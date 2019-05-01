@@ -1,4 +1,22 @@
 {
+    "name": "lezhnev74/openapi-validator",
+    "description": "Validate PSR-7 messages against OpenAPI (3.0.2) specifications \nexpressed in YAML or JSON",
+    "keywords": [
+        "OpenAPI",
+        "psr7",
+        "http",
+        "validation"
+    ],
+    "homepage": "https://github.com/lezhnev74/openapi-psr7-validator",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitry Lezhnev",
+            "email": "lezhnev.work@gmail.com",
+            "homepage": "https://lessthan12ms.com",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "OpenAPIValidation\\": "src/"
@@ -15,5 +33,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8"
-    }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "prefer-stable": true
 }
