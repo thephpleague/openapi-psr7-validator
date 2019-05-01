@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class Minimum
+class Minimum extends BaseKeyword
 {
     /**
      * The value of "minimum" MUST be a number, representing a lower limit

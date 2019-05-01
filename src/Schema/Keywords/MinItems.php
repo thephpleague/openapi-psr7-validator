@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class MinItems
+class MinItems extends BaseKeyword
 {
     /**
      * The value of this keyword MUST be an integer.  This integer MUST be

@@ -14,20 +14,8 @@ use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
 
 
-class Properties
+class Properties extends BaseKeyword
 {
-    /** @var CebeSchema */
-    protected $parentSchema;
-
-    /**
-     * @param CebeSchema $parentSchema
-     */
-    public function __construct(CebeSchema $parentSchema)
-    {
-        $this->parentSchema = $parentSchema;
-    }
-
-
     /**
      * Property definitions MUST be a Schema Object and not a standard JSON Schema (inline or referenced).
      * If absent, it can be considered the same as an empty object.
@@ -71,7 +59,7 @@ class Properties
             // Validate against "properties"
             foreach ($properties as $propName => $propSchema) {
                 if (property_exists($data, $propName)) {
-                    $schemaValidator = new SchemaValidator($propSchema, $data->$propName);
+                    $schemaValidator = new SchemaValidator($propSchema, $data->$propName, $this->parentSchemaValidator->dataType());
                     $schemaValidator->validate();
                 }
             }
@@ -80,7 +68,7 @@ class Properties
             if ($additionalProperties instanceof CebeSchema) {
                 foreach ($data as $propName => $propSchema) {
                     if (!isset($properties[$propName])) { # if not covered by "properties"
-                        $schemaValidator = new SchemaValidator($additionalProperties, $data->$propName);
+                        $schemaValidator = new SchemaValidator($additionalProperties, $data->$propName, $this->parentSchemaValidator->dataType());
                         $schemaValidator->validate();
                     }
                 }

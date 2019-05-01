@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 
-class AdditionalProperties
+class AdditionalProperties extends BaseKeyword
 {
     public function validate($data, bool $additionalProperties): void
     {

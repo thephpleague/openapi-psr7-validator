@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class MultipleOf
+class MultipleOf extends BaseKeyword
 {
     /**
      * The value of "multipleOf" MUST be a number, strictly greater than 0.

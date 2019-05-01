@@ -14,7 +14,7 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
 
-class Not
+class Not extends BaseKeyword
 {
     /**
      * This keyword's value MUST be an object.

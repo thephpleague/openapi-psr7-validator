@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class MinLength
+class MinLength extends BaseKeyword
 {
     /**
      * A string instance is valid against this keyword if its length is

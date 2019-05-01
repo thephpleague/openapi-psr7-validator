@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class Required
+class Required extends BaseKeyword
 {
     /**
      * The value of this keyword MUST be an array.  This array MUST have at
@@ -33,6 +33,10 @@ class Required
             Validator::each(Validator::stringType())->assert($required);
             Validator::trueVal()->assert(count(array_unique($required)) === count($required));
 
+            if ($this->parentSchema->type !== "object") {
+                throw new \Exception(sprintf("Required keyword only works with type=object, but %s found", $this->parentSchema->type));
+            }
+
             foreach ($required as $reqProperty) {
                 $propertyFound = false;
                 foreach ($data as $property => $value) {
@@ -40,6 +44,22 @@ class Required
                 }
 
                 if (!$propertyFound) {
+
+                    # respect writeOnly/readOnly keywords
+                    if (
+                        (
+                            $this->parentSchema->properties[$reqProperty]->writeOnly &&
+                            $this->parentSchemaValidator->dataType() == \OpenAPIValidation\Schema\Validator::VALIDATE_AS_RESPONSE
+                        )
+                        ||
+                        (
+                            $this->parentSchema->properties[$reqProperty]->readOnly &&
+                            $this->parentSchemaValidator->dataType() == \OpenAPIValidation\Schema\Validator::VALIDATE_AS_REQUEST
+                        )
+                    ) {
+                        continue;
+                    }
+
                     throw new \Exception(sprintf("Required property %s must be present in the object", $reqProperty));
                 }
             }

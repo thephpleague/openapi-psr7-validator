@@ -14,20 +14,8 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
 
-class Items
+class Items extends BaseKeyword
 {
-    /** @var CebeSchema */
-    protected $parentSchema;
-
-    /**
-     * @param CebeSchema $parentSchema
-     */
-    public function __construct(CebeSchema $parentSchema)
-    {
-        $this->parentSchema = $parentSchema;
-    }
-
-
     /**
      * Value MUST be an object and not an array.
      * Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.

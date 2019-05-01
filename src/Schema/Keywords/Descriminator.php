@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class Enum extends BaseKeyword
+class Descriminator extends BaseKeyword
 {
     /**
      * The value of this keyword MUST be an array.  This array SHOULD have

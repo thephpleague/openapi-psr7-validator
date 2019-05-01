@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class UniqueItems
+class UniqueItems extends BaseKeyword
 {
     /**
      * The value of this keyword MUST be a boolean.

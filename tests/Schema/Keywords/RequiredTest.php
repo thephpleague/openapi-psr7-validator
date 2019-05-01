@@ -30,6 +30,30 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
+    function test_it_validates_properties_writeOnly_green()
+    {
+        $spec = <<<SPEC
+schema:
+  type: object
+  properties:
+    name:
+      type: string
+      writeOnly: true
+    age:
+      type: integer
+  required:
+  - name
+  - age
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = (object)['age' => 20];
+
+        (new Validator($schema, $data, Validator::VALIDATE_AS_RESPONSE))->validate();
+        $this->addToAssertionCount(1);
+    }
+
+
     function test_it_validates_required_red()
     {
         $spec = <<<SPEC
@@ -74,4 +98,6 @@ SPEC;
             $this->assertEquals('required', $e->keyword());
         }
     }
+
+
 }

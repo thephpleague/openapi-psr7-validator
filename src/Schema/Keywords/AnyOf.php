@@ -14,7 +14,7 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
 
-class AnyOf
+class AnyOf extends BaseKeyword
 {
     /**
      * This keyword's value MUST be an array.  This array MUST have at least

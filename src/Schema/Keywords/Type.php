@@ -13,19 +13,8 @@ use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class Type
+class Type extends BaseKeyword
 {
-    /** @var CebeSchema */
-    protected $parentSchema;
-
-    /**
-     * @param CebeSchema $parentSchema
-     */
-    public function __construct(CebeSchema $parentSchema)
-    {
-        $this->parentSchema = $parentSchema;
-    }
-
     /**
      * The value of this keyword MUST be either a string ONLY.
      *
@@ -51,6 +40,10 @@ class Type
                 5 => 'string',
                 # Note that there is no null type; instead, the nullable attribute is used as a modifier of the base type.
             ])->stringType()->assert($type);
+
+            if ($this->parentSchema->nullable && $data === null) {
+                return;
+            }
 
             switch ($type) {
                 case "boolean":

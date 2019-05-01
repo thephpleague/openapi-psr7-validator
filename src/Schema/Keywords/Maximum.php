@@ -12,7 +12,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
-class Maximum
+class Maximum extends BaseKeyword
 {
     /**
      * The value of "maximum" MUST be a number, representing an upper limit
