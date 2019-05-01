@@ -2,6 +2,7 @@
 
 This package can validate PSR-7 messages against OpenAPI (3.0.2) specifications 
 expressed in YAML or JSON.
+![](image.jpg)
 
 ## Requirements
 n/a
@@ -38,7 +39,7 @@ vendor/bin/phpunit
 
 ## Credits
 - [Dmitry Lezhnev](https://github.com/lezhnev74)
-
+- Icons made by Freepik, licensed by CC 3.0 BY
 
 A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind
  of inspired me to work on this package.
