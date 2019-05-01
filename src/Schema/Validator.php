@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema;
 
 use cebe\openapi\spec\Schema as CebeSchema;
+use OpenAPIValidation\Schema\Keywords\AllOf;
+use OpenAPIValidation\Schema\Keywords\AnyOf;
 use OpenAPIValidation\Schema\Keywords\Enum;
 use OpenAPIValidation\Schema\Keywords\Items;
 use OpenAPIValidation\Schema\Keywords\Maximum;
@@ -20,6 +22,8 @@ use OpenAPIValidation\Schema\Keywords\MinItems;
 use OpenAPIValidation\Schema\Keywords\MinLength;
 use OpenAPIValidation\Schema\Keywords\MinProperties;
 use OpenAPIValidation\Schema\Keywords\MultipleOf;
+use OpenAPIValidation\Schema\Keywords\Not;
+use OpenAPIValidation\Schema\Keywords\OneOf;
 use OpenAPIValidation\Schema\Keywords\Pattern;
 use OpenAPIValidation\Schema\Keywords\Properties;
 use OpenAPIValidation\Schema\Keywords\Required;
@@ -120,9 +124,25 @@ class Validator
         }
 
         if (isset($this->schema->properties) && count($this->schema->properties)) {
-            (new Properties($this->schema))->validate($this->data, $this->schema->properties);
+            $additionalProperties = isset($this->schema->additionalProperties) ? $this->schema->additionalProperties : null;
+            (new Properties($this->schema))->validate($this->data, $this->schema->properties, $additionalProperties);
         }
 
+        if (isset($this->schema->allOf) && count($this->schema->allOf)) {
+            (new AllOf())->validate($this->data, $this->schema->allOf);
+        }
+
+        if (isset($this->schema->oneOf) && count($this->schema->oneOf)) {
+            (new OneOf())->validate($this->data, $this->schema->oneOf);
+        }
+
+        if (isset($this->schema->anyOf) && count($this->schema->anyOf)) {
+            (new AnyOf())->validate($this->data, $this->schema->anyOf);
+        }
+
+        if (isset($this->schema->not)) {
+            (new Not())->validate($this->data, $this->schema->not);
+        }
 
         // ok, all checks are done
     }
