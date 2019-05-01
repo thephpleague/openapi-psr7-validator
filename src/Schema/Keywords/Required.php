@@ -40,7 +40,7 @@ class Required
                 }
 
                 if (!$propertyFound) {
-                    throw new \Exception(sprintf("Required properties must be present in the object"));
+                    throw new \Exception(sprintf("Required property %s must be present in the object", $reqProperty));
                 }
             }
 

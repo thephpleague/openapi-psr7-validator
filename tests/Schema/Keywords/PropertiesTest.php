@@ -11,43 +11,25 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class RequiredTest extends SchemaValidatorTest
+class PropertiesTest extends SchemaValidatorTest
 {
-    function test_it_validates_required_green()
+
+    function test_it_validates_properties_green()
     {
+
         $spec = <<<SPEC
 schema:
   type: object
-  required:
-  - a
-  - b
+  properties:
+    name:
+      type: string
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = (object)['a' => 1, 'b' => 2];
+        $data   = (object)['name' => 'Dima'];
 
         (new Validator($schema, $data))->validate();
         $this->addToAssertionCount(1);
-    }
-
-    function test_it_validates_required_red()
-    {
-        $spec = <<<SPEC
-schema:
-  type: array
-  required: 
-  - a
-  - b
-SPEC;
-
-        $schema = $this->loadRawSchema($spec);
-        $data   = (object)['a' => 1];
-
-        try {
-            (new Validator($schema, $data))->validate();
-        } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('required', $e->keyword());
-        }
     }
 
     function test_it_validates_properties_red()
@@ -60,18 +42,15 @@ schema:
       type: string
     age:
       type: integer
-  required:
-  - name
-  - age
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = (object)['name' => 'Dima'];
+        $data   = (object)['name' => 'Dima', 'age' => 'young'];
 
         try {
             (new Validator($schema, $data))->validate();
         } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('required', $e->keyword());
+            $this->assertEquals('properties', $e->keyword());
         }
     }
 }

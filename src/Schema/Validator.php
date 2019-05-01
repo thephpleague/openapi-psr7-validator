@@ -21,6 +21,7 @@ use OpenAPIValidation\Schema\Keywords\MinLength;
 use OpenAPIValidation\Schema\Keywords\MinProperties;
 use OpenAPIValidation\Schema\Keywords\MultipleOf;
 use OpenAPIValidation\Schema\Keywords\Pattern;
+use OpenAPIValidation\Schema\Keywords\Properties;
 use OpenAPIValidation\Schema\Keywords\Required;
 use OpenAPIValidation\Schema\Keywords\Type;
 use OpenAPIValidation\Schema\Keywords\UniqueItems;
@@ -116,6 +117,10 @@ class Validator
 
         if (isset($this->schema->items)) {
             (new Items($this->schema))->validate($this->data, $this->schema->items);
+        }
+
+        if (isset($this->schema->properties) && count($this->schema->properties)) {
+            (new Properties($this->schema))->validate($this->data, $this->schema->properties);
         }
 
 
