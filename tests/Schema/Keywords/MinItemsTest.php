@@ -20,6 +20,8 @@ class MinItemsTest extends SchemaValidatorTest
 schema:
   type: array
   minItems: 3
+  items:
+    type: number
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
@@ -35,6 +37,8 @@ SPEC;
 schema:
   type: array
   minItems: 3
+  items:
+    type: number
 SPEC;
 
         $schema = $this->loadRawSchema($spec);

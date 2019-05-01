@@ -10,6 +10,7 @@ namespace OpenAPIValidation\Schema;
 
 use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\Keywords\Enum;
+use OpenAPIValidation\Schema\Keywords\Items;
 use OpenAPIValidation\Schema\Keywords\Maximum;
 use OpenAPIValidation\Schema\Keywords\MaxItems;
 use OpenAPIValidation\Schema\Keywords\MaxLength;
@@ -21,6 +22,7 @@ use OpenAPIValidation\Schema\Keywords\MinProperties;
 use OpenAPIValidation\Schema\Keywords\MultipleOf;
 use OpenAPIValidation\Schema\Keywords\Pattern;
 use OpenAPIValidation\Schema\Keywords\Required;
+use OpenAPIValidation\Schema\Keywords\Type;
 use OpenAPIValidation\Schema\Keywords\UniqueItems;
 
 // This will load a whole schema and data to validate if one matches another
@@ -103,6 +105,19 @@ class Validator
         if (isset($this->schema->enum)) {
             (new Enum())->validate($this->data, $this->schema->enum);
         }
+
+        //
+        // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
+        //
+
+        if (isset($this->schema->type)) {
+            (new Type($this->schema))->validate($this->data, $this->schema->type);
+        }
+
+        if (isset($this->schema->items)) {
+            (new Items($this->schema))->validate($this->data, $this->schema->items);
+        }
+
 
         // ok, all checks are done
     }

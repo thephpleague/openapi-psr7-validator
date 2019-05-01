@@ -19,6 +19,8 @@ class UniqueItemsTest extends SchemaValidatorTest
         $spec = <<<SPEC
 schema:
   type: array
+  items:
+    type: integer
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
@@ -33,6 +35,8 @@ SPEC;
         $spec = <<<SPEC
 schema:
   type: array
+  items:
+    type: integer
   uniqueItems: true
 SPEC;
 

@@ -16,9 +16,9 @@ class ValidationKeywordFailed extends \LogicException
     /** @var mixed */
     protected $data;
 
-    static function fromKeyword(string $keyword, $data, $message = null): self
+    static function fromKeyword(string $keyword, $data, $message = null, \Throwable $prev = null): self
     {
-        $instance          = new self("Keyword validation failed: " . $message);
+        $instance          = new self("Keyword validation failed: " . $message, 0, $prev);
         $instance->keyword = $keyword;
         $instance->data    = $data;
         return $instance;
