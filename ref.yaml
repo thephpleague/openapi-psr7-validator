@@ -1,0 +1,82 @@
+components:
+  schemas:
+    DailyWeather:
+      type: object
+      properties:
+        day:
+          type: integer
+          example: 1555997840
+          description: Unix timestamp of the day
+        summary:
+          type: string
+          example: Partly cloudy in the morning.
+          description: Human readable weather summary for the day
+        temperature:
+          type: object
+          properties:
+            min_temperature:
+              type: number
+              format: float
+              example: 15.0
+            max_temperature:
+              type: number
+              format: float
+              example: 70.0
+        air_pressure:
+          type: number
+          format: float
+          example: 1001.5
+          description: Measured in hectopascals
+        wind:
+          type: object
+          properties:
+            speed:
+              type: number
+              format: float
+              example: 12.5
+              description: Measured in m/s
+            direction:
+              type: integer
+              example: 45
+              description: from 0° to 360°
+            direction_label:
+              type: string
+              example: NNW
+  parameters:
+    latParam:
+      in: query
+      name: lat
+      required: true
+      description: Latitude
+      example: 105.456
+      schema:
+        type: number
+        format: float
+    lngParam:
+      in: query
+      name: lng
+      required: true
+      description: Longitude
+      example: 48.528
+      schema:
+        type: number
+        format: float
+    unitsParam:
+      in: query
+      name: units
+      description: Units of measurement
+      schema:
+        type: string
+        default: 'si'
+        enum:
+          - si
+          - imperial
+    acceptHeader:
+      in: header
+      name: Accept
+      schema:
+        type: string
+        enum:
+          - image/png
+          - application/json
+        default: application/json

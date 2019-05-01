@@ -1,0 +1,4 @@
+schema:
+  oneOf:
+    - $ref: 'schemas.yaml#/components/schemas/SchemaA'
+    - $ref: 'schemas.yaml#/components/schemas/SchemaB'

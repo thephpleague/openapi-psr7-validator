@@ -1,0 +1,56 @@
+openapi: 3.0.2
+info:
+  title: Weather API
+  version: 0.0.1
+  contact:
+    name: Dmitry Lezhnev
+    url: https://lessthan12ms.com
+    email: lezhnev.work@gmail.com
+paths:
+  /observed/daily:
+    get:
+      parameters:
+        - $ref: 'ref.yaml#/components/parameters/latParam'
+        - $ref: 'ref.yaml#/components/parameters/lngParam'
+        - $ref: 'ref.yaml#/components/parameters/unitsParam'
+        - $ref: 'ref.yaml#/components/parameters/acceptHeader'
+
+      description: Observed, daily
+      responses:
+        200:
+          description: |
+            It returns observed weather, daily. For the last 30 days.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'ref.yaml#/components/schemas/DailyWeather'
+            image/png:
+              schema:
+                type: string
+                format: binary
+  /forecast/daily:
+    get:
+      parameters:
+        - $ref: 'ref.yaml#/components/parameters/latParam'
+        - $ref: 'ref.yaml#/components/parameters/lngParam'
+        - $ref: 'ref.yaml#/components/parameters/unitsParam'
+        - $ref: 'ref.yaml#/components/parameters/acceptHeader'
+
+      description: Forecast, daily
+      responses:
+        200:
+          description: |
+            It returns a forecast of daily weather for a couple of days ahead.
+            Usually, 7.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'ref.yaml#/components/schemas/DailyWeather'
+            image/png:
+              schema:
+                type: string
+                format: binary

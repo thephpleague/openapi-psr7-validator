@@ -1,0 +1,18 @@
+components:
+  schemas:
+    SchemaA:
+      type: object
+      properties:
+        propA:
+          type: integer
+        propB:
+          type: string
+    SchemaB:
+      type: object
+      properties:
+        propB:
+          type: string
+        propC:
+          type: array
+          items:
+            type: integer

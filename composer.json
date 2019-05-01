@@ -1,0 +1,19 @@
+{
+    "autoload": {
+        "psr-4": {
+            "OpenAPIValidation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OpenAPIValidationTests\\": "tests/"
+        }
+    },
+    "require": {
+        "cebe/php-openapi": "^1.0",
+        "respect/validation": "^1.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    }
+}
