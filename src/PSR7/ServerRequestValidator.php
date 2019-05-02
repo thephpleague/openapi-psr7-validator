@@ -10,13 +10,15 @@ namespace OpenAPIValidation\PSR7;
 
 
 use cebe\openapi\spec\Header as HeaderSpec;
+use OpenAPIValidation\PSR7\Exception\MissedRequestCookie;
 use OpenAPIValidation\PSR7\Exception\MissedRequestHeader;
 use OpenAPIValidation\PSR7\Exception\RequestBodyMismatch;
+use OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch;
 use OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch;
-use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\UnexpectedRequestContentType;
 use OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader;
 use OpenAPIValidation\PSR7\Validators\Body;
+use OpenAPIValidation\PSR7\Validators\Cookies;
 use OpenAPIValidation\PSR7\Validators\Headers;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -63,7 +65,27 @@ class ServerRequestValidator extends Validator
         }
 
         // 1.1 Validate cookies
-        #$this->validateCookies();
+        $cookieSpecs = [];
+        foreach ($spec->parameters as $p) {
+            if ($p->in != "cookie") {
+                continue;
+            }
+
+            $cookieSpecs[$p->name] = $p->schema;
+        }
+
+        try {
+            $cookieValidator = new Cookies();
+            $cookieValidator->validate($serverRequest, $cookieSpecs);
+        } catch (\Throwable $e) {
+            switch ($e->getCode()) {
+                case 301:
+                    throw MissedRequestCookie::fromOperationAddr($e->getMessage(), $addr);
+                    break;
+                default:
+                    throw RequestCookiesMismatch::fromAddrAndCauseException($addr, $e);
+            }
+        }
 
         // 2. Validate Body
         if (!$spec->requestBody) {

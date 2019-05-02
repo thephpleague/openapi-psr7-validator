@@ -12,6 +12,14 @@ n/a
 composer require lezhnev74/openapi-validator
 ```
 
+## How To
+### ServerRequest Message
+add docs
+### Response Message
+add docs
+### Request Message
+`\Psr\Http\Message\RequestInterface` validation is not implemented. 
+
 ## Standalone OpenAPI Validator
 The package contains a standalone validator which can validate any data 
 against an OpenAPI schema like this:

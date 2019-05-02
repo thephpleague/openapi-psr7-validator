@@ -44,6 +44,10 @@ abstract class BaseValidatorTest extends TestCase
                 return $request
                     ->withUri(new Uri("$path?queryArgA=20"))
                     ->withHeader('Header-A', 'value A');
+            case "post /cookies":
+                return $request
+                    ->withCookieParams(['session_id' => 'abc', 'debug' => 10])
+                    ->withHeader('Content-Type', 'text/plain');
             case "post /request-body":
                 $body = ['name' => 'Alex'];
                 return $request

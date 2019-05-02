@@ -11,13 +11,13 @@ namespace OpenAPIValidation\PSR7\Exception;
 
 use OpenAPIValidation\PSR7\OperationAddress;
 
-class RequestHeadersMismatch extends NoMethod
+class RequestCookiesMismatch extends NoMethod
 {
     static function fromAddrAndCauseException(OperationAddress $addr, \Throwable $cause): self
     {
         $i = new self(
             sprintf(
-                "OpenAPI spec does not match the headers of the request [%s,%s]: %s",
+                "OpenAPI spec does not match the cookies of the request [%s,%s]: %s",
                 $addr->path(),
                 $addr->method(),
                 $cause->getMessage()
