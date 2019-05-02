@@ -57,7 +57,7 @@ class Type extends BaseKeyword
                     }
                     break;
                 case "array":
-                    if (!(is_array($data) && isAssoc($data))) {
+                    if (count($data) && !(is_array($data) && isAssoc($data))) {
                         throw new \Exception(sprintf("Value %s is not an array", $data));
                     }
                     if (!isset($this->parentSchema->items)) {

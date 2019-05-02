@@ -16,6 +16,15 @@ use Respect\Validation\Validator;
 
 class AllOf extends BaseKeyword
 {
+    /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
+    protected $validationDataType;
+
+    public function __construct(CebeSchema $parentSchema, int $type)
+    {
+        parent::__construct($parentSchema);
+        $this->validationDataType = $type;
+    }
+
     /**
      * This keyword's value MUST be an array.  This array MUST have at least
      * one element.

@@ -16,6 +16,16 @@ use Respect\Validation\Validator;
 
 class Properties extends BaseKeyword
 {
+    /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
+    protected $validationDataType;
+
+    public function __construct(CebeSchema $parentSchema, int $type)
+    {
+        parent::__construct($parentSchema);
+        $this->validationDataType = $type;
+    }
+
+
     /**
      * Property definitions MUST be a Schema Object and not a standard JSON Schema (inline or referenced).
      * If absent, it can be considered the same as an empty object.
@@ -59,7 +69,7 @@ class Properties extends BaseKeyword
             // Validate against "properties"
             foreach ($properties as $propName => $propSchema) {
                 if (property_exists($data, $propName)) {
-                    $schemaValidator = new SchemaValidator($propSchema, $data->$propName, $this->parentSchemaValidator->dataType());
+                    $schemaValidator = new SchemaValidator($propSchema, $data->$propName, $this->validationDataType);
                     $schemaValidator->validate();
                 }
             }
@@ -68,7 +78,7 @@ class Properties extends BaseKeyword
             if ($additionalProperties instanceof CebeSchema) {
                 foreach ($data as $propName => $propSchema) {
                     if (!isset($properties[$propName])) { # if not covered by "properties"
-                        $schemaValidator = new SchemaValidator($additionalProperties, $data->$propName, $this->parentSchemaValidator->dataType());
+                        $schemaValidator = new SchemaValidator($additionalProperties, $data->$propName, $this->validationDataType);
                         $schemaValidator->validate();
                     }
                 }

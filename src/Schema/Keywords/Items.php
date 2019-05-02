@@ -16,6 +16,15 @@ use Respect\Validation\Validator;
 
 class Items extends BaseKeyword
 {
+    /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
+    protected $validationDataType;
+
+    public function __construct(CebeSchema $parentSchema, int $type)
+    {
+        parent::__construct($parentSchema);
+        $this->validationDataType = $type;
+    }
+
     /**
      * Value MUST be an object and not an array.
      * Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.

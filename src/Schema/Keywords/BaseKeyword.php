@@ -16,17 +16,13 @@ abstract class BaseKeyword
 {
     /** @var CebeSchema */
     protected $parentSchema;
-    /** @var Validator */
-    protected $parentSchemaValidator;
 
     /**
      * @param CebeSchema $parentSchema
-     * @param Validator $parentSchemaValidator
      */
-    public function __construct(CebeSchema $parentSchema, Validator $parentSchemaValidator)
+    public function __construct(CebeSchema $parentSchema)
     {
-        $this->parentSchema          = $parentSchema;
-        $this->parentSchemaValidator = $parentSchemaValidator;
+        $this->parentSchema = $parentSchema;
     }
 
 

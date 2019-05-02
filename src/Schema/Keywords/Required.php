@@ -9,11 +9,21 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 
+use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
 
 class Required extends BaseKeyword
 {
+    /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
+    protected $validationDataType;
+
+    public function __construct(CebeSchema $parentSchema, int $type)
+    {
+        parent::__construct($parentSchema);
+        $this->validationDataType = $type;
+    }
+
     /**
      * The value of this keyword MUST be an array.  This array MUST have at
      * least one element.  Elements of this array MUST be strings, and MUST
@@ -27,6 +37,7 @@ class Required extends BaseKeyword
      */
     public function validate($data, $required): void
     {
+
         try {
             Validator::objectType()->assert($data);
             Validator::arrayType()->assert($required);
@@ -44,17 +55,16 @@ class Required extends BaseKeyword
                 }
 
                 if (!$propertyFound) {
-
                     # respect writeOnly/readOnly keywords
                     if (
                         (
                             $this->parentSchema->properties[$reqProperty]->writeOnly &&
-                            $this->parentSchemaValidator->dataType() == \OpenAPIValidation\Schema\Validator::VALIDATE_AS_RESPONSE
+                            $this->validationDataType == \OpenAPIValidation\Schema\Validator::VALIDATE_AS_RESPONSE
                         )
                         ||
                         (
                             $this->parentSchema->properties[$reqProperty]->readOnly &&
-                            $this->parentSchemaValidator->dataType() == \OpenAPIValidation\Schema\Validator::VALIDATE_AS_REQUEST
+                            $this->validationDataType == \OpenAPIValidation\Schema\Validator::VALIDATE_AS_REQUEST
                         )
                     ) {
                         continue;
