@@ -9,8 +9,11 @@ namespace OpenAPIValidationTests\PSR7;
 
 use cebe\openapi\Reader;
 use OpenAPIValidation\PSR7\Exception\MissedRequestCookie;
+use OpenAPIValidation\PSR7\Exception\MissedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch;
 use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\PSR7\ResponseAddress;
+use OpenAPIValidation\PSR7\ResponseValidator;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
 class MessageCookiesTest extends BaseValidatorTest
@@ -25,6 +28,30 @@ class MessageCookiesTest extends BaseValidatorTest
         $validator->validate($addr, $request);
         $this->addToAssertionCount(1);
     }
+
+    public function test_it_validates_response_with_cookies_green()
+    {
+        $addr     = new ResponseAddress("/cookies", "post", 200);
+        $response = $this->makeGoodResponse($addr->path(), $addr->method());
+
+        $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator->validate($addr, $response);
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_it_validates_response_misses_setcookie_header_green()
+    {
+        $addr     = new ResponseAddress("/cookies", "post", 200);
+        $response = $this->makeGoodResponse($addr->path(), $addr->method())->withoutHeader('Set-Cookie');
+
+        try {
+            $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator->validate($addr, $response);
+        } catch (MissedResponseHeader $e) {
+            $this->assertEquals('Set-Cookie', $e->headerName());
+        }
+    }
+
 
     public function test_it_validates_request_with_missed_cookie_red()
     {

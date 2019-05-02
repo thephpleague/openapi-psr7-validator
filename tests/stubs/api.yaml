@@ -24,8 +24,12 @@ paths:
             schema:
               type: string
       responses:
-        201:
+        200:
           description: Created
+          content:
+            text/plain:
+              schema:
+                type: string
   /cookies:
     post:
       summary: Make a post operation
@@ -40,8 +44,16 @@ paths:
           schema:
             type: integer
       responses:
-        201:
+        200:
           description: posted
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
   /path1:
     get:
       parameters:

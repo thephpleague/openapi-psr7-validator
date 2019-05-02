@@ -30,6 +30,10 @@ abstract class BaseValidatorTest extends TestCase
                     ->withHeader('Content-Type', 'application/json')
                     ->withHeader('Header-B', 'good value')
                     ->withBody(stream_for(json_encode($body)));
+            case "post /cookies":
+                return (new Response())
+                    ->withHeader('Content-Type', 'text/plain')
+                    ->withHeader('Set-Cookie', 'anyName=anyValue');
             default:
                 throw new \Exception("unexpected operation '$method $path''");
         }
