@@ -46,3 +46,7 @@ A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind
  
 ## License
 The MIT License (MIT). Please see `License.md` file for more information.
+
+## TODO
+- [ ] add default type formats
+- [ ] add ability to add custom type formats

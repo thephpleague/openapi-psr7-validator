@@ -14,12 +14,16 @@ use cebe\openapi\spec\MediaType as MediaTypeSpec;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\Response as ResponseSpec;
+use OpenAPIValidation\PSR7\Exception\MissedRequestHeader;
+use OpenAPIValidation\PSR7\Exception\MissedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\NoContentType;
 use OpenAPIValidation\PSR7\Exception\NoMethod;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
+use OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch;
 use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch;
+use OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader;
 use OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType;
 use OpenAPIValidation\PSR7\Exception\UnexpectedResponseHeader;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
@@ -57,8 +61,11 @@ class Validator
             $this->validateHeaders($response, $spec->headers);
         } catch (\Throwable $e) {
             switch ($e->getCode()) {
-                case 101:
+                case 200:
                     throw UnexpectedResponseHeader::fromResponseAddr($e->getMessage(), $addr);
+                    break;
+                case 201:
+                    throw MissedResponseHeader::fromResponseAddr($e->getMessage(), $addr);
                     break;
                 default:
                     throw ResponseHeadersMismatch::fromAddrAndCauseException($addr, $e);
@@ -86,7 +93,7 @@ class Validator
      */
     private function findResponseSpec(ResponseAddress $addr): ResponseSpec
     {
-        $operation = $this->findOperation($addr->getOperationAddress());
+        $operation = $this->findOperationSpec($addr->getOperationAddress());
 
         $response = $operation->responses->getResponse($addr->responseCode());
         if (!$response) {
@@ -102,7 +109,7 @@ class Validator
      * @param OperationAddress $addr
      * @return Operation
      */
-    private function findOperation(OperationAddress $addr): Operation
+    private function findOperationSpec(OperationAddress $addr): Operation
     {
         $pathSpec = $this->openApi->paths->getPath($addr->path());
 
@@ -129,13 +136,20 @@ class Validator
             if (!array_key_exists($header, $headerSpecs)) {
                 // By default this will not report unexpected headers (soft validation)
                 // TODO, maybe this can be enabled later and controlled by custom options
-                #throw new \RuntimeException($header, 101);
+                #throw new \RuntimeException($header, 200);
                 continue;
             }
 
             foreach ($headerValues as $headerValue) {
                 $validator = new SchemaValidator($headerSpecs[$header]->schema, $headerValue, $this->detectValidationStrategy($message));
                 $validator->validate();
+            }
+        }
+
+        // Check if message misses headers
+        foreach ($headerSpecs as $header => $spec) {
+            if (!$message->hasHeader($header)) {
+                throw new \RuntimeException($header, 201);
             }
         }
     }
@@ -190,14 +204,49 @@ class Validator
      */
     public function validateRequest(RequestInterface $request): void
     {
-
+        // TODO, should this be implemented?
     }
 
     /**
+     * @param OperationAddress $addr
      * @param ServerRequestInterface $serverRequest
+     * @throws \cebe\openapi\exceptions\TypeErrorException
      */
-    public function validateServerRequest(ServerRequestInterface $serverRequest): void
+    public function validateServerRequest(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
+        // 0. Find appropriate schema to validate against
+        $spec = $this->findOperationSpec($addr);
+
+        // 1. Validate Headers
+        // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
+        $headerSpecs = [];
+        foreach ($spec->parameters as $p) {
+            if ($p->in != "header") {
+                continue;
+            }
+
+            $headerData = json_decode(json_encode($p->getSerializableData()), true);
+            unset($headerData['in']);
+            unset($headerData['name']);
+            $headerSpecs[$p->name] = new HeaderSpec($headerData);
+        }
+
+        try {
+            $this->validateHeaders($serverRequest, $headerSpecs);
+        } catch (\Throwable $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    throw UnexpectedRequestHeader::fromOperationAddr($e->getMessage(), $addr);
+                    break;
+                case 201:
+                    throw MissedRequestHeader::fromOperationAddr($e->getMessage(), $addr);
+                    break;
+                default:
+                    throw RequestHeadersMismatch::fromAddrAndCauseException($addr, $e);
+            }
+        }
+
+        // 2. Validate Body
 
     }
 }
