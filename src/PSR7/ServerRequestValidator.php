@@ -11,8 +11,12 @@ namespace OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\Header as HeaderSpec;
 use OpenAPIValidation\PSR7\Exception\MissedRequestHeader;
+use OpenAPIValidation\PSR7\Exception\RequestBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch;
+use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
+use OpenAPIValidation\PSR7\Exception\UnexpectedRequestContentType;
 use OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader;
+use OpenAPIValidation\PSR7\Validators\Body;
 use OpenAPIValidation\PSR7\Validators\Headers;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -62,7 +66,22 @@ class ServerRequestValidator extends Validator
         #$this->validateCookies();
 
         // 2. Validate Body
-        // TODO
+        if (!$spec->requestBody) {
+            return;
+        }
+
+        try {
+            $bodyValidator = new Body();
+            $bodyValidator->validate($serverRequest, $spec->requestBody->content);
+        } catch (\Throwable $e) {
+            switch ($e->getCode()) {
+                case 100:
+                    throw UnexpectedRequestContentType::fromAddr($e->getMessage(), $addr);
+                default:
+                    throw RequestBodyMismatch::fromAddrAndCauseException($addr, $e);
+            }
+        }
+
 
     }
 }

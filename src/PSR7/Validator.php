@@ -9,19 +9,12 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7;
 
 
-use cebe\openapi\spec\Header as HeaderSpec;
-use cebe\openapi\spec\MediaType as MediaTypeSpec;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\Response as ResponseSpec;
-use OpenAPIValidation\PSR7\Exception\NoContentType;
 use OpenAPIValidation\PSR7\Exception\NoMethod;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 abstract class Validator
 {
@@ -73,7 +66,6 @@ abstract class Validator
         }
         return $pathSpec->getOperations()[$addr->method()];
     }
-
 
 
 }

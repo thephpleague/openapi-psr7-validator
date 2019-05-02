@@ -7,7 +7,26 @@ info:
     url: https://lessthan12ms.com
     email: lezhnev.work@gmail.com
 paths:
-  /path1:
+  /request-body:
+    post:
+      summary: Request post with body payload
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+          text/plain:
+            schema:
+              type: string
+      responses:
+        201:
+          description: Created
+  /cookies:
     post:
       summary: Make a post operation
       operationId: post1
@@ -21,8 +40,9 @@ paths:
           schema:
             type: integer
       responses:
-        203:
-          description: fake endpoint
+        201:
+          description: posted
+  /path1:
     get:
       parameters:
         - $ref: 'schemas.yaml#/components/parameters/HeaderA'

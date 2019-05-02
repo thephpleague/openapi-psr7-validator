@@ -41,10 +41,14 @@ abstract class BaseValidatorTest extends TestCase
 
         switch ("$method $path") {
             case "get /path1":
-                $body = ['propA' => 1];
                 return $request
                     ->withUri(new Uri("$path?queryArgA=20"))
                     ->withHeader('Header-A', 'value A');
+            case "post /request-body":
+                $body = ['name' => 'Alex'];
+                return $request
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withBody(stream_for(json_encode($body)));
             default:
                 throw new \Exception("unexpected operation '$method $path''");
         }
