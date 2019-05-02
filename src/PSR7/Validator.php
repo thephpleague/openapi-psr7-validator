@@ -81,5 +81,4 @@ abstract class Validator
         return $pathSpec;
     }
 
-
 }

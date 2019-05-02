@@ -7,6 +7,18 @@ info:
     url: https://lessthan12ms.com
     email: lezhnev.work@gmail.com
 paths:
+  /read/{param1}/from/{param2}:
+    parameters:
+      - in: path
+        name: param1
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: param2
+        required: true
+        schema:
+          type: integer
   /read:
     parameters:
       - name: offset

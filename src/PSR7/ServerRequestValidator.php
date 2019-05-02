@@ -22,6 +22,7 @@ use OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader;
 use OpenAPIValidation\PSR7\Validators\Body;
 use OpenAPIValidation\PSR7\Validators\Cookies;
 use OpenAPIValidation\PSR7\Validators\Headers;
+use OpenAPIValidation\PSR7\Validators\Path;
 use OpenAPIValidation\PSR7\Validators\QueryArguments;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -31,6 +32,7 @@ class ServerRequestValidator extends Validator
      * @param OperationAddress $addr
      * @param ServerRequestInterface $serverRequest
      * @throws \cebe\openapi\exceptions\TypeErrorException
+     * @throws \Throwable
      */
     public function validate(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
@@ -46,6 +48,9 @@ class ServerRequestValidator extends Validator
 
         // 4. Validate Query arguments
         $this->validateQueryArgs($addr, $serverRequest);
+
+        // 5. Validate path
+        $this->validatePath($addr, $serverRequest);
 
     }
 
@@ -209,6 +214,55 @@ class ServerRequestValidator extends Validator
                     break;
                 default:
                     throw RequestQueryArgumentMismatch::fromAddrAndCauseException($addr, $e);
+            }
+        }
+    }
+
+    /**
+     * @param OperationAddress $addr
+     * @param ServerRequestInterface $serverRequest
+     * @throws \Throwable
+     */
+    private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest)
+    {
+        $spec = $this->findOperationSpec($addr);
+
+        // 1. Collect operation-level params
+        $pathSpecs = [];
+
+        foreach ($spec->parameters as $p) {
+            if ($p->in != "path") {
+                continue;
+            }
+
+            $pathSpecs[$p->name] = $p;
+        }
+
+        // 2. Collect path-level params
+        $pathSpec = $this->findPathSpec($addr);
+        foreach ($pathSpec->parameters as $p) {
+            if ($p->in != "path") {
+                continue;
+            }
+
+            $pathSpecs += [$p->name => $p]; #union won't override
+        }
+
+
+
+        // 3. Validate collected params
+        try {
+            $pathValidator = new Path();
+            $pathValidator->validate($serverRequest, $pathSpecs);
+        } catch (\Throwable $e) {
+            switch ($e->getCode()) {
+//                case 501:
+//                    throw MissedRequestQueryArgument::fromOperationAddr($e->getMessage(), $addr);
+//                    break;
+                default:
+//                    throw RequestQueryArgumentMismatch::fromAddrAndCauseException($addr, $e);
+
+                    throw $e;
             }
         }
     }

@@ -9,10 +9,8 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7;
 
 
-class OperationAddress
+class OperationAddress extends PathAddress
 {
-    /** @var string */
-    protected $path;
     /** @var string */
     protected $method;
 
@@ -22,16 +20,8 @@ class OperationAddress
      */
     public function __construct(string $path, string $method)
     {
-        $this->path   = $path;
+        parent::__construct($path);
         $this->method = $method;
-    }
-
-    /**
-     * @return string
-     */
-    public function path(): string
-    {
-        return $this->path;
     }
 
     /**
@@ -45,6 +35,6 @@ class OperationAddress
 
     public function getOperationAddress(): self
     {
-        return new OperationAddress($this->path, $this->method);
+        return new self($this->path, $this->method);
     }
 }
