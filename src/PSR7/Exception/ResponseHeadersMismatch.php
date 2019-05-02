@@ -11,13 +11,13 @@ namespace OpenAPIValidation\PSR7\Exception;
 
 use OpenAPIValidation\PSR7\ResponseAddress;
 
-class ResponseBodyMismatch extends NoResponseCode
+class ResponseHeadersMismatch extends NoResponseCode
 {
     static function fromAddrAndCauseException(ResponseAddress $addr, \Throwable $cause): self
     {
         $i = new self(
             sprintf(
-                "OpenAPI spec does not match the body of the response [%s,%s,%d]: %s",
+                "OpenAPI spec does not match the headers of the response [%s,%s,%d]: %s",
                 $addr->path(),
                 $addr->method(),
                 $addr->responseCode(),

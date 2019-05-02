@@ -16,6 +16,13 @@ paths:
       responses:
         200:
           description: fake endpoint
+          headers:
+            Header-B:
+              schema:
+                type: string
+                enum:
+                  - good value
+                  - another good value
           content:
             application/json:
               schema:

@@ -19,7 +19,9 @@ use OpenAPIValidation\PSR7\Exception\NoMethod;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
+use OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch;
 use OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType;
+use OpenAPIValidation\PSR7\Exception\UnexpectedResponseHeader;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
@@ -51,7 +53,17 @@ class Validator
         $spec = $this->findResponseSpec($addr);
 
         // 1. Validate Headers
-        $this->validateHeaders($response, $spec->headers);
+        try {
+            $this->validateHeaders($response, $spec->headers);
+        } catch (\Throwable $e) {
+            switch ($e->getCode()) {
+                case 101:
+                    throw UnexpectedResponseHeader::fromResponseAddr($e->getMessage(), $addr);
+                    break;
+                default:
+                    throw ResponseHeadersMismatch::fromAddrAndCauseException($addr, $e);
+            }
+        }
 
         // 2. Validate Body
         try {
@@ -110,7 +122,37 @@ class Validator
      */
     protected function validateHeaders(MessageInterface $message, array $headerSpecs): void
     {
-        #var_dump($headerSpecs);
+        $messageHeaders = $message->getHeaders();
+
+        foreach ($messageHeaders as $header => $headerValues) {
+
+            if (!array_key_exists($header, $headerSpecs)) {
+                // By default this will not report unexpected headers (soft validation)
+                // TODO, maybe this can be enabled later and controlled by custom options
+                #throw new \RuntimeException($header, 101);
+                continue;
+            }
+
+            foreach ($headerValues as $headerValue) {
+                $validator = new SchemaValidator($headerSpecs[$header]->schema, $headerValue, $this->detectValidationStrategy($message));
+                $validator->validate();
+            }
+        }
+    }
+
+    /**
+     * Distinguish requests and responses, so we can treat them differently (writeOnly/readOnly OAS keywords)
+     *
+     * @param MessageInterface $message
+     * @return int
+     */
+    private function detectValidationStrategy(MessageInterface $message): int
+    {
+        if ($message instanceof ResponseInterface) {
+            return \OpenAPIValidation\Schema\Validator::VALIDATE_AS_RESPONSE;
+        } else {
+            return \OpenAPIValidation\Schema\Validator::VALIDATE_AS_REQUEST;
+        }
     }
 
     /**
@@ -141,21 +183,6 @@ class Validator
         }
         $validator = new SchemaValidator($mediaTypeSpecs[$contentType]->schema, $body, $this->detectValidationStrategy($message));
         $validator->validate();
-    }
-
-    /**
-     * Distinguish requests and responses, so we can treat them differently (writeOnly/readOnly OAS keywords)
-     *
-     * @param MessageInterface $message
-     * @return int
-     */
-    private function detectValidationStrategy(MessageInterface $message): int
-    {
-        if ($message instanceof ResponseInterface) {
-            return \OpenAPIValidation\Schema\Validator::VALIDATE_AS_RESPONSE;
-        } else {
-            return \OpenAPIValidation\Schema\Validator::VALIDATE_AS_REQUEST;
-        }
     }
 
     /**
