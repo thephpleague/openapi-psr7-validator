@@ -8,6 +8,21 @@ info:
     email: lezhnev.work@gmail.com
 paths:
   /path1:
+    post:
+      summary: Make a post operation
+      operationId: post1
+      parameters:
+        - in: cookie
+          name: session_id
+          schema:
+            type: string
+        - in: cookie
+          name: debug
+          schema:
+            type: integer
+      responses:
+        203:
+          description: fake endpoint
     get:
       parameters:
         - $ref: 'schemas.yaml#/components/parameters/HeaderA'
@@ -27,7 +42,7 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas.yaml#/components/schemas/SchemaA'
-            image/png:
+            image/jpeg:
               schema:
                 type: string
                 format: binary

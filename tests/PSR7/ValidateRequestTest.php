@@ -11,6 +11,7 @@ use cebe\openapi\Reader;
 use OpenAPIValidation\PSR7\Exception\MissedRequestHeader;
 use OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch;
 use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\PSR7\ServerRequestValidator;
 use OpenAPIValidation\PSR7\Validator;
 
 class ValidateRequestTest extends BaseValidatorTest
@@ -21,8 +22,8 @@ class ValidateRequestTest extends BaseValidatorTest
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method());
 
-        $validator = new Validator(Reader::readFromYamlFile($this->apiSpecFile));
-        $validator->validateServerRequest($addr, $request);
+        $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator->validate($addr, $request);
         $this->addToAssertionCount(1);
     }
 
@@ -33,8 +34,8 @@ class ValidateRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
 
         try {
-            $validator = new Validator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validateServerRequest($addr, $request);
+            $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator->validate($addr, $request);
             $this->fail("Exception expected");
         } catch (RequestHeadersMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
@@ -49,8 +50,8 @@ class ValidateRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');
 
         try {
-            $validator = new Validator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validateServerRequest($addr, $request);
+            $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator->validate($addr, $request);
             $this->fail("Exception expected");
         } catch (MissedRequestHeader $e) {
             $this->assertEquals('Header-A', $e->headerName());

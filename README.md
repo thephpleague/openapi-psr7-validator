@@ -50,3 +50,6 @@ The MIT License (MIT). Please see `License.md` file for more information.
 ## TODO
 - [ ] add default type formats
 - [ ] add ability to add custom type formats
+- [ ] cookie parameters validation
+- [ ] path parameters validation
+- [ ] query parameters validation

@@ -12,7 +12,7 @@ use OpenAPIValidation\PSR7\Exception\MissedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch;
 use OpenAPIValidation\PSR7\ResponseAddress;
-use OpenAPIValidation\PSR7\Validator;
+use OpenAPIValidation\PSR7\ResponseValidator;
 use function GuzzleHttp\Psr7\stream_for;
 
 class ValidateResponseTest extends BaseValidatorTest
@@ -22,8 +22,19 @@ class ValidateResponseTest extends BaseValidatorTest
     {
         $response = $this->makeGoodResponse('/path1', 'get');
 
-        $validator = new Validator(Reader::readFromYamlFile($this->apiSpecFile));
-        $validator->validateResponse(new ResponseAddress('/path1', 'get', 200), $response);
+        $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator->validate(new ResponseAddress('/path1', 'get', 200), $response);
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_it_validates_binary_response_green()
+    {
+        $response = $this->makeGoodResponse('/path1', 'get')
+                         ->withHeader('Content-Type', 'image/jpeg')
+                         ->withBody(stream_for(__DIR__ . "/../stubs/image.jpg"));
+
+        $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator->validate(new ResponseAddress('/path1', 'get', 200), $response);
         $this->addToAssertionCount(1);
     }
 
@@ -34,8 +45,8 @@ class ValidateResponseTest extends BaseValidatorTest
         $response = $this->makeGoodResponse('/path1', 'get')->withBody(stream_for(json_encode($body)));
 
         try {
-            $validator = new Validator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validateResponse($addr, $response);
+            $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator->validate($addr, $response);
             $this->fail("Exception expected");
         } catch (ResponseBodyMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
@@ -52,8 +63,8 @@ class ValidateResponseTest extends BaseValidatorTest
         $response = $this->makeGoodResponse('/path1', 'get')->withHeader('Header-B', 'wrong value');
 
         try {
-            $validator = new Validator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validateResponse($addr, $response);
+            $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator->validate($addr, $response);
             $this->fail("Exception expected");
         } catch (ResponseHeadersMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
@@ -70,8 +81,8 @@ class ValidateResponseTest extends BaseValidatorTest
         $response = $this->makeGoodResponse('/path1', 'get')->withoutHeader('Header-B');
 
         try {
-            $validator = new Validator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validateResponse($addr, $response);
+            $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator->validate($addr, $response);
             $this->fail("Exception expected");
         } catch (MissedResponseHeader $e) {
             $this->assertEquals('Header-B', $e->headerName());

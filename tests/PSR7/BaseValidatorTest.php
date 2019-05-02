@@ -19,7 +19,7 @@ use function GuzzleHttp\Psr7\stream_for;
 
 abstract class BaseValidatorTest extends TestCase
 {
-    protected $apiSpecFile = __DIR__ . "/../openapi_stubs/api.yaml";
+    protected $apiSpecFile = __DIR__ . "/../stubs/api.yaml";
 
     protected function makeGoodResponse(string $path, string $method): ResponseInterface
     {
