@@ -41,7 +41,7 @@ class Not extends BaseKeyword
             Validator::instance(CebeSchema::class)->assert($not);
 
             try {
-                $schemaValidator = new SchemaValidator($not, $data);
+                $schemaValidator = new SchemaValidator($not, $data, $this->validationDataType);
                 $schemaValidator->validate();
 
                 throw new \Exception(sprintf("Data must not match the schema"));

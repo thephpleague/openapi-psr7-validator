@@ -33,7 +33,7 @@ class MultipleOf extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("multipleOf", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("multipleOf", $data, $e->getMessage(), $e);
         }
     }
 }

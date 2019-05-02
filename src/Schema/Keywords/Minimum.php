@@ -52,7 +52,7 @@ class Minimum extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("minimum", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("minimum", $data, $e->getMessage(), $e);
         }
     }
 }

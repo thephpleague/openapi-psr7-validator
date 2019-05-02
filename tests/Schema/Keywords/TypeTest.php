@@ -17,7 +17,7 @@ class TypeTest extends SchemaValidatorTest
     {
         $typedValues = [
             'string'  => 'string value',
-            'object'  => (object)['a' => 1],
+            'object'  => ['a' => 1],
             'array'   => ['a', 'b'],
             'boolean' => true,
             'number'  => 0.54,
@@ -57,7 +57,7 @@ SPEC;
             'object'  => 'not object',
             'array'   => ['a' => 1, 'b' => 2], # this is not a plain array (ala JSON)
             'boolean' => [1, 2],
-            'number'  => (object)[],
+            'number'  => [],
             'integer' => 12.55,
         ];
 

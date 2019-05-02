@@ -41,7 +41,7 @@ class MaxLength extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("maxLength", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("maxLength", $data, $e->getMessage(), $e);
         }
     }
 }

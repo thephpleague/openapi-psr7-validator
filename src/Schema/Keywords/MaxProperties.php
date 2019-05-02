@@ -27,7 +27,7 @@ class MaxProperties extends BaseKeyword
     public function validate($data, $maxProperties): void
     {
         try {
-            Validator::objectType()->assert($data);
+            Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($maxProperties >= 0);
 
             if (count($data) > $maxProperties) {

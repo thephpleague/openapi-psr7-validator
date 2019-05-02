@@ -48,7 +48,7 @@ class OneOf extends BaseKeyword
             $matchedCount = 0;
             foreach ($oneOf as $schema) {
                 try {
-                    $schemaValidator = new SchemaValidator($schema, $data);
+                    $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType);
                     $schemaValidator->validate();
                     $matchedCount++;
                 } catch (ValidationKeywordFailed $e) {
@@ -61,7 +61,7 @@ class OneOf extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("oneOf", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("oneOf", $data, $e->getMessage(), $e);
         }
     }
 }

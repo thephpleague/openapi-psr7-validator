@@ -37,7 +37,7 @@ class Enum extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("enum", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("enum", $data, $e->getMessage(), $e);
         }
     }
 }

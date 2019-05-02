@@ -42,7 +42,7 @@ class MinLength extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("minLength", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("minLength", $data, $e->getMessage(), $e);
         }
     }
 }

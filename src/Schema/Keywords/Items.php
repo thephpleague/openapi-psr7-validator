@@ -44,7 +44,7 @@ class Items extends BaseKeyword
             }
 
             foreach ($data as $dataItem) {
-                $schemaValidator = new SchemaValidator($items, $dataItem);
+                $schemaValidator = new SchemaValidator($items, $dataItem, $this->validationDataType);
                 $schemaValidator->validate();
             }
 

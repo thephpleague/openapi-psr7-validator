@@ -58,7 +58,7 @@ class Properties extends BaseKeyword
     {
 
         try {
-            Validator::objectType()->assert($data);
+            Validator::arrayType()->assert($data);
             Validator::arrayVal()->assert($properties);
             Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
 
@@ -68,8 +68,8 @@ class Properties extends BaseKeyword
 
             // Validate against "properties"
             foreach ($properties as $propName => $propSchema) {
-                if (property_exists($data, $propName)) {
-                    $schemaValidator = new SchemaValidator($propSchema, $data->$propName, $this->validationDataType);
+                if (array_key_exists($propName, $data)) {
+                    $schemaValidator = new SchemaValidator($propSchema, $data[$propName], $this->validationDataType);
                     $schemaValidator->validate();
                 }
             }
@@ -78,7 +78,7 @@ class Properties extends BaseKeyword
             if ($additionalProperties instanceof CebeSchema) {
                 foreach ($data as $propName => $propSchema) {
                     if (!isset($properties[$propName])) { # if not covered by "properties"
-                        $schemaValidator = new SchemaValidator($additionalProperties, $data->$propName, $this->validationDataType);
+                        $schemaValidator = new SchemaValidator($additionalProperties, $data[$propName], $this->validationDataType);
                         $schemaValidator->validate();
                     }
                 }
@@ -86,7 +86,7 @@ class Properties extends BaseKeyword
 
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("properties", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("properties", $data, $e->getMessage(), $e);
         }
     }
 }

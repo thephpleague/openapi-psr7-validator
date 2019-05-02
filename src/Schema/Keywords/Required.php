@@ -39,7 +39,7 @@ class Required extends BaseKeyword
     {
 
         try {
-            Validator::objectType()->assert($data);
+            Validator::arrayType()->assert($data);
             Validator::arrayType()->assert($required);
             Validator::each(Validator::stringType())->assert($required);
             Validator::trueVal()->assert(count(array_unique($required)) === count($required));
@@ -76,7 +76,7 @@ class Required extends BaseKeyword
 
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("required", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("required", $data, $e->getMessage(), $e);
         }
     }
 }

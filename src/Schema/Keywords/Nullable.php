@@ -28,7 +28,7 @@ class Nullable extends BaseKeyword
 
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("nullable", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("nullable", $data, $e->getMessage(), $e);
         }
     }
 }

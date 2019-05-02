@@ -35,7 +35,7 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = (object)['age' => 10];
+        $data   = ['age' => 10];
 
         (new Validator($schema, $data))->validate();
         $this->addToAssertionCount(1);
@@ -62,7 +62,7 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = (object)['time' => 'today'];
+        $data   = ['time' => 'today'];
 
         try {
             (new Validator($schema, $data))->validate();

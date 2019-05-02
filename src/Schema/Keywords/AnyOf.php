@@ -47,7 +47,7 @@ class AnyOf extends BaseKeyword
             // Validate against all schemas
             $matchedCount = 0;
             foreach ($anyOf as $schema) {
-                $schemaValidator = new SchemaValidator($schema, $data);
+                $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType);
                 try {
                     $schemaValidator->validate();
                     $matchedCount++;
@@ -62,7 +62,7 @@ class AnyOf extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("anyOf", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("anyOf", $data, $e->getMessage(), $e);
         }
     }
 }

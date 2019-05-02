@@ -46,12 +46,12 @@ class AllOf extends BaseKeyword
 
             // Validate against all schemas
             foreach ($allOf as $schema) {
-                $schemaValidator = new SchemaValidator($schema, $data);
+                $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType);
                 $schemaValidator->validate();
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("allOf", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("allOf", $data, $e->getMessage(), $e);
         }
     }
 }

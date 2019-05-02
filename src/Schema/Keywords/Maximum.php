@@ -51,7 +51,7 @@ class Maximum extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("maximum", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("maximum", $data, $e->getMessage(), $e);
         }
     }
 }

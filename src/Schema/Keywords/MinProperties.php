@@ -31,7 +31,7 @@ class MinProperties extends BaseKeyword
     public function validate($data, $minProperties): void
     {
         try {
-            Validator::objectType()->assert($data);
+            Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($minProperties >= 0);
 
             if (count($data) < $minProperties) {
@@ -39,7 +39,7 @@ class MinProperties extends BaseKeyword
             }
 
         } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("minProperties", $data, $e->getMessage());
+            throw ValidationKeywordFailed::fromKeyword("minProperties", $data, $e->getMessage(), $e);
         }
     }
 }
