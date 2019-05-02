@@ -1,0 +1,26 @@
+openapi: 3.0.2
+info:
+  title: Weather API
+  version: 0.0.1
+  contact:
+    name: Dmitry Lezhnev
+    url: https://lessthan12ms.com
+    email: lezhnev.work@gmail.com
+paths:
+  /path1:
+    get:
+      parameters:
+        - $ref: 'schemas.yaml#/components/parameters/HeaderA'
+        - $ref: 'schemas.yaml#/components/parameters/QueryArgumentA'
+      description: Get Path1
+      responses:
+        200:
+          description: fake endpoint
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.yaml#/components/schemas/SchemaA'
+            image/png:
+              schema:
+                type: string
+                format: binary

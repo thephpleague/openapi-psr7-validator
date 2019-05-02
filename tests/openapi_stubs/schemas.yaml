@@ -5,14 +5,33 @@ components:
       properties:
         propA:
           type: integer
+          readOnly: true
         propB:
           type: string
-    SchemaB:
-      type: object
-      properties:
-        propB:
-          type: string
+          writeOnly: true
         propC:
           type: array
           items:
-            type: integer
+            type: string
+      required:
+        - propA
+        - propB
+  parameters:
+    HeaderA:
+      in: header
+      name: Header-A
+      schema:
+        type: string
+        enum:
+          - value A
+          - value B
+        default: value A
+    QueryArgumentA:
+      in: query
+      name: queryArgA
+      required: true
+      description: query argument A
+      example: 10.5
+      schema:
+        type: number
+        format: float
