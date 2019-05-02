@@ -18,6 +18,7 @@ use OpenAPIValidation\PSR7\Exception\NoContentType;
 use OpenAPIValidation\PSR7\Exception\NoMethod;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
+use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Psr\Http\Message\MessageInterface;
@@ -55,12 +56,12 @@ class Validator
         // 2. Validate Body
         try {
             $this->validateBody($response, $spec->content);
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $e) {
             switch ($e->getCode()) {
                 case 100:
                     throw UnexpectedResponseContentType::fromResponseAddr($e->getMessage(), $addr);
                 default:
-                    throw $e;
+                    throw ResponseBodyMismatch::fromAddrAndCauseException($addr, $e);
             }
         }
     }
@@ -133,7 +134,7 @@ class Validator
         // ok looks good, now apply validation
         $body = (string)$message->getBody();
         if (preg_match("#^application/json#", $contentType)) {
-            $body = json_decode($body);
+            $body = json_decode($body, true);
             if (json_last_error()) {
                 throw new \RuntimeException("Unable to decode JSON body content: " . json_last_error_msg());
             }
