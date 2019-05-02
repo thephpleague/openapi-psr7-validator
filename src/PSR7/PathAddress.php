@@ -80,4 +80,18 @@ class PathAddress
 
         return $parsedParams;
     }
+
+    /**
+     * Checks if path matches a specification
+     *
+     * @param string $specPath like "/users/{id}"
+     * @param string $path like "/users/12"
+     * @return bool
+     */
+    static function isPathMatchesSpec(string $specPath, string $path): bool
+    {
+        $pattern = "#^" . preg_replace("#{[^}]+}#", "[^/]+", $specPath) . "$#";
+
+        return (bool)preg_match($pattern, $path);
+    }
 }

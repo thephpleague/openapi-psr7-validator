@@ -81,4 +81,33 @@ abstract class Validator
         return $pathSpec;
     }
 
+    /**
+     * Check the openapi spec and find matching oeprations(path+method)
+     *
+     * @param string $path like "/users/12"
+     * @param string $method like "post"
+     * @return OperationAddress[]
+     */
+    protected function findMatchingOperations(string $path, string $method): array
+    {
+        $matchedOperations = [];
+
+        foreach ($this->openApi->paths as $specPath => $pathItemSpec) {
+            if (!PathAddress::isPathMatchesSpec($specPath, $path)) {
+                continue;
+            }
+
+            foreach ($pathItemSpec->getOperations() as $opMethod => $operation) {
+                if ($opMethod != $method) {
+                    continue;
+                }
+
+                // ok looks like method and path matched
+                $matchedOperations[] = new OperationAddress($specPath, $opMethod);
+            }
+        }
+
+        return $matchedOperations;
+    }
+
 }

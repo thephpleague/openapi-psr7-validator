@@ -29,13 +29,17 @@ use Psr\Http\Message\ServerRequestInterface;
 class ServerRequestValidator extends Validator
 {
     /**
-     * @param OperationAddress $addr
      * @param ServerRequestInterface $serverRequest
-     * @throws \cebe\openapi\exceptions\TypeErrorException
      * @throws \Throwable
+     * @throws \cebe\openapi\exceptions\TypeErrorException
      */
-    public function validate(OperationAddress $addr, ServerRequestInterface $serverRequest): void
+    public function validate(ServerRequestInterface $serverRequest): void
     {
+        // 0. Find matching operations
+        // If there is only one - then proceed with checking
+        // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
+        // "This request matched operations A,B and C, but mismatched its schemas."
+        //$matchingPaths = $this->findMatchingOperations($serverRequest->getUri()->getPath(), $serverRequest->getMethod());
 
         // 1. Headers
         $this->validateHeaders($addr, $serverRequest);
