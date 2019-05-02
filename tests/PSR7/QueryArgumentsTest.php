@@ -51,7 +51,7 @@ class QueryArgumentsTest extends BaseValidatorTest
         $addr    = new OperationAddress("/read", "get");
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
                         ->withUri(new Uri("/read?limit=wrong"))
-                        ->withQueryParams(['limit' => 'wronng']);
+                        ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
 
         try {
             $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));

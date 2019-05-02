@@ -21,7 +21,7 @@ class MissedRequestCookie extends \RuntimeException
     static function fromOperationAddr(string $cookieName, OperationAddress $address): self
     {
         $i = new self(
-            sprintf("Request does not contain cookie %s at [%s,%s]",
+            sprintf("Request does not contain cookie '%s' at [%s,%s]",
                 $cookieName,
                 $address->path(),
                 $address->method()

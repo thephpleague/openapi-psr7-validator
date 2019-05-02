@@ -21,7 +21,7 @@ class MissedRequestHeader extends \RuntimeException
     static function fromOperationAddr(string $headerName, OperationAddress $address): self
     {
         $i = new self(
-            sprintf("Request header %s at [%s,%s] not found",
+            sprintf("Request header '%s' at [%s,%s] not found",
                 $headerName,
                 $address->path(),
                 $address->method()

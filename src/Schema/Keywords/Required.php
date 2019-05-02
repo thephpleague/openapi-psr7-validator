@@ -45,7 +45,7 @@ class Required extends BaseKeyword
             Validator::trueVal()->assert(count(array_unique($required)) === count($required));
 
             if ($this->parentSchema->type !== "object") {
-                throw new \Exception(sprintf("Required keyword only works with type=object, but %s found", $this->parentSchema->type));
+                throw new \Exception(sprintf("Required keyword only works with type=object, but '%s' found", $this->parentSchema->type));
             }
 
             foreach ($required as $reqProperty) {
@@ -70,7 +70,7 @@ class Required extends BaseKeyword
                         continue;
                     }
 
-                    throw new \Exception(sprintf("Required property %s must be present in the object", $reqProperty));
+                    throw new \Exception(sprintf("Required property '%s' must be present in the object", $reqProperty));
                 }
             }
 

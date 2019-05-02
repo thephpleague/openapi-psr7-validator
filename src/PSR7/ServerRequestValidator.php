@@ -10,7 +10,6 @@ namespace OpenAPIValidation\PSR7;
 
 
 use cebe\openapi\spec\Header as HeaderSpec;
-use cebe\openapi\spec\Operation as OperationSpec;
 use OpenAPIValidation\PSR7\Exception\MissedRequestCookie;
 use OpenAPIValidation\PSR7\Exception\MissedRequestHeader;
 use OpenAPIValidation\PSR7\Exception\MissedRequestQueryArgument;
@@ -35,31 +34,30 @@ class ServerRequestValidator extends Validator
      */
     public function validate(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
-        // 0. Find appropriate schema to validate against
-        $spec = $this->findOperationSpec($addr);
 
         // 1. Headers
-        $this->validateHeaders($addr, $serverRequest, $spec);
+        $this->validateHeaders($addr, $serverRequest);
 
         // 2. Cookies
-        $this->validateCookies($addr, $serverRequest, $spec);
+        $this->validateCookies($addr, $serverRequest);
 
         // 3. Body
-        $this->validateBody($addr, $serverRequest, $spec);
+        $this->validateBody($addr, $serverRequest);
 
         // 4. Validate Query arguments
-        $this->validateQueryArgs($addr, $serverRequest, $spec);
+        $this->validateQueryArgs($addr, $serverRequest);
 
     }
 
     /**
      * @param OperationAddress $addr
      * @param ServerRequestInterface $serverRequest
-     * @param OperationSpec $spec
      * @throws \cebe\openapi\exceptions\TypeErrorException
      */
-    protected function validateHeaders(OperationAddress $addr, ServerRequestInterface $serverRequest, OperationSpec $spec): void
+    protected function validateHeaders(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
+        $spec = $this->findOperationSpec($addr);
+
         // 1. Validate Headers
         // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
         $headerSpecs = [];
@@ -72,6 +70,16 @@ class ServerRequestValidator extends Validator
             unset($headerData['in']);
             unset($headerData['name']);
             $headerSpecs[$p->name] = new HeaderSpec($headerData);
+        }
+
+        // 2. Collect path-level params
+        $pathSpec = $this->findPathSpec($addr);
+        foreach ($pathSpec->parameters as $p) {
+            if ($p->in != "header") {
+                continue;
+            }
+
+            $headerSpecs += [$p->name => $p]; #union won't override
         }
 
         try {
@@ -94,17 +102,30 @@ class ServerRequestValidator extends Validator
     /**
      * @param OperationAddress $addr
      * @param ServerRequestInterface $serverRequest
-     * @param OperationSpec $spec
      */
-    private function validateCookies(OperationAddress $addr, ServerRequestInterface $serverRequest, OperationSpec $spec): void
+    private function validateCookies(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
+        $spec = $this->findOperationSpec($addr);
+
         $cookieSpecs = [];
+
+        // 1. Find operation level params
         foreach ($spec->parameters as $p) {
             if ($p->in != "cookie") {
                 continue;
             }
 
             $cookieSpecs[$p->name] = $p;
+        }
+
+        // 2. Collect path-level params
+        $pathSpec = $this->findPathSpec($addr);
+        foreach ($pathSpec->parameters as $p) {
+            if ($p->in != "cookie") {
+                continue;
+            }
+
+            $cookieSpecs += [$p->name => $p]; #union won't override
         }
 
         try {
@@ -124,10 +145,11 @@ class ServerRequestValidator extends Validator
     /**
      * @param OperationAddress $addr
      * @param ServerRequestInterface $serverRequest
-     * @param OperationSpec $spec
      */
-    private function validateBody(OperationAddress $addr, ServerRequestInterface $serverRequest, OperationSpec $spec): void
+    private function validateBody(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
+        $spec = $this->findOperationSpec($addr);
+
         if (!$spec->requestBody) {
             return;
         }
@@ -146,9 +168,17 @@ class ServerRequestValidator extends Validator
     }
 
 
-    private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest, OperationSpec $spec)
+    /**
+     * @param OperationAddress $addr
+     * @param ServerRequestInterface $serverRequest
+     */
+    private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest)
     {
+        $spec = $this->findOperationSpec($addr);
+
+        // 1. Collect operation-level params
         $querySpecs = [];
+
         foreach ($spec->parameters as $p) {
             if ($p->in != "query") {
                 continue;
@@ -157,6 +187,18 @@ class ServerRequestValidator extends Validator
             $querySpecs[$p->name] = $p;
         }
 
+        // 2. Collect path-level params
+        $pathSpec = $this->findPathSpec($addr);
+        foreach ($pathSpec->parameters as $p) {
+            if ($p->in != "query") {
+                continue;
+            }
+
+            $querySpecs += [$p->name => $p]; #union won't override
+        }
+
+
+        // 3. Validate collected params
         try {
             $queryArgumentsValidator = new QueryArguments();
             $queryArgumentsValidator->validate($serverRequest, $querySpecs);

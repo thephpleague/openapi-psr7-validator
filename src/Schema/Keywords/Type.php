@@ -48,17 +48,17 @@ class Type extends BaseKeyword
             switch ($type) {
                 case "boolean":
                     if (!is_bool($data)) {
-                        throw new \Exception(sprintf("Value %s is not a boolean", $data));
+                        throw new \Exception(sprintf("Value '%s' is not a boolean", $data));
                     }
                     break;
                 case "object":
                     if (!is_object($data) && !is_array($data)) {
-                        throw new \Exception(sprintf("Value %s is not an object", $data));
+                        throw new \Exception(sprintf("Value '%s' is not an object", $data));
                     }
                     break;
                 case "array":
                     if (count($data) && !(is_array($data) && isAssoc($data))) {
-                        throw new \Exception(sprintf("Value %s is not an array", $data));
+                        throw new \Exception(sprintf("Value '%s' is not an array", $data));
                     }
                     if (!isset($this->parentSchema->items)) {
                         throw new \Exception(sprintf("items MUST be present if the type is array"));
@@ -66,21 +66,21 @@ class Type extends BaseKeyword
                     break;
                 case "number":
                     if (!is_numeric($data)) {
-                        throw new \Exception(sprintf("Value %s is not a number", $data));
+                        throw new \Exception(sprintf("Value '%s' is not a number", $data));
                     }
                     break;
                 case "integer":
                     if (!is_int($data)) {
-                        throw new \Exception(sprintf("Value %s is not an integer", $data));
+                        throw new \Exception(sprintf("Value '%s' is not an integer", $data));
                     }
                     break;
                 case "string":
                     if (!is_string($data)) {
-                        throw new \Exception(sprintf("Value %s is not a string", $data));
+                        throw new \Exception(sprintf("Value '%s' is not a string", $data));
                     }
                     break;
                 default:
-                    throw new \Exception("Type %s is unexpected", $type);
+                    throw new \Exception("Type '%s' is unexpected", $type);
             }
 
         } catch (\Throwable $e) {

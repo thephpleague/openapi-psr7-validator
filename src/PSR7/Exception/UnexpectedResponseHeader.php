@@ -21,7 +21,7 @@ class UnexpectedResponseHeader extends \RuntimeException
     static function fromResponseAddr(string $headerName, ResponseAddress $address): self
     {
         $i = new self(
-            sprintf("Response header %s at [%s,%s,%d] has name which is not found in the spec",
+            sprintf("Response header '%s' at [%s,%s,%d] has name which is not found in the spec",
                 $headerName,
                 $address->path(),
                 $address->method(),

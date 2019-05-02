@@ -21,7 +21,7 @@ class MissedRequestQueryArgument extends \RuntimeException
     static function fromOperationAddr(string $queryArgumentName, OperationAddress $address): self
     {
         $i = new self(
-            sprintf("Request does not contain query argument %s at [%s,%s]",
+            sprintf("Request does not contain query argument '%s' at [%s,%s]",
                 $queryArgumentName,
                 $address->path(),
                 $address->method()

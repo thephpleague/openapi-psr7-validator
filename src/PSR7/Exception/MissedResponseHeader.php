@@ -21,7 +21,7 @@ class MissedResponseHeader extends \RuntimeException
     static function fromResponseAddr(string $headerName, ResponseAddress $address): self
     {
         $i = new self(
-            sprintf("Response header %s at [%s,%s,%d] not found",
+            sprintf("Response header '%s' at [%s,%s,%d] not found",
                 $headerName,
                 $address->path(),
                 $address->method(),

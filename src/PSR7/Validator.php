@@ -11,6 +11,7 @@ namespace OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
+use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response as ResponseSpec;
 use OpenAPIValidation\PSR7\Exception\NoMethod;
 use OpenAPIValidation\PSR7\Exception\NoPath;
@@ -55,16 +56,29 @@ abstract class Validator
      */
     protected function findOperationSpec(OperationAddress $addr): Operation
     {
+        $pathSpec = $this->findPathSpec($addr);
+
+        if (!isset($pathSpec->getOperations()[$addr->method()])) {
+            throw NoMethod::fromPathAndMethod($addr->path(), $addr->method());
+        }
+        return $pathSpec->getOperations()[$addr->method()];
+    }
+
+    /**
+     * Find a particualr path in the spec
+     *
+     * @param OperationAddress $addr
+     * @return Operation
+     */
+    protected function findPathSpec(OperationAddress $addr): PathItem
+    {
         $pathSpec = $this->openApi->paths->getPath($addr->path());
 
         if (!$pathSpec) {
             throw NoPath::fromPath($addr->path());
         }
 
-        if (!isset($pathSpec->getOperations()[$addr->method()])) {
-            throw NoMethod::fromPathAndMethod($addr->path(), $addr->method());
-        }
-        return $pathSpec->getOperations()[$addr->method()];
+        return $pathSpec;
     }
 
 

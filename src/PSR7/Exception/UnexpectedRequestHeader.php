@@ -21,7 +21,7 @@ class UnexpectedRequestHeader extends \RuntimeException
     static function fromOperationAddr(string $headerName, OperationAddress $address): self
     {
         $i = new self(
-            sprintf("Request header %s at [%s,%s] has name which is not found in the spec",
+            sprintf("Request header '%s' at [%s,%s] has name which is not found in the spec",
                 $headerName,
                 $address->path(),
                 $address->method()
