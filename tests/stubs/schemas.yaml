@@ -29,7 +29,6 @@ components:
     QueryArgumentA:
       in: query
       name: queryArgA
-      required: true
       description: query argument A
       example: 10.5
       schema:

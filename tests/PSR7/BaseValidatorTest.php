@@ -44,6 +44,10 @@ abstract class BaseValidatorTest extends TestCase
         $request = new ServerRequest($method, $path);
 
         switch ("$method $path") {
+            case "get /read":
+                return $request
+                    ->withUri(new Uri("$path?filter=age&limit=10"))
+                    ->withQueryParams(['filter' => 'age', 'limit' => 10]);
             case "get /path1":
                 return $request
                     ->withUri(new Uri("$path?queryArgA=20"))

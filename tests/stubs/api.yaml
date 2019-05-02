@@ -7,6 +7,28 @@ info:
     url: https://lessthan12ms.com
     email: lezhnev.work@gmail.com
 paths:
+  /read:
+    get:
+      summary: Read data
+      operationId: read
+      parameters:
+        - name: filter
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: good read
+          content:
+            text/plain:
+              schema:
+                type: string
+
   /request-body:
     post:
       summary: Request post with body payload
@@ -39,6 +61,7 @@ paths:
           name: session_id
           schema:
             type: string
+          required: true
         - in: cookie
           name: debug
           schema:

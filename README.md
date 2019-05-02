@@ -1,7 +1,8 @@
 # OpenAPI PSR-7 Message (HTTP Request/Response) Validator
 
 This package can validate PSR-7 messages against OpenAPI (3.0.2) specifications 
-expressed in YAML or JSON.
+expressed in YAML or JSON. 
+
 ![](image.jpg)
 
 ## Requirements
@@ -45,6 +46,12 @@ You can run the tests with:
 vendor/bin/phpunit
 ```
 
+## Beta version
+**Still in BETA** (but useful already).
+If you foudn something does not work as expected (occasionally this happens),
+ I'd appreciate it if you open a new issue and attach OpenAPI spec which 
+ caused the problem. That would simplify and speed up the fixing process.
+
 ## Credits
 - [Dmitry Lezhnev](https://github.com/lezhnev74)
 - Icons made by Freepik, licensed by CC 3.0 BY
@@ -58,6 +65,9 @@ The MIT License (MIT). Please see `License.md` file for more information.
 ## TODO
 - [ ] add default type formats
 - [ ] add ability to add custom type formats
-- [ ] cookie parameters validation
 - [ ] path parameters validation
-- [ ] query parameters validation
+- [ ] parameters serialization
+    - Does anyone use this serialization? It looks very... unpractical.
+- [ ] add validation for Request class.
+    - Usually for serverside testing purposes ServerRequest is what we need. 
+    But, Request should be quite easy to add.
