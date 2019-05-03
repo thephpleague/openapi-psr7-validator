@@ -33,10 +33,9 @@ class ServerRequestValidator extends Validator
 {
     /**
      * @param ServerRequestInterface $serverRequest
-     * @throws \Throwable
-     * @throws \cebe\openapi\exceptions\TypeErrorException
+     * @return OperationAddress which matched the Request
      */
-    public function validate(ServerRequestInterface $serverRequest): void
+    public function validate(ServerRequestInterface $serverRequest): OperationAddress
     {
         $path   = $serverRequest->getUri()->getPath();
         $method = strtolower($serverRequest->getMethod());
@@ -54,13 +53,14 @@ class ServerRequestValidator extends Validator
         // Single match is the most desirable variant, because we reduce ambiguity down to zero
         if (count($matchingOperationsAddrs) === 1) {
             $this->validateAddress($matchingOperationsAddrs[0], $serverRequest);
+            return $matchingOperationsAddrs[0];
         } else {
             // there are multiple matching operations, this is bad, because if none of them match the message
             // then we cannot say reliably which one intended to match
             foreach ($matchingOperationsAddrs as $matchedAddr) {
                 try {
                     $this->validateAddress($matchedAddr, $serverRequest);
-                    return; # Good, operation matched, stop here
+                    return $matchedAddr; # Good, operation matched and request is valid against it, stop here
                 } catch (\Throwable $e) {
                     // that operation did not match
                 }

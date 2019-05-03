@@ -76,7 +76,7 @@ $customFormat = new class()
 };
 
 # Register your callable like this before validating tyour data
-FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);
+\OpenAPIValidation\Schema\TypeFormats\FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);
 ```
 
 ## Testing
@@ -103,8 +103,6 @@ A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind
 The MIT License (MIT). Please see `License.md` file for more information.
 
 ## TODO
-- [ ] add default type formats
-- [ ] add ability to add custom type formats
 - [ ] parameters serialization
     - Does anyone use this serialization? It looks very... unpractical.
 - [ ] add validation for Request class.

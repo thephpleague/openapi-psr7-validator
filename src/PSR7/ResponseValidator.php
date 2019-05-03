@@ -24,12 +24,13 @@ class ResponseValidator extends Validator
     use ValidationStrategy;
 
     /**
-     * @param ResponseAddress $addr
+     * @param OperationAddress $opAddr
      * @param ResponseInterface $response
-     * @throws \Exception
      */
-    public function validate(ResponseAddress $addr, ResponseInterface $response): void
+    public function validate(OperationAddress $opAddr, ResponseInterface $response): void
     {
+        $addr = new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode());
+
         // 0. Find appropriate schema to validate against
         $spec = $this->findResponseSpec($addr);
 

@@ -28,10 +28,11 @@
         }
     },
     "require": {
+        "ext-json": "*",
         "cebe/php-openapi": "^1.0",
         "psr/http-message": "^1.0",
-        "respect/validation": "^1.1",
-        "ext-json": "*"
+        "psr/http-server-middleware": "^1.0",
+        "respect/validation": "^1.1"
     },
     "require-dev": {
         "guzzlehttp/psr7": "^1.5",
