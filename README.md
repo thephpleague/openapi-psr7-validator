@@ -215,13 +215,12 @@ You can run the tests with:
 vendor/bin/phpunit
 ```
 
-
 ## Credits
 People:
-    - [Dmitry Lezhnev](https://github.com/lezhnev74) Resources:
-    - Icons made by Freepik, licensed by CC 3.0 BY
-    - [cebe/php-openapi](https://github.com/cebe/php-openapi) package for Reading OAS files
-    - [slim3-psr15](https://github.com/bnf/slim3-psr15) package for Slim middleware adapter
+- [Dmitry Lezhnev](https://github.com/lezhnev74) Resources:
+- Icons made by Freepik, licensed by CC 3.0 BY
+- [cebe/php-openapi](https://github.com/cebe/php-openapi) package for Reading OAS files
+- [slim3-psr15](https://github.com/bnf/slim3-psr15) package for Slim middleware adapter
 
 A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind of inspired me to work on this package.
  
