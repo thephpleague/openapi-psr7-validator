@@ -11,6 +11,7 @@ use cebe\openapi\Reader;
 use OpenAPIValidation\PSR7\Exception\MissedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch;
+use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ResponseAddress;
 use OpenAPIValidation\PSR7\ResponseValidator;
 use function GuzzleHttp\Psr7\stream_for;
@@ -23,7 +24,7 @@ class ValidateResponseTest extends BaseValidatorTest
         $response = $this->makeGoodResponse('/path1', 'get');
 
         $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
-        $validator->validate(new ResponseAddress('/path1', 'get', 200), $response);
+        $validator->validate(new OperationAddress('/path1', 'get'), $response);
         $this->addToAssertionCount(1);
     }
 
@@ -34,13 +35,13 @@ class ValidateResponseTest extends BaseValidatorTest
                          ->withBody(stream_for(__DIR__ . "/../stubs/image.jpg"));
 
         $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
-        $validator->validate(new ResponseAddress('/path1', 'get', 200), $response);
+        $validator->validate(new OperationAddress('/path1', 'get'), $response);
         $this->addToAssertionCount(1);
     }
 
     public function test_it_validates_message_wrong_body_value_red()
     {
-        $addr     = new ResponseAddress('/path1', 'get', 200);
+        $addr     = new OperationAddress('/path1', 'get');
         $body     = [];
         $response = $this->makeGoodResponse('/path1', 'get')->withBody(stream_for(json_encode($body)));
 
@@ -51,14 +52,14 @@ class ValidateResponseTest extends BaseValidatorTest
         } catch (ResponseBodyMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
             $this->assertEquals($addr->method(), $e->method());
-            $this->assertEquals($addr->responseCode(), $e->responseCode());
+            $this->assertEquals($response->getStatusCode(), $e->responseCode());
         }
 
     }
 
     public function test_it_validates_message_wrong_header_value_red()
     {
-        $addr = new ResponseAddress('/path1', 'get', 200);
+        $addr = new OperationAddress('/path1', 'get');
 
         $response = $this->makeGoodResponse('/path1', 'get')->withHeader('Header-B', 'wrong value');
 
@@ -69,14 +70,14 @@ class ValidateResponseTest extends BaseValidatorTest
         } catch (ResponseHeadersMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
             $this->assertEquals($addr->method(), $e->method());
-            $this->assertEquals($addr->responseCode(), $e->responseCode());
+            $this->assertEquals($response->getStatusCode(), $e->responseCode());
         }
 
     }
 
     public function test_it_validates_message_misses_header_red()
     {
-        $addr = new ResponseAddress('/path1', 'get', 200);
+        $addr = new OperationAddress('/path1', 'get');
 
         $response = $this->makeGoodResponse('/path1', 'get')->withoutHeader('Header-B');
 
@@ -88,7 +89,7 @@ class ValidateResponseTest extends BaseValidatorTest
             $this->assertEquals('Header-B', $e->headerName());
             $this->assertEquals($addr->path(), $e->addr()->path());
             $this->assertEquals($addr->method(), $e->addr()->method());
-            $this->assertEquals($addr->responseCode(), $e->addr()->responseCode());
+            $this->assertEquals($response->getStatusCode(), $e->addr()->responseCode());
         }
 
     }
