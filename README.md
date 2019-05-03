@@ -192,7 +192,16 @@ handle. There are some of them:
         - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader` - 
         request carries unexpected header  
     - Response related:
-        - todo
+        - `\OpenAPIValidation\PSR7\Exception\MissedResponseHeader` - response
+         does not have a header
+        - `\OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch` - response
+         body does not match a schema
+        - `\OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch` - 
+        response headers do not match the spec
+        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseHeader` - 
+        response contains header not mentioned in the spec
+        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType` -
+         response contains unexpected content-type 
 
 
 ## Testing
@@ -202,11 +211,6 @@ You can run the tests with:
 vendor/bin/phpunit
 ```
 
-## Beta version
-**Still in BETA** (but useful already).
-If you foudn something does not work as expected (occasionally this happens),
- I'd appreciate it if you open a new issue and attach OpenAPI spec which 
- caused the problem. That would simplify and speed up the fixing process.
 
 ## Credits
 People:
