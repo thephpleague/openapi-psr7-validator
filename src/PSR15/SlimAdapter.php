@@ -18,7 +18,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * This class wraps a PSR-15 style single pass middleware,
  * into an invokable double pass middleware.
  */
-final class PsrMiddleware implements RequestHandlerInterface
+final class SlimAdapter implements RequestHandlerInterface
 {
     /**
      * @var MiddlewareInterface
