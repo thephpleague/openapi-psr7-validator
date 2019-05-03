@@ -1,5 +1,9 @@
-# OpenAPI PSR-7 Message (HTTP Request/Response) Validator
+[![Latest Stable Version](https://poser.pugx.org/lezhnev74/openapi-validator/v/stable)](https://packagist.org/packages/lezhnev74/openapi-validator)
+[![Build Status](https://travis-ci.org/lezhnev74/openapi-validator.svg?branch=master)](https://travis-ci.org/lezhnev74/openapi-validator)
+[![Total Downloads](https://poser.pugx.org/lezhnev74/openapi-validator/downloads)](https://packagist.org/packages/lezhnev74/openapi-validator)
+[![License](https://poser.pugx.org/lezhnev74/openapi-validator/license)](https://packagist.org/packages/lezhnev74/openapi-validator)
 
+# OpenAPI PSR-7 Message (HTTP Request/Response) Validator
 This package can validate PSR-7 messages against OpenAPI (3.0.2) specifications 
 expressed in YAML or JSON. 
 
