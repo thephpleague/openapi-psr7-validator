@@ -1,6 +1,5 @@
 [![Latest Stable Version](https://poser.pugx.org/lezhnev74/openapi-psr7-validator/v/stable)](https://packagist.org/packages/lezhnev74/openapi-psr7-validator)
 [![Build Status](https://travis-ci.org/lezhnev74/openapi-psr7-validator.svg?branch=master)](https://travis-ci.org/lezhnev74/openapi-psr7-validator)
-[![Total Downloads](https://poser.pugx.org/lezhnev74/openapi-psr7-validator/downloads)](https://packagist.org/packages/lezhnev74/openapi-psr7-validator)
 [![License](https://poser.pugx.org/lezhnev74/openapi-psr7-validator/license)](https://packagist.org/packages/lezhnev74/openapi-psr7-validator)
 
 # OpenAPI PSR-7 Message (HTTP Request/Response) Validator
