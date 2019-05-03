@@ -1,5 +1,5 @@
 {
-    "name": "lezhnev74/openapi-validator",
+    "name": "lezhnev74/openapi-psr7-validator",
     "description": "Validate PSR-7 messages against OpenAPI (3.0.2) specifications \nexpressed in YAML or JSON",
     "keywords": [
         "OpenAPI",
