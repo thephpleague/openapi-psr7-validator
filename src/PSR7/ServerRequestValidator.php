@@ -18,6 +18,7 @@ use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\RequestBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch;
 use OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch;
+use OpenAPIValidation\PSR7\Exception\RequestPathParameterMismatch;
 use OpenAPIValidation\PSR7\Exception\RequestQueryArgumentMismatch;
 use OpenAPIValidation\PSR7\Exception\UnexpectedRequestContentType;
 use OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader;
@@ -51,14 +52,14 @@ class ServerRequestValidator extends Validator
         }
 
         // Single match is the most desirable variant, because we reduce ambiguity down to zero
-        if (count($matchingOperationsAddrs) == 1) {
+        if (count($matchingOperationsAddrs) === 1) {
             $this->validateAddress($matchingOperationsAddrs[0], $serverRequest);
         } else {
             // there are multiple matching operations, this is bad, because if none of them match the message
             // then we cannot say reliably which one intended to match
             foreach ($matchingOperationsAddrs as $matchedAddr) {
                 try {
-                    $this->validateAddress($matchingOperationsAddrs[0], $serverRequest);
+                    $this->validateAddress($matchedAddr, $serverRequest);
                     return; # Good, operation matched, stop here
                 } catch (\Throwable $e) {
                     // that operation did not match
@@ -283,20 +284,14 @@ class ServerRequestValidator extends Validator
             $pathSpecs += [$p->name => $p]; #union won't override
         }
 
-
         // 3. Validate collected params
         try {
             $pathValidator = new Path();
-            $pathValidator->validate($serverRequest, $pathSpecs);
+            $pathValidator->validate($serverRequest, $pathSpecs, $addr->path());
         } catch (\Throwable $e) {
             switch ($e->getCode()) {
-//                case 501:
-//                    throw MissedRequestQueryArgument::fromOperationAddr($e->getMessage(), $addr);
-//                    break;
                 default:
-//                    throw RequestQueryArgumentMismatch::fromAddrAndCauseException($addr, $e);
-
-                    throw $e;
+                    throw RequestPathParameterMismatch::fromAddrAndCauseException($addr, $serverRequest->getUri()->getPath(), $e);
             }
         }
     }

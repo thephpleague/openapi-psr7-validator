@@ -1,0 +1,31 @@
+openapi: 3.0.2
+info:
+  title: Weather API
+  version: 0.0.1
+  contact:
+    name: Dmitry Lezhnev
+    url: https://lessthan12ms.com
+    email: lezhnev.work@gmail.com
+
+paths:
+
+  /users/{group}:
+    parameters:
+      - name: group
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+            - admin
+            - user
+    get:
+      summary: Read data
+      operationId: read
+      responses:
+        200:
+          description: good read
+          content:
+            text/plain:
+              schema:
+                type: string
