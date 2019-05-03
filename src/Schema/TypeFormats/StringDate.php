@@ -11,10 +11,9 @@ namespace OpenAPIValidation\Schema\TypeFormats;
 
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
 
-class StringDate implements Format
+class StringDate
 {
-
-    public function validate($value): void
+    function __invoke($value): void
     {
         // full-date notation as defined by RFC 3339, section 5.6, for example, 2017-07-21
 

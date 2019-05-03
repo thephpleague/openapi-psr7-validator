@@ -11,10 +11,9 @@ namespace OpenAPIValidation\Schema\TypeFormats;
 
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
 
-class StringHostname implements Format
+class StringHostname
 {
-
-    public function validate($value): void
+    function __invoke($value): void
     {
         if (!filter_var($value, FILTER_VALIDATE_DOMAIN)) {
             throw FormatMismatch::fromFormat('hostname', $value);

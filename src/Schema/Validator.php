@@ -169,7 +169,7 @@ class Validator
         //
 
         if (isset($this->schema->type)) {
-            (new Type($this->schema))->validate($this->data, $this->schema->type);
+            (new Type($this->schema))->validate($this->data, $this->schema->type, $this->schema->format);
         }
 
         if (isset($this->schema->items)) {

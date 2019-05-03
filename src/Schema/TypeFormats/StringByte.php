@@ -11,11 +11,9 @@ namespace OpenAPIValidation\Schema\TypeFormats;
 
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
 
-class StringByte implements Format
+class StringByte
 {
-
-
-    public function validate($value): void
+    function __invoke($value): void
     {
         //base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw==
 

@@ -11,10 +11,9 @@ namespace OpenAPIValidation\Schema\TypeFormats;
 
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
 
-class StringURI implements Format
+class StringURI
 {
-
-    public function validate($value): void
+    function __invoke($value): void
     {
         if (!filter_var($value, FILTER_VALIDATE_URL)) {
             throw FormatMismatch::fromFormat('uri', $value);

@@ -11,10 +11,10 @@ namespace OpenAPIValidation\Schema\TypeFormats;
 
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
 
-class StringDateTime implements Format
+class StringDateTime
 {
 
-    public function validate($value): void
+    function __invoke($value): void
     {
         // the date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
 

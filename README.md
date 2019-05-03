@@ -39,6 +39,46 @@ $schema = new cebe\openapi\spec\Schema($spec->schema);
 (new OpenAPIValidation\Schema\Validator($schema, $data))->validate();
 ```
 
+## Custom Type Formats
+As you know, OAS allows you to add formats to types:
+```yaml
+schema:
+  type: string
+  format: binary
+```
+This package contains a bunch of built-in format validators:
+- `string` type:
+    - `byte`
+    - `date`
+    - `date-time`
+    - `email`
+    - `hostname`
+    - `ipv4`
+    - `ipv6`
+    - `uri`
+    - `uuid` (uuid4)
+- `number` type
+    - `float`
+    - `double`
+
+You can also add your own formats. Like this:
+```php
+# A format validator can be a callable
+# failed validation should throw an exception
+$customFormat = new class()
+{
+    function __invoke($value): void
+    {
+        if ($value != "good value") {
+            throw FormatMismatch::fromFormat('custom', $value);
+        }
+    }
+};
+
+# Register your callable like this before validating tyour data
+FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);
+```
+
 ## Testing
 You can run the tests with:
 

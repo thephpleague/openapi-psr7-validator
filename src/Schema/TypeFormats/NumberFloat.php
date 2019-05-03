@@ -11,12 +11,9 @@ namespace OpenAPIValidation\Schema\TypeFormats;
 
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
 
-class NumberFloat implements Format
+class NumberFloat
 {
-    /**
-     * @inheritDoc
-     */
-    function validate($value): void
+    function __invoke($value): void
     {
         if (!is_float($value + 0)) {
             throw FormatMismatch::fromFormat('float', $value);

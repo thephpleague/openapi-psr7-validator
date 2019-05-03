@@ -9,8 +9,9 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 
-use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\TypeFormats\Format;
+use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use Respect\Validation\Validator;
 
 class Type extends BaseKeyword
@@ -28,7 +29,7 @@ class Type extends BaseKeyword
      * @param string $type
      * @param string|null $format
      */
-    public function validate($data, $type, $format = null): void
+    public function validate($data, string $type, $format = null): void
     {
         try {
             Validator::in([
@@ -82,6 +83,27 @@ class Type extends BaseKeyword
                 default:
                     throw new \Exception("Type '%s' is unexpected", $type);
             }
+
+            // 2. Validate format now
+
+            if (!$format) {
+                return;
+            }
+
+            $formatValidator = FormatsContainer::getFormat($type, $format); # callable or FQCN
+            if ($formatValidator === null) {
+                return;
+            }
+
+            if (is_string($formatValidator) && !class_exists($formatValidator)) {
+                throw new \RuntimeException(sprintf("'%s' does not loaded", $formatValidator));
+            }
+
+            if (is_string($formatValidator)) {
+                $formatValidator = new $formatValidator;
+            }
+
+            $formatValidator($data);
 
         } catch (\Throwable $e) {
             throw ValidationKeywordFailed::fromKeyword("type", $data, $e->getMessage(), $e);
