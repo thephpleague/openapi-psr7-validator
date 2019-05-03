@@ -20,11 +20,10 @@ class QueryArgumentsTest extends BaseValidatorTest
 {
     public function test_it_validates_request_query_arguments_green()
     {
-        $addr    = new OperationAddress("/read", "get");
-        $request = $this->makeGoodServerRequest($addr->path(), $addr->method());
+        $request = $this->makeGoodServerRequest("/read", "get");
 
         $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
-        $validator->validate($addr, $request);
+        $validator->validate($request);
         $this->addToAssertionCount(1);
     }
 
@@ -37,7 +36,7 @@ class QueryArgumentsTest extends BaseValidatorTest
 
         try {
             $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validate($addr, $request);
+            $validator->validate($request);
         } catch (MissedRequestQueryArgument $e) {
             $this->assertEquals($addr->path(), $e->addr()->path());
             $this->assertEquals($addr->method(), $e->addr()->method());
@@ -55,7 +54,7 @@ class QueryArgumentsTest extends BaseValidatorTest
 
         try {
             $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validate($addr, $request);
+            $validator->validate($request);
         } catch (RequestQueryArgumentMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
             $this->assertEquals($addr->method(), $e->method());

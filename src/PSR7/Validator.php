@@ -13,7 +13,7 @@ use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response as ResponseSpec;
-use OpenAPIValidation\PSR7\Exception\NoMethod;
+use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
 
@@ -59,7 +59,7 @@ abstract class Validator
         $pathSpec = $this->findPathSpec($addr);
 
         if (!isset($pathSpec->getOperations()[$addr->method()])) {
-            throw NoMethod::fromPathAndMethod($addr->path(), $addr->method());
+            throw NoOperation::fromPathAndMethod($addr->path(), $addr->method());
         }
         return $pathSpec->getOperations()[$addr->method()];
     }
@@ -82,7 +82,9 @@ abstract class Validator
     }
 
     /**
-     * Check the openapi spec and find matching oeprations(path+method)
+     * Check the openapi spec and find matching operations(path+method)
+     * This should consider path parameters as well
+     * "/users/12" should match both ["/users/{id}", "/users/{group}"]
      *
      * @param string $path like "/users/12"
      * @param string $method like "post"

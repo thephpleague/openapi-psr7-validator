@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Exception;
 
 
-class NoMethod extends NoPath
+class NoOperation extends NoPath
 {
     /** @var string */
     protected $method;
@@ -21,6 +21,7 @@ class NoMethod extends NoPath
         $i->method = $method;
         return $i;
     }
+
 
     /**
      * @return string

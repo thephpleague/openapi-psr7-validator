@@ -11,7 +11,7 @@ namespace OpenAPIValidation\PSR7\Exception;
 
 use OpenAPIValidation\PSR7\OperationAddress;
 
-class RequestQueryArgumentMismatch extends NoMethod
+class RequestQueryArgumentMismatch extends NoOperation
 {
     static function fromAddrAndCauseException(OperationAddress $addr, \Throwable $cause): self
     {

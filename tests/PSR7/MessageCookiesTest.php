@@ -21,11 +21,10 @@ class MessageCookiesTest extends BaseValidatorTest
 
     public function test_it_validates_request_with_cookies_green()
     {
-        $addr    = new OperationAddress("/cookies", "post");
-        $request = $this->makeGoodServerRequest($addr->path(), $addr->method());
+        $request = $this->makeGoodServerRequest("/cookies", "post");
 
         $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
-        $validator->validate($addr, $request);
+        $validator->validate($request);
         $this->addToAssertionCount(1);
     }
 
@@ -61,7 +60,7 @@ class MessageCookiesTest extends BaseValidatorTest
 
         try {
             $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validate($addr, $request);
+            $validator->validate($request);
             $this->fail("Exception expected");
         } catch (MissedRequestCookie $e) {
             $this->assertEquals($addr->path(), $e->addr()->path());
@@ -79,7 +78,7 @@ class MessageCookiesTest extends BaseValidatorTest
 
         try {
             $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
-            $validator->validate($addr, $request);
+            $validator->validate($request);
             $this->fail("Exception expected");
         } catch (RequestCookiesMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());

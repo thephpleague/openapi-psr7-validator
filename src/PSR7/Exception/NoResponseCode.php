@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Exception;
 
 
-class NoResponseCode extends NoMethod
+class NoResponseCode extends NoOperation
 {
     /** @var int */
     protected $responseCode;

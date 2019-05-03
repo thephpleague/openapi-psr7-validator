@@ -13,6 +13,8 @@ use cebe\openapi\spec\Header as HeaderSpec;
 use OpenAPIValidation\PSR7\Exception\MissedRequestCookie;
 use OpenAPIValidation\PSR7\Exception\MissedRequestHeader;
 use OpenAPIValidation\PSR7\Exception\MissedRequestQueryArgument;
+use OpenAPIValidation\PSR7\Exception\MultipleOperationsMismatchForRequest;
+use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\RequestBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch;
 use OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch;
@@ -35,12 +37,42 @@ class ServerRequestValidator extends Validator
      */
     public function validate(ServerRequestInterface $serverRequest): void
     {
+        $path   = $serverRequest->getUri()->getPath();
+        $method = strtolower($serverRequest->getMethod());
+
         // 0. Find matching operations
         // If there is only one - then proceed with checking
         // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
         // "This request matched operations A,B and C, but mismatched its schemas."
-        //$matchingPaths = $this->findMatchingOperations($serverRequest->getUri()->getPath(), $serverRequest->getMethod());
+        $matchingOperationsAddrs = $this->findMatchingOperations($path, $method);
 
+        if (!$matchingOperationsAddrs) {
+            throw NoOperation::fromPathAndMethod($path, $method);
+        }
+
+        // Single match is the most desirable variant, because we reduce ambiguity down to zero
+        if (count($matchingOperationsAddrs) == 1) {
+            $this->validateAddress($matchingOperationsAddrs[0], $serverRequest);
+        } else {
+            // there are multiple matching operations, this is bad, because if none of them match the message
+            // then we cannot say reliably which one intended to match
+            foreach ($matchingOperationsAddrs as $matchedAddr) {
+                try {
+                    $this->validateAddress($matchingOperationsAddrs[0], $serverRequest);
+                    return; # Good, operation matched, stop here
+                } catch (\Throwable $e) {
+                    // that operation did not match
+                }
+            }
+
+            // no operation matched at all...
+            throw MultipleOperationsMismatchForRequest::fromMatchedAddrs($matchingOperationsAddrs);
+        }
+
+    }
+
+    protected function validateAddress(OperationAddress $addr, ServerRequestInterface $serverRequest): void
+    {
         // 1. Headers
         $this->validateHeaders($addr, $serverRequest);
 
@@ -55,7 +87,6 @@ class ServerRequestValidator extends Validator
 
         // 5. Validate path
         $this->validatePath($addr, $serverRequest);
-
     }
 
     /**
@@ -251,7 +282,6 @@ class ServerRequestValidator extends Validator
 
             $pathSpecs += [$p->name => $p]; #union won't override
         }
-
 
 
         // 3. Validate collected params
