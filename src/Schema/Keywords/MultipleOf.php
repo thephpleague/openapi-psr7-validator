@@ -27,8 +27,7 @@ class MultipleOf extends BaseKeyword
             Validator::numeric()->assert($data);
             Validator::numeric()->positive()->assert($multipleOf);
 
-            $d = $data % $multipleOf;
-            if ($d) {
+            if ($data % $multipleOf) {
                 throw new \Exception(sprintf("Division by %d did not resulted in integer", $multipleOf));
             }
 

@@ -65,7 +65,6 @@ The MIT License (MIT). Please see `License.md` file for more information.
 ## TODO
 - [ ] add default type formats
 - [ ] add ability to add custom type formats
-- [ ] path parameters validation
 - [ ] parameters serialization
     - Does anyone use this serialization? It looks very... unpractical.
 - [ ] add validation for Request class.
