@@ -58,7 +58,7 @@ class ResponseValidator extends Validator
         } catch (\Throwable $e) {
             switch ($e->getCode()) {
                 case 100:
-                    throw UnexpectedResponseContentType::fromResponseAddr($e->getMessage(), $addr);
+                    throw UnexpectedResponseContentType::fromResponseAddr($e->getMessage(), $addr, $e);
                 default:
                     throw ResponseBodyMismatch::fromAddrAndCauseException($addr, $e);
             }

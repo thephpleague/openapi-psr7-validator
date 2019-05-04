@@ -129,10 +129,10 @@ class ServerRequestValidator extends Validator
         } catch (\Throwable $e) {
             switch ($e->getCode()) {
                 case 200:
-                    throw UnexpectedRequestHeader::fromOperationAddr($e->getMessage(), $addr);
+                    throw UnexpectedRequestHeader::fromOperationAddr($e->getMessage(), $addr, $e);
                     break;
                 case 201:
-                    throw MissedRequestHeader::fromOperationAddr($e->getMessage(), $addr);
+                    throw MissedRequestHeader::fromOperationAddr($e->getMessage(), $addr, $e);
                     break;
                 default:
                     throw RequestHeadersMismatch::fromAddrAndCauseException($addr, $e);

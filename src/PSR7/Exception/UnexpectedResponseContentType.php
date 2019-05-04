@@ -18,11 +18,17 @@ class UnexpectedResponseContentType extends \RuntimeException
     /** @var ResponseAddress */
     protected $addr;
 
-    static function fromResponseAddr(string $contentType, ResponseAddress $address): self
+    static function fromResponseAddr(string $contentType, ResponseAddress $address, \Throwable $prev = null): self
     {
         $i = new self(
-            sprintf("Response body at [%s,%s,%d] has Content-Type %s, which is not found in the spec", $address->path(), $address->method(),
-                $address->responseCode(), $contentType)
+            sprintf("Response body at [%s,%s,%d] has Content-Type %s, which is not found in the spec",
+                $address->path(),
+                $address->method(),
+                $address->responseCode(),
+                $contentType
+            ),
+            0,
+            $prev
         );
 
         $i->contentType = $contentType;
