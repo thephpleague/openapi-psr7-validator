@@ -106,11 +106,19 @@ schema:
   - a
   - b
 SPEC;
-$data = "a";
+$data = "c";
 
 $spec   = cebe\openapi\Reader::readFromYaml($spec);
 $schema = new cebe\openapi\spec\Schema($spec->schema);
-(new OpenAPIValidation\Schema\Validator($schema, $data))->validate();
+
+try {
+    (new OpenAPIValidation\Schema\Validator($schema, $data))->validate();
+} catch(\OpenAPIValidation\Schema\Exception\ValidationKeywordFailed $e) {
+    // you can evaluate failure details
+    // $e->keyword() == "enum"
+    // $e->data() == "c"
+    // $e->dataBreadCrumb()->buildChain() -- only for nested data
+}
 ```
 
 ## Custom Type Formats
@@ -165,8 +173,6 @@ handle. There are some of them:
     - `\OpenAPIValidation\Schema\Exception\FormatMismatch` - data mismatched a 
     given type format. For example `type: string, format: email` won't match 
     `not-email`.
-    - `\OpenAPIValidation\Schema\Exception\DataMismatched` - in general, data 
-    does not match a given schema specification
 - PSR7 Messages related:
     - `\OpenAPIValidation\PSR7\Exception\NoContentType` - Response contains 
     no Content-Type header. General HTTP errors.

@@ -35,4 +35,39 @@ SPEC;
         }
 
     }
+
+
+    function test_it_shows_invalid_data_address_nested()
+    {
+        $spec = <<<SPEC
+schema:
+  type: array
+  items:
+    type: array
+    items:
+      type: object
+      properties:
+        name: 
+          type: string     
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = [
+            [
+                ['name' => 'good name'],
+            ],
+            [
+                ['name' => .0],
+            ],
+        ];
+
+        try {
+            (new Validator($schema, $data))->validate();
+        } catch (ValidationKeywordFailed $e) {
+            $this->assertEquals([1, 0, 'name'], $e->dataBreadCrumb()->buildChain());
+            $this->assertEquals($data[1][0]['name'], $e->data());
+            $this->assertEquals("type", $e->keyword());
+        }
+
+    }
 }
