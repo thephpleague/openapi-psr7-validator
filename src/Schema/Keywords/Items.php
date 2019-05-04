@@ -10,7 +10,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
 
@@ -18,11 +18,14 @@ class Items extends BaseKeyword
 {
     /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
     protected $validationDataType;
+    /** @var BreadCrumb */
+    protected $dataBreadCrumb;
 
-    public function __construct(CebeSchema $parentSchema, int $type)
+    public function __construct(CebeSchema $parentSchema, int $type, BreadCrumb $breadCrumb)
     {
         parent::__construct($parentSchema);
         $this->validationDataType = $type;
+        $this->dataBreadCrumb     = $breadCrumb;
     }
 
     /**
@@ -31,26 +34,24 @@ class Items extends BaseKeyword
      * items MUST be present if the type is array.
      *
      * @param $data
-     * @param CebeSchema $items
+     * @param CebeSchema $itemsSchema
      */
-    public function validate($data, $items): void
+    public function validate($data, $itemsSchema): void
     {
-        try {
-            Validator::arrayVal()->assert($data);
-            Validator::instance(CebeSchema::class)->assert($items);
 
-            if (!isset($this->parentSchema->type) || ($this->parentSchema->type != "array")) {
-                throw new \Exception(sprintf("items MUST be present if the type is array"));
-            }
+        Validator::arrayVal()->assert($data);
+        Validator::instance(CebeSchema::class)->assert($itemsSchema);
 
-            foreach ($data as $dataItem) {
-                $schemaValidator = new SchemaValidator($items, $dataItem, $this->validationDataType);
-                $schemaValidator->validate();
-            }
-
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("items", $data, $e->getMessage());
+        if (!isset($this->parentSchema->type) || ($this->parentSchema->type != "array")) {
+            throw new \Exception(sprintf("items MUST be present if the type is array"));
         }
+
+        foreach ($data as $dataIndex => $dataItem) {
+            $breadCrumb      = $this->dataBreadCrumb->addCrumb($dataIndex);
+            $schemaValidator = new SchemaValidator($itemsSchema, $dataItem, $this->validationDataType, $breadCrumb);
+            $schemaValidator->validate();
+        }
+
+
     }
 }

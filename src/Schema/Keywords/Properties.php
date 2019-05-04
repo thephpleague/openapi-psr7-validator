@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
 
@@ -18,13 +18,15 @@ class Properties extends BaseKeyword
 {
     /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
     protected $validationDataType;
+    /** @var BreadCrumb */
+    protected $dataBreadCrumb;
 
-    public function __construct(CebeSchema $parentSchema, int $type)
+    public function __construct(CebeSchema $parentSchema, int $type, BreadCrumb $breadCrumb)
     {
         parent::__construct($parentSchema);
         $this->validationDataType = $type;
+        $this->dataBreadCrumb     = $breadCrumb;
     }
-
 
     /**
      * Property definitions MUST be a Schema Object and not a standard JSON Schema (inline or referenced).
@@ -57,36 +59,32 @@ class Properties extends BaseKeyword
     public function validate($data, $properties, $additionalProperties): void
     {
 
-        try {
-            Validator::arrayType()->assert($data);
-            Validator::arrayVal()->assert($properties);
-            Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
+        Validator::arrayType()->assert($data);
+        Validator::arrayVal()->assert($properties);
+        Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
 
-            if (!isset($this->parentSchema->type) || ($this->parentSchema->type != "object")) {
-                throw new \Exception(sprintf("properties only work with type=object"));
+        if (!isset($this->parentSchema->type) || ($this->parentSchema->type != "object")) {
+            throw new \Exception(sprintf("properties only work with type=object"));
+        }
+
+        // Validate against "properties"
+        foreach ($properties as $propName => $propSchema) {
+            if (array_key_exists($propName, $data)) {
+                $breadCrumb      = $this->dataBreadCrumb->addCrumb($propName);
+                $schemaValidator = new SchemaValidator($propSchema, $data[$propName], $this->validationDataType, $breadCrumb);
+                $schemaValidator->validate();
             }
+        }
 
-            // Validate against "properties"
-            foreach ($properties as $propName => $propSchema) {
-                if (array_key_exists($propName, $data)) {
-                    $schemaValidator = new SchemaValidator($propSchema, $data[$propName], $this->validationDataType);
+        // Validate the rest against "additionalProperties"
+        if ($additionalProperties instanceof CebeSchema) {
+            foreach ($data as $propName => $propSchema) {
+                if (!isset($properties[$propName])) { # if not covered by "properties"
+                    $schemaValidator = new SchemaValidator($additionalProperties, $data[$propName], $this->validationDataType);
                     $schemaValidator->validate();
                 }
             }
-
-            // Validate the rest against "additionalProperties"
-            if ($additionalProperties instanceof CebeSchema) {
-                foreach ($data as $propName => $propSchema) {
-                    if (!isset($properties[$propName])) { # if not covered by "properties"
-                        $schemaValidator = new SchemaValidator($additionalProperties, $data[$propName], $this->validationDataType);
-                        $schemaValidator->validate();
-                    }
-                }
-            }
-
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("properties", $data, $e->getMessage(), $e);
         }
+
     }
 }

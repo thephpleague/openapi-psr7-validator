@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema;
 
 use cebe\openapi\spec\Schema as CebeSchema;
+use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Keywords\AllOf;
 use OpenAPIValidation\Schema\Keywords\AnyOf;
 use OpenAPIValidation\Schema\Keywords\Enum;
@@ -42,6 +43,8 @@ class Validator
     protected $schema;
     /** @var mixed */
     protected $data;
+    /** @var BreadCrumb */
+    protected $dataBreadCrumb;
     /** @var int strategy of validation - Request or Response (affected by writeOnly/readOnly keywords) */
     protected $validationStrategy;
 
@@ -49,155 +52,133 @@ class Validator
      * @param CebeSchema $schema
      * @param mixed $data
      * @param int $validationStrategy
+     * @param BreadCrumb|null $breadCrumb
      */
-    public function __construct(CebeSchema $schema, $data, $validationStrategy = self::VALIDATE_AS_RESPONSE)
+    public function __construct(CebeSchema $schema, $data, $validationStrategy = self::VALIDATE_AS_RESPONSE, BreadCrumb $breadCrumb = null)
     {
         \Respect\Validation\Validator::in([self::VALIDATE_AS_REQUEST, self::VALIDATE_AS_RESPONSE])->assert($validationStrategy);
 
         $this->schema             = $schema;
         $this->data               = $data;
+        $this->dataBreadCrumb     = $breadCrumb;
         $this->validationStrategy = $validationStrategy;
     }
-
-    /**
-     * Clone an object with a new data type
-     *
-     * @param int $dataType
-     * @return Validator
-     */
-    public function withValidationStrategy(int $dataType): self
-    {
-        return new self($this->schema, $this->data, $dataType);
-    }
-
-    /**
-     * @return CebeSchema
-     */
-    public function schema(): CebeSchema
-    {
-        return $this->schema;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function data()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @return int
-     */
-    public function validationStrategy(): int
-    {
-        return $this->validationStrategy;
-    }
-
 
     /**
      * Apply a whole bunch of possible checks by using validation keywords
      */
     public function validate(): void
     {
-        //
-        // These keywords are not part of the JSON Schema at all (new to OAS)
-        //
-        (new Nullable($this->schema))->validate($this->data, $this->schema->nullable);
+        try {
+            //
+            // These keywords are not part of the JSON Schema at all (new to OAS)
+            //
+            (new Nullable($this->schema))->validate($this->data, $this->schema->nullable);
 
 
-        //
-        // This keywords come directly from JSON Schema Validation, they are the same as in JSON schema
-        // https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5
-        //
-        if (isset($this->schema->multipleOf)) {
-            (new MultipleOf($this->schema))->validate($this->data, $this->schema->multipleOf);
+            //
+            // This keywords come directly from JSON Schema Validation, they are the same as in JSON schema
+            // https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5
+            //
+            if (isset($this->schema->multipleOf)) {
+                (new MultipleOf($this->schema))->validate($this->data, $this->schema->multipleOf);
+            }
+
+            if (isset($this->schema->maximum)) {
+                $exclusiveMaximum = (bool)(isset($this->schema->exclusiveMaximum) ? $this->schema->exclusiveMaximum : false);
+                (new Maximum($this->schema))->validate($this->data, $this->schema->maximum, $exclusiveMaximum);
+            }
+
+            if (isset($this->schema->minimum)) {
+                $exclusiveMinimum = (bool)(isset($this->schema->exclusiveMinimum) ? $this->schema->exclusiveMinimum : false);
+                (new Minimum($this->schema))->validate($this->data, $this->schema->minimum, $exclusiveMinimum);
+            }
+
+            if (isset($this->schema->maxLength)) {
+                (new MaxLength($this->schema))->validate($this->data, $this->schema->maxLength);
+            }
+
+            if (isset($this->schema->minLength)) {
+                (new MinLength($this->schema))->validate($this->data, $this->schema->minLength);
+            }
+
+            if (isset($this->schema->pattern)) {
+                (new Pattern($this->schema))->validate($this->data, $this->schema->pattern);
+            }
+
+            if (isset($this->schema->maxItems)) {
+                (new MaxItems($this->schema))->validate($this->data, $this->schema->maxItems);
+            }
+
+            if (isset($this->schema->minItems)) {
+                (new MinItems($this->schema))->validate($this->data, $this->schema->minItems);
+            }
+
+            if (isset($this->schema->uniqueItems)) {
+                (new UniqueItems($this->schema))->validate($this->data, $this->schema->uniqueItems);
+            }
+
+            if (isset($this->schema->maxProperties)) {
+                (new MaxProperties($this->schema))->validate($this->data, $this->schema->maxProperties);
+            }
+
+            if (isset($this->schema->minProperties)) {
+                (new MinProperties($this->schema))->validate($this->data, $this->schema->minProperties);
+            }
+
+            if (isset($this->schema->required)) {
+                (new Required($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->required);
+            }
+
+            if (isset($this->schema->enum)) {
+                (new Enum($this->schema))->validate($this->data, $this->schema->enum);
+            }
+
+            //
+            // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
+            //
+
+            if (isset($this->schema->type)) {
+                (new Type($this->schema))->validate($this->data, $this->schema->type, $this->schema->format);
+            }
+
+            if (isset($this->schema->items)) {
+                (new Items($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->items);
+            }
+
+            if (isset($this->schema->properties) && count($this->schema->properties)) {
+                $additionalProperties = isset($this->schema->additionalProperties) ? $this->schema->additionalProperties : null;
+                (new Properties($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->properties,
+                    $additionalProperties);
+            }
+
+            if (isset($this->schema->allOf) && count($this->schema->allOf)) {
+                (new AllOf($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->allOf);
+            }
+
+            if (isset($this->schema->oneOf) && count($this->schema->oneOf)) {
+                (new OneOf($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->oneOf);
+            }
+
+            if (isset($this->schema->anyOf) && count($this->schema->anyOf)) {
+                (new AnyOf($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->anyOf);
+            }
+
+            if (isset($this->schema->not)) {
+                (new Not($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->not);
+            }
+
+
+            //   ✓  ok, all checks are done
+
+        } catch (ValidationKeywordFailed $e) {
+            $e->hydrateDataBreadCrumb($this->prepareBreadCrumb());
+            throw $e;
         }
+    }
 
-        if (isset($this->schema->maximum)) {
-            $exclusiveMaximum = (bool)(isset($this->schema->exclusiveMaximum) ? $this->schema->exclusiveMaximum : false);
-            (new Maximum($this->schema))->validate($this->data, $this->schema->maximum, $exclusiveMaximum);
-        }
-
-        if (isset($this->schema->minimum)) {
-            $exclusiveMinimum = (bool)(isset($this->schema->exclusiveMinimum) ? $this->schema->exclusiveMinimum : false);
-            (new Minimum($this->schema))->validate($this->data, $this->schema->minimum, $exclusiveMinimum);
-        }
-
-        if (isset($this->schema->maxLength)) {
-            (new MaxLength($this->schema))->validate($this->data, $this->schema->maxLength);
-        }
-
-        if (isset($this->schema->minLength)) {
-            (new MinLength($this->schema))->validate($this->data, $this->schema->minLength);
-        }
-
-        if (isset($this->schema->pattern)) {
-            (new Pattern($this->schema))->validate($this->data, $this->schema->pattern);
-        }
-
-        if (isset($this->schema->maxItems)) {
-            (new MaxItems($this->schema))->validate($this->data, $this->schema->maxItems);
-        }
-
-        if (isset($this->schema->minItems)) {
-            (new MinItems($this->schema))->validate($this->data, $this->schema->minItems);
-        }
-
-        if (isset($this->schema->uniqueItems)) {
-            (new UniqueItems($this->schema))->validate($this->data, $this->schema->uniqueItems);
-        }
-
-        if (isset($this->schema->maxProperties)) {
-            (new MaxProperties($this->schema))->validate($this->data, $this->schema->maxProperties);
-        }
-
-        if (isset($this->schema->minProperties)) {
-            (new MinProperties($this->schema))->validate($this->data, $this->schema->minProperties);
-        }
-
-        if (isset($this->schema->required)) {
-            (new Required($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->required);
-        }
-
-        if (isset($this->schema->enum)) {
-            (new Enum($this->schema))->validate($this->data, $this->schema->enum);
-        }
-
-        //
-        // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
-        //
-
-        if (isset($this->schema->type)) {
-            (new Type($this->schema))->validate($this->data, $this->schema->type, $this->schema->format);
-        }
-
-        if (isset($this->schema->items)) {
-            (new Items($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->items);
-        }
-
-        if (isset($this->schema->properties) && count($this->schema->properties)) {
-            $additionalProperties = isset($this->schema->additionalProperties) ? $this->schema->additionalProperties : null;
-            (new Properties($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->properties, $additionalProperties);
-        }
-
-        if (isset($this->schema->allOf) && count($this->schema->allOf)) {
-            (new AllOf($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->allOf);
-        }
-
-        if (isset($this->schema->oneOf) && count($this->schema->oneOf)) {
-            (new OneOf($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->oneOf);
-        }
-
-        if (isset($this->schema->anyOf) && count($this->schema->anyOf)) {
-            (new AnyOf($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->anyOf);
-        }
-
-        if (isset($this->schema->not)) {
-            (new Not($this->schema, $this->validationStrategy))->validate($this->data, $this->schema->not);
-        }
-
-
-        //   ✓  ok, all checks are done
+    protected function prepareBreadCrumb(): BreadCrumb
+    {
+        return $this->dataBreadCrumb ?? new BreadCrumb();
     }
 }

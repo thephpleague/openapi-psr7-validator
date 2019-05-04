@@ -9,12 +9,16 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Exception;
 
 // Indicates that data was not matched against a schema's keyword
+use OpenAPIValidation\Schema\BreadCrumb;
+
 class ValidationKeywordFailed extends \LogicException
 {
     /** @var string */
     protected $keyword;
     /** @var mixed */
     protected $data;
+    /** @var BreadCrumb */
+    protected $dataBreadCrumb;
 
     static function fromKeyword(string $keyword, $data, $message = null, \Throwable $prev = null): self
     {
@@ -40,5 +44,21 @@ class ValidationKeywordFailed extends \LogicException
         return $this->data;
     }
 
+    /**
+     * @return BreadCrumb
+     */
+    public function dataBreadCrumb(): ?BreadCrumb
+    {
+        return $this->dataBreadCrumb;
+    }
 
+    /**
+     * @param BreadCrumb $dataBreadCrumb
+     */
+    public function hydrateDataBreadCrumb(BreadCrumb $dataBreadCrumb): void
+    {
+        if ($this->dataBreadCrumb === null) {
+            $this->dataBreadCrumb = $dataBreadCrumb;
+        }
+    }
 }

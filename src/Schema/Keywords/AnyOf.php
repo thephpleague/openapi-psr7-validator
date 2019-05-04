@@ -10,6 +10,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 
 
 use cebe\openapi\spec\Schema as CebeSchema;
+use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
@@ -18,11 +19,14 @@ class AnyOf extends BaseKeyword
 {
     /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
     protected $validationDataType;
+    /** @var BreadCrumb */
+    protected $dataBreadCrumb;
 
-    public function __construct(CebeSchema $parentSchema, int $type)
+    public function __construct(CebeSchema $parentSchema, int $type, BreadCrumb $breadCrumb)
     {
         parent::__construct($parentSchema);
         $this->validationDataType = $type;
+        $this->dataBreadCrumb     = $breadCrumb;
     }
 
     /**
@@ -47,7 +51,8 @@ class AnyOf extends BaseKeyword
             // Validate against all schemas
             $matchedCount = 0;
             foreach ($anyOf as $schema) {
-                $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType);
+                $breadCrumb      = $this->dataBreadCrumb;
+                $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType, $breadCrumb);
                 try {
                     $schemaValidator->validate();
                     $matchedCount++;

@@ -58,7 +58,7 @@ SPEC;
         try {
             (new Validator($schema, $data))->validate();
         } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('allOf', $e->keyword());
+            $this->assertEquals('type', $e->keyword());
         }
     }
 

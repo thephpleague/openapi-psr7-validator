@@ -10,7 +10,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
 
@@ -18,11 +18,14 @@ class AllOf extends BaseKeyword
 {
     /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
     protected $validationDataType;
+    /** @var BreadCrumb */
+    protected $dataBreadCrumb;
 
-    public function __construct(CebeSchema $parentSchema, int $type)
+    public function __construct(CebeSchema $parentSchema, int $type, BreadCrumb $breadCrumb)
     {
         parent::__construct($parentSchema);
         $this->validationDataType = $type;
+        $this->dataBreadCrumb     = $breadCrumb;
     }
 
     /**
@@ -40,18 +43,16 @@ class AllOf extends BaseKeyword
      */
     public function validate($data, $allOf): void
     {
-        try {
-            Validator::arrayVal()->assert($allOf);
-            Validator::each(Validator::instance(CebeSchema::class))->assert($allOf);
 
-            // Validate against all schemas
-            foreach ($allOf as $schema) {
-                $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType);
-                $schemaValidator->validate();
-            }
+        Validator::arrayVal()->assert($allOf);
+        Validator::each(Validator::instance(CebeSchema::class))->assert($allOf);
 
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("allOf", $data, $e->getMessage(), $e);
+        // Validate against all schemas
+        foreach ($allOf as $schema) {
+            $breadCrumb      = $this->dataBreadCrumb;
+            $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType, $breadCrumb);
+            $schemaValidator->validate();
         }
+
     }
 }

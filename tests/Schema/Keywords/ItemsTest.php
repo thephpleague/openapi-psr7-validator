@@ -65,7 +65,7 @@ SPEC;
         try {
             (new Validator($schema, $data))->validate();
         } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('items', $e->keyword());
+            $this->assertEquals('type', $e->keyword());
         }
     }
 
@@ -87,7 +87,7 @@ SPEC;
         try {
             (new Validator($schema, $data))->validate();
         } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('items', $e->keyword());
+            $this->assertEquals('type', $e->keyword());
         }
     }
 }
