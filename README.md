@@ -33,6 +33,7 @@ words, or schema keywords
 
 ### ServerRequest Message
 You can validate `\Psr\Http\Message\ServerRequestInterface` instance like this:
+
 ```php
 $yamlFile = "api.yaml";
 
@@ -49,6 +50,7 @@ Validation of `\Psr\Http\Message\ResponseInterface` is a bit more complicated
 to know which operation this response belongs to (in terms of OAS).
 
 Example:
+
 ```php
 $yamlFile = "api.yaml";
 $operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 
@@ -67,6 +69,7 @@ $validator->validate($request);
 
 ### PSR-15 Middleware
 PSR-15 middleware can be used like this:
+
 ```php
 $yamlFile = "api.yaml";
 $jsonFile = "api.yaml";
@@ -79,8 +82,7 @@ $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonSpec($jsonY
 ### SlimFramework middleware
 Slim framework uses slightly different middleware interface, so here is an 
 adapter which you can use like this:
-```php
-PSR-15 middleware can be used like this:
+
 ```php
 $yamlFile = "api.yaml";
 $psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlSpec
@@ -95,6 +97,7 @@ $app->add($slimMiddleware);
 ### Standalone OpenAPI Validator
 The package contains a standalone validator which can validate any data 
 against an OpenAPI schema like this:
+
 ```php
 $spec = <<<SPEC
 schema:
@@ -112,11 +115,13 @@ $schema = new cebe\openapi\spec\Schema($spec->schema);
 
 ## Custom Type Formats
 As you know, OAS allows you to add formats to types:
+
 ```yaml
 schema:
   type: string
   format: binary
 ```
+
 This package contains a bunch of built-in format validators:
 - `string` type:
     - `byte`
