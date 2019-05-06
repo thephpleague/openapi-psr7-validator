@@ -19,6 +19,7 @@ class PathAddressTest extends TestCase
             ["/users/{id}", "/users/12", ['id' => 12]],
             ["/users/{id}/", "/users/12/", ['id' => 12]],
             ["/users/{id}/", "/users/22.5/", ['id' => 22.5]],
+            ["/users/{id}/{name}", "/users/22/admin", ['id' => 22, 'name' => 'admin']],
         ];
     }
 
@@ -38,12 +39,14 @@ class PathAddressTest extends TestCase
         return [
             ['/users/{id}', '/users/12', true],
             ['/users/{id}', '/users/word', true],
+            ['/users/{id}', '/users/word/', true],
             ['/users/{id}', '/users/', false],
             ['/users/{id}', '/users', false],
             ['/users/{id}', '/users/word/some', false],
             ['/users/{id}/group/{group}', '/users/12/group/admin', true],
             ['/users/{id}/group/{group}', '/users/word/group/admin', true],
             ['/users/{id}/group/{group}', '/users/word/group/', false],
+            ['/users/{id}/{group}', '/users/word1/word2/', true],
         ];
     }
 

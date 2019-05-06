@@ -90,7 +90,7 @@ class PathAddress
      */
     static function isPathMatchesSpec(string $specPath, string $path): bool
     {
-        $pattern = "#^" . preg_replace("#{[^}]+}#", "[^/]+", $specPath) . "$#";
+        $pattern = "#^" . preg_replace("#{[^}]+}#", "[^/]+", $specPath) . "/?$#";
 
         return (bool)preg_match($pattern, $path);
     }
