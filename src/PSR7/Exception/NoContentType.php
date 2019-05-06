@@ -11,6 +11,6 @@ namespace OpenAPIValidation\PSR7\Exception;
 
 class NoContentType extends \RuntimeException
 {
-    protected $message = "Response contains no Content-Type header";
+    protected $message = "Message's body contains no Content-Type header";
 
 }

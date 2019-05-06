@@ -10,6 +10,7 @@ namespace OpenAPIValidation\PSR7\Validators;
 
 
 use cebe\openapi\spec\Parameter;
+use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -49,7 +50,12 @@ class QueryArguments
 
         // Check if cookies are invalid
         foreach ($message->getQueryParams() as $name => $argumentValue) {
-            $validator = new SchemaValidator($specs[$name]->schema, $argumentValue, $this->detectValidationStrategy($message));
+            $validator = new SchemaValidator(
+                $specs[$name]->schema,
+                $argumentValue,
+                $this->detectValidationStrategy($message),
+                new BreadCrumb($name)
+            );
             $validator->validate();
         }
     }

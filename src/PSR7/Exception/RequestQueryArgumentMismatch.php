@@ -10,6 +10,7 @@ namespace OpenAPIValidation\PSR7\Exception;
 
 
 use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 
 class RequestQueryArgumentMismatch extends NoOperation
 {
@@ -17,7 +18,8 @@ class RequestQueryArgumentMismatch extends NoOperation
     {
         $i = new self(
             sprintf(
-                "OpenAPI spec does not match the query argument of the request [%s,%s]: %s",
+                "OpenAPI spec does not match the query argument '%s' of the request [%s,%s]: %s",
+                $cause instanceof ValidationKeywordFailed ? implode("->",$cause->dataBreadCrumb()->buildChain()) : "?",
                 $addr->path(),
                 $addr->method(),
                 $cause->getMessage()

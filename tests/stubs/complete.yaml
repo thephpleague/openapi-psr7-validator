@@ -1,0 +1,65 @@
+openapi: 3.0.2
+info:
+  title: Weather API
+  version: 0.0.1
+  contact:
+    name: Dmitry Lezhnev
+    url: https://lessthan12ms.com
+    email: lezhnev.work@gmail.com
+paths:
+  /complete/{param1}/{param2}:
+    parameters:
+      - in: path
+        name: param1
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: param2
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: filtering
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: X-RequestId
+        required: true
+        schema:
+          type: string
+          pattern: "#^[a-z]{4}$#"
+      - in: cookie
+        name: session_id
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: Post data
+      operationId: read
+      parameters:
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas.yaml#/components/schemas/SchemaA'
+      responses:
+        200:
+          description: good read
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                $ref: 'schemas.yaml#/components/schemas/SchemaA'
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
