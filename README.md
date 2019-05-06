@@ -4,7 +4,7 @@
 ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)
 
 # OpenAPI PSR-7 Message (HTTP Request/Response) Validator
-This package can validate PSR-7 messages against OpenAPI (3.0.2) specifications 
+This package can validate PSR-7 messages against OpenAPI (3.0.x) specifications 
 expressed in YAML or JSON. 
 
 ![](image.jpg)
@@ -19,10 +19,10 @@ composer require lezhnev74/openapi-psr7-validator
 
 ## OpenAPI (OAS) Terms
 There are some specific terms that are used in the package. These terms come 
-from OAS 3 specification:
-- `specification` - an OAS data expressed in JSON or YAML file
-- `data` - actual thing that we validate against a specification
-- `schema` - data type specification
+from OpenAPI:
+- `specification` - an OpenAPI document describing an API, expressed in JSON or YAML file
+- `data` - actual thing that we validate against a specification, including body and metadata
+- `schema` - the part of the specification that describes the body of the request / response
 - `keyword` - properties that are used to describe the instance are called key
 words, or schema keywords
 - `path` - a relative path to an individual endpoint
@@ -48,7 +48,7 @@ $validator->validate($request);
 ### Response Message
 Validation of `\Psr\Http\Message\ResponseInterface` is a bit more complicated
 . Because you need not only YAML file and Response itself, but also you need 
-to know which operation this response belongs to (in terms of OAS).
+to know which operation this response belongs to (in terms of OpenAPI).
 
 Example:
 
@@ -72,12 +72,9 @@ $validator->validate($request);
 PSR-15 middleware can be used like this:
 
 ```php
-$yamlFile = "api.yaml";
-$jsonFile = "api.yaml";
-
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlSpec($specYaml);
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlSpec("api.yaml");
 # or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonSpec($jsonYaml);
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonSpec("api.yaml");
 ```
 
 ### SlimFramework middleware
@@ -85,9 +82,8 @@ Slim framework uses slightly different middleware interface, so here is an
 adapter which you can use like this:
 
 ```php
-$yamlFile = "api.yaml";
 $psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlSpec
-($specYaml);
+("api.yaml");
 
 $slimMiddleware = new \OpenAPIValidation\PSR15\SlimAdapter($psr15Middleware);
 
@@ -123,7 +119,7 @@ try {
 ```
 
 ## Custom Type Formats
-As you know, OAS allows you to add formats to types:
+As you know, OpenAPI allows you to add formats to types:
 
 ```yaml
 schema:
@@ -233,7 +229,7 @@ People:
 
 Resources:
 - Icons made by Freepik, licensed by CC 3.0 BY
-- [cebe/php-openapi](https://github.com/cebe/php-openapi) package for Reading OAS files
+- [cebe/php-openapi](https://github.com/cebe/php-openapi) package for Reading OpenAPI files
 - [slim3-psr15](https://github.com/bnf/slim3-psr15) package for Slim middleware adapter
  
 ## License
