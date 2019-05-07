@@ -54,6 +54,9 @@ class PathAddress
         # actual:  /a/12/c/some
         # result:  ['b'=>'12', 'd'=>'some']
 
+        // 0. Filter URL, remove query string
+        $url  = strtok($url, '?');
+
         // 1. Find param names
         preg_match_all("#{([^}]+)}#", $specPath, $m);
         $parameterNames = $m[1];

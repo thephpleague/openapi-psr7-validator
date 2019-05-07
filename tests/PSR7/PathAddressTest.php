@@ -15,8 +15,8 @@ class PathAddressTest extends TestCase
     function dataProviderParse()
     {
         return [
-            ["/users/{id}/group/{group}", "/users/12/group/admin", ['id' => 12, 'group' => 'admin']],
-            ["/users/{id}", "/users/12", ['id' => 12]],
+            ["/users/{id}/group/{group}", "/users/12/group/admin?a=2", ['id' => 12, 'group' => 'admin']],
+            ["/users/{id}", "/users/12?", ['id' => 12]],
             ["/users/{id}/", "/users/12/", ['id' => 12]],
             ["/users/{id}/", "/users/22.5/", ['id' => 22.5]],
             ["/users/{id}/{name}", "/users/22/admin", ['id' => 22, 'name' => 'admin']],
@@ -37,8 +37,8 @@ class PathAddressTest extends TestCase
     function dataProviderMatch()
     {
         return [
-            ['/users/{id}', '/users/12', true],
-            ['/users/{id}', '/users/word', true],
+            ['/users/{id}', '/users/12?data=extended', true],
+            ['/users/{id}', '/users/word?', true],
             ['/users/{id}', '/users/word/', true],
             ['/users/{id}', '/users/', false],
             ['/users/{id}', '/users', false],
