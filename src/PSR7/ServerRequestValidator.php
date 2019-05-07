@@ -27,6 +27,7 @@ use OpenAPIValidation\PSR7\Validators\Cookies;
 use OpenAPIValidation\PSR7\Validators\Headers;
 use OpenAPIValidation\PSR7\Validators\Path;
 use OpenAPIValidation\PSR7\Validators\QueryArguments;
+use OpenAPIValidation\PSR7\Validators\Security;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ServerRequestValidator extends Validator
@@ -88,6 +89,9 @@ class ServerRequestValidator extends Validator
 
         // 5. Validate path
         $this->validatePath($addr, $serverRequest);
+
+        // 6. Validate security
+        $this->validateSecurity($addr, $serverRequest);
     }
 
     /**
@@ -213,7 +217,7 @@ class ServerRequestValidator extends Validator
      * @param OperationAddress $addr
      * @param ServerRequestInterface $serverRequest
      */
-    private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest)
+    private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
         $spec = $this->findOperationSpec($addr);
 
@@ -259,7 +263,7 @@ class ServerRequestValidator extends Validator
      * @param ServerRequestInterface $serverRequest
      * @throws \Throwable
      */
-    private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest)
+    private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest): void
     {
         $spec = $this->findOperationSpec($addr);
 
@@ -288,6 +292,35 @@ class ServerRequestValidator extends Validator
         try {
             $pathValidator = new Path();
             $pathValidator->validate($serverRequest, $pathSpecs, $addr->path());
+        } catch (\Throwable $e) {
+            switch ($e->getCode()) {
+                default:
+                    throw RequestPathParameterMismatch::fromAddrAndCauseException($addr, $serverRequest->getUri()->getPath(), $e);
+            }
+        }
+    }
+
+    /**
+     * @param OperationAddress $addr
+     * @param ServerRequestInterface $serverRequest
+     */
+    private function validateSecurity(OperationAddress $addr, ServerRequestInterface $serverRequest): void
+    {
+        $opSpec = $this->findOperationSpec($addr);
+
+        // 1. Collect security params
+        if (property_exists($opSpec->getSerializableData(), 'security')) {
+            // security is set on operation level
+            $securitySpecs = $opSpec->security;
+        } else {
+            // security is set on root level (fallback option)
+            $securitySpecs = $this->openApi->security;
+        }
+
+        // 2. Validate collected params
+        try {
+            $pathValidator = new Security();
+            $pathValidator->validate($serverRequest, $securitySpecs, $addr->path());
         } catch (\Throwable $e) {
             switch ($e->getCode()) {
                 default:
