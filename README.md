@@ -185,7 +185,7 @@ handle. There are some of them:
         - `\OpenAPIValidation\PSR7\Exception\MissedRequestCookie` - Request 
         does not contain expected cookie
         - `\OpenAPIValidation\PSR7\Exception\MissedRequestHeader` - Request 
-        dons not contain expected header
+        does not contain expected header
         - `\OpenAPIValidation\PSR7\Exception\MissedRequestQueryArgument` - 
         Request does not have expected query argument
         - `\OpenAPIValidation\PSR7\Exception\RequestBodyMismatch` - request's
@@ -203,7 +203,7 @@ handle. There are some of them:
         - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader` - 
         request carries unexpected header
         - `\OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey` - described security apiKey not found in the request
-        - `\OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch` - request does not match with the decribed security requirements  
+        - `\OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch` - request does not match with the described security requirements  
     - Response related:
         - `\OpenAPIValidation\PSR7\Exception\MissedResponseHeader` - response
          does not have a header
