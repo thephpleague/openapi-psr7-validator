@@ -49,7 +49,7 @@ class ServerRequestValidator extends Validator
         // If there is only one - then proceed with checking
         // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
         // "This request matched operations A,B and C, but mismatched its schemas."
-        $matchingOperationsAddrs = $this->findMatchingOperations($path, $method);
+        $matchingOperationsAddrs = $this->findMatchingOperations($serverRequest);
 
         if (!$matchingOperationsAddrs) {
             throw NoOperation::fromPathAndMethod($path, $method);
@@ -122,7 +122,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr);
+        $pathSpec = $this->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in != "header") {
                 continue;
@@ -168,7 +168,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr);
+        $pathSpec = $this->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in != "cookie") {
                 continue;
@@ -237,7 +237,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr);
+        $pathSpec = $this->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in != "query") {
                 continue;
@@ -283,7 +283,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr);
+        $pathSpec = $this->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in != "path") {
                 continue;

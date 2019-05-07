@@ -13,6 +13,7 @@ use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response as ResponseSpec;
+use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
@@ -67,10 +68,10 @@ abstract class Validator
     /**
      * Find a particualr path in the spec
      *
-     * @param OperationAddress $addr
-     * @return Operation
+     * @param PathAddress $addr
+     * @return PathItem
      */
-    protected function findPathSpec(OperationAddress $addr): PathItem
+    protected function findPathSpec(PathAddress $addr): PathItem
     {
         $pathSpec = $this->openApi->paths->getPath($addr->path());
 
@@ -86,28 +87,13 @@ abstract class Validator
      * This should consider path parameters as well
      * "/users/12" should match both ["/users/{id}", "/users/{group}"]
      *
-     * @param string $path like "/users/12"
-     * @param string $method like "post"
+     * @param ServerRequest $request
      * @return OperationAddress[]
      */
-    protected function findMatchingOperations(string $path, string $method): array
+    protected function findMatchingOperations(ServerRequest $request): array
     {
-        $matchedOperations = [];
-
-        foreach ($this->openApi->paths as $specPath => $pathItemSpec) {
-            if (!PathAddress::isPathMatchesSpec($specPath, $path)) {
-                continue;
-            }
-
-            foreach ($pathItemSpec->getOperations() as $opMethod => $operation) {
-                if ($opMethod != $method) {
-                    continue;
-                }
-
-                // ok looks like method and path matched
-                $matchedOperations[] = new OperationAddress($specPath, $opMethod);
-            }
-        }
+        $pathFinder        = new PathFinder($this->openApi, $request->getUri(), $request->getMethod());
+        $matchedOperations = $pathFinder->search();
 
         return $matchedOperations;
     }
