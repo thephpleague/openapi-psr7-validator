@@ -11,14 +11,14 @@ namespace OpenAPIValidation\PSR7\Exception\Request\Security;
 
 use OpenAPIValidation\PSR7\OperationAddress;
 
-class NoRequestSecurityApiKey extends \RuntimeException
+class NoRequestAuthorizationHeader extends \RuntimeException
 {
     protected $addr;
 
     static function fromOperationAddr(OperationAddress $address, \Throwable $prev = null): self
     {
         $i = new self(
-            sprintf("Request [%s,%s] has no apiKey",
+            sprintf("Request [%s,%s]: `Authorization` header must be present",
                 $address->path(),
                 $address->method()
             ),
@@ -26,7 +26,7 @@ class NoRequestSecurityApiKey extends \RuntimeException
             $prev
         );
 
-        $i->addr           = $address;
+        $i->addr = $address;
         return $i;
     }
 

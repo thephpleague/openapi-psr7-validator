@@ -201,7 +201,9 @@ handle. There are some of them:
         - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestContentType` - 
         request's body content type is unexpected
         - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader` - 
-        request carries unexpected header  
+        request carries unexpected header
+        - `\OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey` - described security apiKey not found in the request
+        - `\OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch` - request does not match with the decribed security requirements  
     - Response related:
         - `\OpenAPIValidation\PSR7\Exception\MissedResponseHeader` - response
          does not have a header

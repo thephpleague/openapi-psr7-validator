@@ -20,6 +20,8 @@ use OpenAPIValidation\PSR7\Exception\Request\RequestCookiesMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\RequestHeadersMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\RequestPathParameterMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
+use OpenAPIValidation\PSR7\Exception\Request\Security\MalformattedRequestAuthorizationHeader;
+use OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestAuthorizationHeader;
 use OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey;
 use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestContentType;
@@ -327,6 +329,10 @@ class ServerRequestValidator extends Validator
             switch ($e->getCode()) {
                 case 601:
                     throw NoRequestSecurityApiKey::fromOperationAddr($addr, $e);
+                case 611:
+                    throw NoRequestAuthorizationHeader::fromOperationAddr($addr, $e);
+                case 612:
+                    throw MalformattedRequestAuthorizationHeader::fromOperationAddr($addr, $e);
                 default:
                     throw RequestSecurityMismatch::fromOperationAddr($addr, $e);
             }

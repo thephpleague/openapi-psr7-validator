@@ -13,7 +13,7 @@ use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 
-class SecurityTest extends TestCase
+class SecurityApiKeyTest extends TestCase
 {
     // Security schemes united as AND
     protected $specSecurityORUnion = <<<OR

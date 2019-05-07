@@ -77,8 +77,10 @@ class Security
     private function validateSecurityScheme(ServerRequestInterface $request, SecurityRequirement $spec): void
     {
         // Here I implement AND-union
-        $shouldMatchSchemesCount = count((array)$spec->getSerializableData());
+        // Each SecurityRequirement contains 1+ security [schema_name=>scopes]
+        // Scopes are not used for the purpose of validation
 
+        $shouldMatchSchemesCount = count((array)$spec->getSerializableData());
 
         foreach ($spec->getSerializableData() as $securityScheme => $scopes) {
 
@@ -87,40 +89,70 @@ class Security
             }
             $securityScheme = $this->securitySchemes[$securityScheme];
 
-            switch ($securityScheme->in) {
-                case "query":
-                    if (!isset($request->getQueryParams()[$securityScheme->name])) {
-                        throw new \Exception(sprintf("Absent query argument '%s'", $securityScheme->name), 601);
-                    }
-
-                    # security query argument exists, good
-                    $shouldMatchSchemesCount--;
-
+            switch ($securityScheme->type) {
+                case "http":
+                    $this->validateHTTPSecurityScheme($request, $securityScheme);
                     break;
-                case "header":
-                    if (!count($request->getHeaders()[$securityScheme->name])) {
-                        throw new \Exception(sprintf("Absent header '%s'", $securityScheme->name), 601);
-                    }
-
-                    # security query argument exists, good
-                    $shouldMatchSchemesCount--;
-
-                    break;
-                case "cookie":
-                    if (!isset($request->getCookieParams()[$securityScheme->name])) {
-                        throw new \Exception(sprintf("Absent cookie '%s'", $securityScheme->name), 601);
-                    }
-
-                    # security query argument exists, good
-                    $shouldMatchSchemesCount--;
-
+                case "apiKey":
+                    $this->validateApiKeySecurityScheme($request, $securityScheme);
                     break;
             }
+
+            # security query argument exists, good
+            $shouldMatchSchemesCount--;
         }
 
         // Check that all AND-united security schemes matched
         if ($shouldMatchSchemesCount) {
             throw new \Exception("Request did not match all of given security schemes");
+        }
+    }
+
+    private function validateHTTPSecurityScheme(ServerRequestInterface $request, SecurityScheme $securityScheme)
+    {
+        # Supported schemas: https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
+
+        # Token should be passed in TLS session, in header: `Authorization:....`
+        if (!$request->hasHeader('Authorization')) {
+            throw new \Exception("", 611);
+        }
+
+        switch ($securityScheme->scheme) {
+            case "basic":
+                # Described in https://tools.ietf.org/html/rfc7617
+                if (!preg_match("#^Basic #", $request->getHeader('Authorization')[0])) {
+                    throw new \Exception("", 612);
+                }
+
+                break;
+            case "bearer":
+                # Described in https://tools.ietf.org/html/rfc6750
+                if (!preg_match("#^Bearer #", $request->getHeader('Authorization')[0])) {
+                    throw new \Exception("", 612);
+                }
+
+                break;
+        }
+    }
+
+    private function validateApiKeySecurityScheme(ServerRequestInterface $request, SecurityScheme $securityScheme)
+    {
+        switch ($securityScheme->in) {
+            case "query":
+                if (!isset($request->getQueryParams()[$securityScheme->name])) {
+                    throw new \Exception(sprintf("Absent query argument '%s'", $securityScheme->name), 601);
+                }
+                break;
+            case "header":
+                if (!count($request->getHeaders()[$securityScheme->name])) {
+                    throw new \Exception(sprintf("Absent header '%s'", $securityScheme->name), 601);
+                }
+                break;
+            case "cookie":
+                if (!isset($request->getCookieParams()[$securityScheme->name])) {
+                    throw new \Exception(sprintf("Absent cookie '%s'", $securityScheme->name), 601);
+                }
+                break;
         }
     }
 
