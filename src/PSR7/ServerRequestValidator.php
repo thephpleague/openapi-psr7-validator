@@ -20,6 +20,8 @@ use OpenAPIValidation\PSR7\Exception\Request\RequestCookiesMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\RequestHeadersMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\RequestPathParameterMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
+use OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey;
+use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestContentType;
 use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestHeader;
 use OpenAPIValidation\PSR7\Validators\Body;
@@ -320,11 +322,13 @@ class ServerRequestValidator extends Validator
         // 2. Validate collected params
         try {
             $pathValidator = new Security();
-            $pathValidator->validate($serverRequest, $securitySpecs, $addr->path());
+            $pathValidator->validate($serverRequest, $securitySpecs, $this->openApi->components ? $this->openApi->components->securitySchemes : []);
         } catch (\Throwable $e) {
             switch ($e->getCode()) {
+                case 601:
+                    throw NoRequestSecurityApiKey::fromOperationAddr($addr, $e);
                 default:
-                    throw RequestPathParameterMismatch::fromAddrAndCauseException($addr, $serverRequest->getUri()->getPath(), $e);
+                    throw RequestSecurityMismatch::fromOperationAddr($addr, $e);
             }
         }
     }
