@@ -48,8 +48,14 @@ class QueryArguments
             }
         }
 
-        // Check if cookies are invalid
+        // Check if query arguments are invalid
         foreach ($message->getQueryParams() as $name => $argumentValue) {
+
+            # skip if there are no schema for this argument
+            if (!array_key_exists($name, $specs)) {
+                continue;
+            }
+
             $validator = new SchemaValidator(
                 $specs[$name]->schema,
                 $argumentValue,
