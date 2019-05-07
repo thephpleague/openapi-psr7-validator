@@ -97,6 +97,24 @@ class Security
                     $shouldMatchSchemesCount--;
 
                     break;
+                case "header":
+                    if (!count($request->getHeaders()[$securityScheme->name])) {
+                        throw new \Exception(sprintf("Absent header '%s'", $securityScheme->name), 601);
+                    }
+
+                    # security query argument exists, good
+                    $shouldMatchSchemesCount--;
+
+                    break;
+                case "cookie":
+                    if (!isset($request->getCookieParams()[$securityScheme->name])) {
+                        throw new \Exception(sprintf("Absent cookie '%s'", $securityScheme->name), 601);
+                    }
+
+                    # security query argument exists, good
+                    $shouldMatchSchemesCount--;
+
+                    break;
             }
         }
 
