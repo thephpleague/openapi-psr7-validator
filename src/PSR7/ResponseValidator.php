@@ -9,11 +9,11 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7;
 
 
-use OpenAPIValidation\PSR7\Exception\MissedResponseHeader;
-use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
-use OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch;
-use OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType;
-use OpenAPIValidation\PSR7\Exception\UnexpectedResponseHeader;
+use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
+use OpenAPIValidation\PSR7\Exception\Response\ResponseBodyMismatch;
+use OpenAPIValidation\PSR7\Exception\Response\ResponseHeadersMismatch;
+use OpenAPIValidation\PSR7\Exception\Response\UnexpectedResponseContentType;
+use OpenAPIValidation\PSR7\Exception\Response\UnexpectedResponseHeader;
 use OpenAPIValidation\PSR7\Validators\Body;
 use OpenAPIValidation\PSR7\Validators\Headers;
 use OpenAPIValidation\PSR7\Validators\ValidationStrategy;

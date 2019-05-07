@@ -6,31 +6,29 @@
 declare(strict_types=1);
 
 
-namespace OpenAPIValidation\PSR7\Exception;
+namespace OpenAPIValidation\PSR7\Exception\Request;
 
 
 use OpenAPIValidation\PSR7\OperationAddress;
 
-class MissedRequestHeader extends \RuntimeException
+class MissedRequestCookie extends \RuntimeException
 {
     /** @var string */
-    protected $headerName;
+    protected $cookieName;
     /** @var OperationAddress */
     protected $addr;
 
-    static function fromOperationAddr(string $headerName, OperationAddress $address, \Throwable $prev = null): self
+    static function fromOperationAddr(string $cookieName, OperationAddress $address): self
     {
         $i = new self(
-            sprintf("Request header '%s' at [%s,%s] not found",
-                $headerName,
+            sprintf("Request does not contain cookie '%s' at [%s,%s]",
+                $cookieName,
                 $address->path(),
                 $address->method()
-            ),
-            0,
-            $prev
+            )
         );
 
-        $i->headerName = $headerName;
+        $i->cookieName = $cookieName;
         $i->addr       = $address;
         return $i;
     }
@@ -38,9 +36,9 @@ class MissedRequestHeader extends \RuntimeException
     /**
      * @return string
      */
-    public function headerName(): string
+    public function cookieName(): string
     {
-        return $this->headerName;
+        return $this->cookieName;
     }
 
     /**

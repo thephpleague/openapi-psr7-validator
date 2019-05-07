@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7;
 
 use cebe\openapi\Reader;
-use OpenAPIValidation\PSR7\Exception\MissedRequestCookie;
-use OpenAPIValidation\PSR7\Exception\MissedResponseHeader;
-use OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch;
+use OpenAPIValidation\PSR7\Exception\Request\MissedRequestCookie;
+use OpenAPIValidation\PSR7\Exception\Request\RequestCookiesMismatch;
+use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ResponseAddress;
 use OpenAPIValidation\PSR7\ResponseValidator;

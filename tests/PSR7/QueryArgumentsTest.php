@@ -11,8 +11,8 @@ namespace OpenAPIValidationTests\PSR7;
 
 use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\Uri;
-use OpenAPIValidation\PSR7\Exception\MissedRequestQueryArgument;
-use OpenAPIValidation\PSR7\Exception\RequestQueryArgumentMismatch;
+use OpenAPIValidation\PSR7\Exception\Request\MissedRequestQueryArgument;
+use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 

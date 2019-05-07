@@ -11,7 +11,7 @@ namespace OpenAPIValidationTests\PSR7;
 
 use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\ServerRequest;
-use OpenAPIValidation\PSR7\Exception\RequestPathParameterMismatch;
+use OpenAPIValidation\PSR7\Exception\Request\RequestPathParameterMismatch;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
 class PathParametersTest extends BaseValidatorTest

@@ -6,27 +6,28 @@
 declare(strict_types=1);
 
 
-namespace OpenAPIValidation\PSR7\Exception;
+namespace OpenAPIValidation\PSR7\Exception\Request;
 
 
-use OpenAPIValidation\PSR7\ResponseAddress;
+use OpenAPIValidation\PSR7\OperationAddress;
 
-class UnexpectedResponseHeader extends \RuntimeException
+class MissedRequestHeader extends \RuntimeException
 {
     /** @var string */
     protected $headerName;
-    /** @var ResponseAddress */
+    /** @var OperationAddress */
     protected $addr;
 
-    static function fromResponseAddr(string $headerName, ResponseAddress $address): self
+    static function fromOperationAddr(string $headerName, OperationAddress $address, \Throwable $prev = null): self
     {
         $i = new self(
-            sprintf("Response header '%s' at [%s,%s,%d] has name which is not found in the spec",
+            sprintf("Request header '%s' at [%s,%s] not found",
                 $headerName,
                 $address->path(),
-                $address->method(),
-                $address->responseCode()
-            )
+                $address->method()
+            ),
+            0,
+            $prev
         );
 
         $i->headerName = $headerName;
@@ -43,7 +44,7 @@ class UnexpectedResponseHeader extends \RuntimeException
     }
 
     /**
-     * @return ResponseAddress
+     * @return OperationAddress
      */
     public function addr()
     {

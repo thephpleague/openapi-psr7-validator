@@ -6,7 +6,7 @@
 declare(strict_types=1);
 
 
-namespace OpenAPIValidation\PSR7\Exception;
+namespace OpenAPIValidation\PSR7\Exception\Request;
 
 
 use OpenAPIValidation\PSR7\OperationAddress;

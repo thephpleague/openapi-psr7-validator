@@ -8,11 +8,10 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7;
 
 use cebe\openapi\Reader;
-use OpenAPIValidation\PSR7\Exception\MissedResponseHeader;
-use OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch;
-use OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch;
+use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
+use OpenAPIValidation\PSR7\Exception\Response\ResponseBodyMismatch;
+use OpenAPIValidation\PSR7\Exception\Response\ResponseHeadersMismatch;
 use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\ResponseAddress;
 use OpenAPIValidation\PSR7\ResponseValidator;
 use function GuzzleHttp\Psr7\stream_for;
 
