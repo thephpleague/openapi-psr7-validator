@@ -48,6 +48,12 @@ class Cookies
 
         // Check if cookies are invalid
         foreach ($message->getCookieParams() as $cookieName => $cookieValue) {
+
+            // Skip checking for non-described cookie (allow any non described cookies)
+            if (!isset($specs[$cookieName])) {
+                continue;
+            }
+
             $validator = new SchemaValidator($specs[$cookieName]->schema, $cookieValue, $this->detectValidationStrategy($message));
             $validator->validate();
         }
