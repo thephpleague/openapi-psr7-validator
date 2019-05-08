@@ -156,8 +156,8 @@ $customFormat = new class()
     }
 };
 
-# Register your callable like this before validating tyour data
-\OpenAPIValidation\Schema\TypeFormats\FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);
+# Register your callable like this before validating your data
+\OpenAPIValidation\Schema\TypeFormats\FormatsContainer::registerFormat('string', 'custom', $customFormat);
 ```
 
 ## Exceptions
