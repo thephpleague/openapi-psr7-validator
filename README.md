@@ -54,15 +54,14 @@ Example:
 
 ```php
 $yamlFile = "api.yaml";
-$operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 
-'get') 
 
 $validator = new \OpenAPIValidation\PSR7\ResponseValidator(
-    $operation,
     \cebe\openapi\Reader::readFromYamlFile($yamlFile)
 );
 
-$validator->validate($request);
+$operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 'get') ;
+
+$validator->validate($operation, $request);
 ```
 
 ### Request Message
