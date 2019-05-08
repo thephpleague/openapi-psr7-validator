@@ -43,11 +43,7 @@ class Required extends BaseKeyword
             Validator::arrayType()->assert($required);
             Validator::each(Validator::stringType())->assert($required);
             Validator::trueVal()->assert(count(array_unique($required)) === count($required));
-
-            if ($this->parentSchema->type !== "object") {
-                throw new \Exception(sprintf("Required keyword only works with type=object, but '%s' found", $this->parentSchema->type));
-            }
-
+            
             foreach ($required as $reqProperty) {
                 $propertyFound = false;
                 foreach ($data as $property => $value) {
