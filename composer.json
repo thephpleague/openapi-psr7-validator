@@ -20,10 +20,7 @@
     "autoload": {
         "psr-4": {
             "OpenAPIValidation\\": "src/"
-        },
-        "files": [
-            "helpers.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

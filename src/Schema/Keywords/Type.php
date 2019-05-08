@@ -11,6 +11,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
+use OpenAPIValidation\Schema\Utils\ArrayHelper;
 use Respect\Validation\Validator;
 
 class Type extends BaseKeyword
@@ -57,7 +58,7 @@ class Type extends BaseKeyword
                     }
                     break;
                 case "array":
-                    if (count($data) && !(is_array($data) && isAssoc($data))) {
+                    if (count($data) && !(is_array($data) && ArrayHelper::isAssoc($data))) {
                         throw new \Exception(sprintf("Value '%s' is not an array", $data));
                     }
                     if (!isset($this->parentSchema->items)) {
