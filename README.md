@@ -238,7 +238,7 @@ Resources:
 The MIT License (MIT). Please see `License.md` file for more information.
 
 ## TODO
-- [ ] support securitySchemes (top priority)
+- [ ] Support Discriminator Object
 - [ ] parameters serialization
     - Does anyone use this serialization? It looks very... unpractical.
 - [ ] add validation for Request class.

@@ -36,7 +36,6 @@ paths:
         content:
           application/json:
             schema:
-              type: object
               properties:
                 test:
                   type: integer

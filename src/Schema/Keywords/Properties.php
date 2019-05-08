@@ -63,10 +63,6 @@ class Properties extends BaseKeyword
         Validator::arrayVal()->assert($properties);
         Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
 
-        if (!isset($this->parentSchema->type) || ($this->parentSchema->type != "object")) {
-            throw new \Exception(sprintf("properties only work with type=object"));
-        }
-
         // Validate against "properties"
         foreach ($properties as $propName => $propSchema) {
             if (array_key_exists($propName, $data)) {

@@ -10,7 +10,6 @@ namespace OpenAPIValidation\Schema\Keywords;
 
 
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\TypeFormats\Format;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use Respect\Validation\Validator;
 
