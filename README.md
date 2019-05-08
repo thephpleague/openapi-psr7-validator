@@ -228,6 +228,7 @@ vendor/bin/phpunit
 People:
 - [Dmitry Lezhnev](https://github.com/lezhnev74)
 - [Carsten Brandt](https://github.com/cebe)
+- [Samuel Nela](https://github.com/samnela)
 - [Pavel Batanov](https://github.com/scaytrase)
 - A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind of inspired me to work on this package. 
 
