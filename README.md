@@ -56,6 +56,12 @@ Until the issue is resolved, please use [speccy](https://github.com/wework/specc
 speccy resolve spec.yaml
 ```  
 
+### Note for Windows users
+
+There is [a known issue](https://github.com/lezhnev74/openapi-psr7-validator/issues/9) in the underlying `cebe/php-openapi` package that we use
+which prevents you from using `\cebe\openapi\Reader::readFromYamlFile('api.yaml')` on a Windows machine.
+Until the issue is resolved we recommend using `\cebe\openapi\Reader::readFromYaml(json_get_contents('api.yaml'))` instead.
+
 ### ServerRequest Message
 You can validate `\Psr\Http\Message\ServerRequestInterface` instance like this:
 
