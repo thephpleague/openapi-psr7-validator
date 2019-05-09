@@ -229,6 +229,7 @@ People:
 - [Carsten Brandt](https://github.com/cebe)
 - [Samuel Nela](https://github.com/samnela)
 - [Pavel Batanov](https://github.com/scaytrase)
+- [Christopher L Bray](https://github.com/brayniverse)
 - A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind of inspired me to work on this package. 
 
 Resources:
