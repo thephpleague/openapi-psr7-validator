@@ -98,7 +98,7 @@ $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlF
 #or
 $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_content($jsonFile));
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_contents($jsonFile));
 #or
 $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
 ```
