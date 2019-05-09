@@ -33,7 +33,12 @@ words, or schema keywords
 ## How To Validate
 
 ### Resolve references first
-If your OpenAPI file contains references like this:
+If you see a similar error: 
+```
+... Argument 1 passed to OpenAPIValidation\Schema\Validator::__construct() must be an instance of cebe\openapi\spec\Schema, instance of cebe\openapi\spec\Reference given ...
+```
+
+and your OpenAPI file contains references like this:
 ```yaml
 ...
   /path1:
