@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR15;
 
 
-use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use OpenAPIValidation\PSR7\ResponseValidator;
 use OpenAPIValidation\PSR7\ServerRequestValidator;

@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7;
 
 
+use cebe\openapi\Reader;
+use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
@@ -26,9 +28,37 @@ abstract class Validator
     /**
      * @param OpenApi $schema
      */
-    public function __construct(OpenApi $schema)
+    protected function __construct(OpenApi $schema)
     {
         $this->openApi = $schema;
+    }
+
+    static function fromYaml(string $yaml): self
+    {
+        $oas = Reader::readFromYaml($yaml);
+        $oas->resolveReferences(new ReferenceContext($oas, '/'));
+        return new static($oas);
+    }
+
+    static function fromJson(string $json): self
+    {
+        $oas = Reader::readFromJson($json);
+        $oas->resolveReferences(new ReferenceContext($oas, '/'));
+        return new static($oas);
+    }
+
+    static function fromYamlFile(string $yamlFile): self
+    {
+        $oas = Reader::readFromYamlFile($yamlFile);
+        $oas->resolveReferences(new ReferenceContext($oas, realpath($yamlFile)));
+        return new static($oas);
+    }
+
+    static function fromJsonFile(string $jsonFile): self
+    {
+        $oas = Reader::readFromJsonFile($jsonFile);
+        $oas->resolveReferences(new ReferenceContext($oas, realpath($jsonFile)));
+        return new static($oas);
     }
 
     /**
