@@ -11,6 +11,7 @@ namespace OpenAPIValidation\PSR7;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Server;
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 
 // This class finds operations matching the given URI+method
 // That would be a very simple operation if there were no "Servers" keyword.
@@ -20,17 +21,17 @@ class PathFinder
 {
     /** @var OpenApi */
     protected $openApiSpec;
-    /** @var Uri */
+    /** @var UriInterface */
     protected $uri;
     /** @var string $method like "get" */
     protected $method;
 
     /**
      * @param OpenApi $openApiSpec
-     * @param Uri $uri
+     * @param UriInterface $uri
      * @param string $method
      */
-    public function __construct(OpenApi $openApiSpec, Uri $uri, string $method)
+    public function __construct(OpenApi $openApiSpec, UriInterface $uri, string $method)
     {
         $this->openApiSpec = $openApiSpec;
         $this->uri         = $uri;
