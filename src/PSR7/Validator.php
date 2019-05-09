@@ -49,6 +49,8 @@ abstract class Validator
 
     static function fromYamlFile(string $yamlFile): self
     {
+        \Respect\Validation\Validator::file()->assert($yamlFile);
+
         $oas = Reader::readFromYamlFile($yamlFile);
         $oas->resolveReferences(new ReferenceContext($oas, realpath($yamlFile)));
         return new static($oas);
@@ -56,6 +58,8 @@ abstract class Validator
 
     static function fromJsonFile(string $jsonFile): self
     {
+        \Respect\Validation\Validator::file()->assert($jsonFile);
+        
         $oas = Reader::readFromJsonFile($jsonFile);
         $oas->resolveReferences(new ReferenceContext($oas, realpath($jsonFile)));
         return new static($oas);

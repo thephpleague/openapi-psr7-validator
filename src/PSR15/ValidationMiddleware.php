@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Respect\Validation\Validator;
 
 class ValidationMiddleware implements MiddlewareInterface
 {
@@ -29,6 +30,8 @@ class ValidationMiddleware implements MiddlewareInterface
      */
     protected function __construct(string $oasType, string $oasContent)
     {
+        Validator::in(['json', 'yaml', 'jsonFile', 'yamlFile'])->assert($oasType);
+
         $this->oasType    = $oasType;
         $this->oasContent = $oasContent;
     }
@@ -45,11 +48,15 @@ class ValidationMiddleware implements MiddlewareInterface
 
     static function fromYamlFile(string $yamlFile): self
     {
+        Validator::file()->assert($yamlFile);
+
         return new static('yamlFile', $yamlFile);
     }
 
     static function fromJsonFile(string $jsonFile): self
     {
+        Validator::file()->assert($jsonFile);
+
         return new static('jsonFile', $jsonFile);
     }
 
