@@ -33,7 +33,7 @@ words, or schema keywords
 ## How To Validate
 
 ### Resolve references first
-If your OPenAPI file contains references like this:
+If your OpenAPI file contains references like this:
 ```yaml
 ...
   /path1:
@@ -44,9 +44,9 @@ If your OPenAPI file contains references like this:
 ```
 
 You need to resolve them first before using this package. In other words you need to have a single file with resolved references.
-This constraint mention in [#4](https://github.com/lezhnev74/openapi-psr7-validator/issues/4).
+This constraint mentioned in [#4](https://github.com/lezhnev74/openapi-psr7-validator/issues/4).
 
-Until the issue is resolved, please use `speccy` tool to resolve dependencies.
+Until the issue is resolved, please use [speccy](https://github.com/wework/speccy) tool to resolve dependencies.
 ```
 speccy resolve spec.yaml
 ```  
