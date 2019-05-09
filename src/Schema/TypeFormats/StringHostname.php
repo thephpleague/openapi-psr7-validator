@@ -9,14 +9,10 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\TypeFormats;
 
 
-use OpenAPIValidation\Schema\Exception\FormatMismatch;
-
 class StringHostname
 {
-    function __invoke($value): void
+    function __invoke($value): bool
     {
-        if (!filter_var($value, FILTER_VALIDATE_DOMAIN)) {
-            throw FormatMismatch::fromFormat('hostname', $value);
-        }
+        return filter_var($value, FILTER_VALIDATE_DOMAIN) !== false;
     }
 }

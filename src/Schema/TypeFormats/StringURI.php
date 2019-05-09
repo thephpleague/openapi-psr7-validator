@@ -13,10 +13,8 @@ use OpenAPIValidation\Schema\Exception\FormatMismatch;
 
 class StringURI
 {
-    function __invoke($value): void
+    function __invoke($value): bool
     {
-        if (!filter_var($value, FILTER_VALIDATE_URL)) {
-            throw FormatMismatch::fromFormat('uri', $value);
-        }
+        return filter_var($value, FILTER_VALIDATE_URL) !== false;
     }
 }

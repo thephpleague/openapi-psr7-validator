@@ -74,11 +74,9 @@ SPEC;
 
         $unexpectedFormat = new class()
         {
-            function __invoke($value): void
+            function __invoke($value): bool
             {
-                if ($value != "good value") {
-                    throw FormatMismatch::fromFormat('unexpected', $value);
-                }
+                return $value === "good value";
             }
         };
         FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);
@@ -99,11 +97,9 @@ SPEC;
 
         $unexpectedFormat = new class()
         {
-            function __invoke($value): void
+            function __invoke($value): bool
             {
-                if ($value != "good value") {
-                    throw FormatMismatch::fromFormat('unexpected', $value);
-                }
+                return $value === "good value";
             }
         };
         FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);

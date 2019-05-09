@@ -143,15 +143,13 @@ This package contains a bunch of built-in format validators:
 
 You can also add your own formats. Like this:
 ```php
-# A format validator can be a callable
-# failed validation should throw an exception
+# A format validator must be a callable
+# It must return bool value (true if format matched the data, false otherwise)
 $customFormat = new class()
 {
-    function __invoke($value): void
+    function __invoke($value): bool
     {
-        if ($value != "good value") {
-            throw FormatMismatch::fromFormat('custom', $value);
-        }
+        return $value === "good value";
     }
 };
 

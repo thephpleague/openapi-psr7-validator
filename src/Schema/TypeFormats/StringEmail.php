@@ -9,15 +9,11 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\TypeFormats;
 
 
-use OpenAPIValidation\Schema\Exception\FormatMismatch;
-
 class StringEmail
 {
-    function __invoke($value): void
+    function __invoke($value): bool
     {
-        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            throw FormatMismatch::fromFormat('email', $value);
-        }
+        return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
 
 }

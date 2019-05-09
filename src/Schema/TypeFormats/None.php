@@ -12,8 +12,8 @@ namespace OpenAPIValidation\Schema\TypeFormats;
 class None
 {
 
-    public function __invoke($value): void
+    public function __invoke($value): bool
     {
-        // no op
+        return true;
     }
 }

@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 
+use OpenAPIValidation\Schema\Exception\FormatMismatch;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use OpenAPIValidation\Schema\Utils\ArrayHelper;
@@ -103,7 +104,9 @@ class Type extends BaseKeyword
                 $formatValidator = new $formatValidator;
             }
 
-            $formatValidator($data);
+            if (!$formatValidator($data)) {
+                throw FormatMismatch::fromFormat($format, $data);
+            }
 
         } catch (\Throwable $e) {
             throw ValidationKeywordFailed::fromKeyword("type", $data, $e->getMessage(), $e);
