@@ -73,7 +73,7 @@ PSR-15 middleware can be used like this:
 ```php
 $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlSpec("api.yaml");
 # or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonSpec("api.yaml");
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonSpec("api.json");
 ```
 
 ### SlimFramework middleware
