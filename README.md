@@ -32,30 +32,6 @@ words, or schema keywords
 
 ## How To Validate
 
-### Resolve references first
-If you see a similar error: 
-```
-... Argument 1 passed to OpenAPIValidation\Schema\Validator::__construct() must be an instance of cebe\openapi\spec\Schema, instance of cebe\openapi\spec\Reference given ...
-```
-
-and your OpenAPI file contains references like this:
-```yaml
-...
-  /path1:
-    get:
-      parameters:
-        - $ref: 'schemas.yaml#/components/parameters/HeaderA'
-...
-```
-
-You need to resolve them first before using this package. In other words you need to have a single file with resolved references.
-This constraint mentioned in [#4](https://github.com/lezhnev74/openapi-psr7-validator/issues/4).
-
-Until the issue is resolved, please use [speccy](https://github.com/wework/speccy) tool to resolve dependencies.
-```
-speccy resolve spec.yaml
-```  
-
 ### Note for Windows users
 
 There is [a known issue](https://github.com/lezhnev74/openapi-psr7-validator/issues/9) in the underlying `cebe/php-openapi` package that we use
