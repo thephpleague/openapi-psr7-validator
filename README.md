@@ -101,7 +101,7 @@ $validator->validate($operation, $request);
 PSR-15 middleware can be used like this:
 
 ```php
-$oas = \cebe\openapi\Reader::readFromYamlFile($yamlFile);
+$oas = \cebe\openapi\Reader::readFromYamlFile('api.yaml');
 
 $middleware = new \OpenAPIValidation\PSR15\ValidationMiddleware($oas);
 ```
