@@ -271,6 +271,7 @@ Resources:
 The MIT License (MIT). Please see `License.md` file for more information.
 
 ## TODO
+- [ ] [#4](https://github.com/lezhnev74/openapi-psr7-validator/issues/4) Resolve references automatically
 - [ ] Support Discriminator Object
 - [ ] parameters serialization
     - Does anyone use this serialization? It looks very... unpractical.
