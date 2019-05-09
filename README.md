@@ -67,10 +67,15 @@ You can validate `\Psr\Http\Message\ServerRequestInterface` instance like this:
 
 ```php
 $yamlFile = "api.yaml";
+$jsonFile = "api.json";
 
-$validator = new \OpenAPIValidation\PSR7\ServerRequestValidator(
-    \cebe\openapi\Reader::readFromYamlFile($yamlFile)
-);
+$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYamlFile($yamlFile);
+#or
+$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYaml(file_get_contents($yamlFile));
+#or
+$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJson($jsonFile);
+#or
+$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJsonFile($jsonFile);
 
 $validator->validate($request);
 ```
@@ -84,10 +89,15 @@ Example:
 
 ```php
 $yamlFile = "api.yaml";
+$jsonFile = "api.json";
 
-$validator = new \OpenAPIValidation\PSR7\ResponseValidator(
-    \cebe\openapi\Reader::readFromYamlFile($yamlFile)
-);
+$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromYamlFile($yamlFile);
+#or
+$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromYaml(file_get_contents($yamlFile));
+#or
+$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromJson(file_get_contents($jsonFile));
+#or
+$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromJsonFile($jsonFile);
 
 $operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 'get') ;
 
@@ -101,9 +111,16 @@ $validator->validate($operation, $request);
 PSR-15 middleware can be used like this:
 
 ```php
-$oas = \cebe\openapi\Reader::readFromYamlFile('api.yaml');
+$yamlFile = 'api.yaml';
+$jsonFile = 'api.json';
 
-$middleware = new \OpenAPIValidation\PSR15\ValidationMiddleware($oas);
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile);
+#or
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
+#or
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson($jsonFile);
+#or
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile(file_get_contents($jsonFile));
 ```
 
 ### SlimFramework middleware
@@ -111,8 +128,16 @@ Slim framework uses slightly different middleware interface, so here is an
 adapter which you can use like this:
 
 ```php
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlSpec
-("api.yaml");
+$yamlFile = 'api.yaml';
+$jsonFile = 'api.json';
+
+$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile);
+#or
+$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
+#or
+$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
+#or
+$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_contents($jsonFile));
 
 $slimMiddleware = new \OpenAPIValidation\PSR15\SlimAdapter($psr15Middleware);
 
@@ -135,6 +160,10 @@ SPEC;
 $data = "c";
 
 $spec   = cebe\openapi\Reader::readFromYaml($spec);
+
+#optional reference resolving
+$spec->resolveReferences(new ReferenceContext($spec, "/"));
+
 $schema = new cebe\openapi\spec\Schema($spec->schema);
 
 try {

@@ -21,7 +21,7 @@ class ServerRequestMultipleMatchesTest extends BaseValidatorTest
         $specFile = __DIR__ . "/../stubs/multipleMatches.yaml";
         $request  = new ServerRequest('get', '/users/goodstring');
 
-        $validator = new ServerRequestValidator(Reader::readFromYamlFile($specFile));
+        $validator = ServerRequestValidator::fromYamlFile($specFile);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -34,7 +34,7 @@ class ServerRequestMultipleMatchesTest extends BaseValidatorTest
 
 
         try {
-            $validator = new ServerRequestValidator(Reader::readFromYamlFile($specFile));
+            $validator = ServerRequestValidator::fromYamlFile($specFile);
             $validator->validate($request);
             $this->fail("Exception expected");
         } catch (MultipleOperationsMismatchForRequest $e) {

@@ -23,7 +23,7 @@ class ServerRequestTest extends BaseValidatorTest
     {
         $request = $this->makeGoodServerRequest('/path1', 'get');
 
-        $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -34,7 +34,7 @@ class ServerRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest('/request-body', 'post')
                         ->withBody(stream_for(json_encode($body)));
 
-        $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -47,7 +47,7 @@ class ServerRequestTest extends BaseValidatorTest
                         ->withBody(stream_for(json_encode($body)));
 
         try {
-            $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
             $validator->validate($request);
         } catch (RequestBodyMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
@@ -63,7 +63,7 @@ class ServerRequestTest extends BaseValidatorTest
                         ->withHeader('Content-Type', 'unexpected/content');
 
         try {
-            $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
             $validator->validate($request);
         } catch (UnexpectedRequestContentType $e) {
             $this->assertEquals('unexpected/content', $e->contentType());
@@ -79,7 +79,7 @@ class ServerRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
 
         try {
-            $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
             $validator->validate($request);
             $this->fail("Exception expected");
         } catch (RequestHeadersMismatch $e) {
@@ -95,7 +95,7 @@ class ServerRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');
 
         try {
-            $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
             $validator->validate($request);
             $this->fail("Exception expected");
         } catch (MissedRequestHeader $e) {

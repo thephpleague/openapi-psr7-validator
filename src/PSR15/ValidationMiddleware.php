@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR15;
 
 
-use cebe\openapi\spec\OpenApi;
 use OpenAPIValidation\PSR7\ResponseValidator;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use Psr\Http\Message\ResponseInterface;
@@ -19,16 +18,41 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ValidationMiddleware implements MiddlewareInterface
 {
-    /** @var OpenApi */
-    private $oas;
+    /** @var string in(yaml,yamlFile,json,jsonFile) */
+    private $oasType;
+    /** @var string */
+    private $oasContent;
 
     /**
-     * @param OpenApi $oas
+     * @param string $oasType
+     * @param string $oasContent
      */
-    function __construct(OpenApi $oas)
+    protected function __construct(string $oasType, string $oasContent)
     {
-        $this->oas = $oas;
+        $this->oasType    = $oasType;
+        $this->oasContent = $oasContent;
     }
+
+    static function fromYaml(string $yaml): self
+    {
+        return new static('yaml', $yaml);
+    }
+
+    static function fromJson(string $json): self
+    {
+        return new static('json', $json);
+    }
+
+    static function fromYamlFile(string $yamlFile): self
+    {
+        return new static('yamlFile', $yamlFile);
+    }
+
+    static function fromJsonFile(string $jsonFile): self
+    {
+        return new static('jsonFile', $jsonFile);
+    }
+
 
     /**
      * Process an incoming server request.
@@ -43,14 +67,32 @@ class ValidationMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        switch ($this->oasType) {
+            case "json":
+                $serverRequestValidator = ServerRequestValidator::fromJson($this->oasContent);
+                $responseValidator      = ResponseValidator::fromJson($this->oasContent);
+                break;
+            case "jsonFile":
+                $serverRequestValidator = ServerRequestValidator::fromJsonFile($this->oasContent);
+                $responseValidator      = ResponseValidator::fromJsonFile($this->oasContent);
+                break;
+            case "yaml":
+                $serverRequestValidator = ServerRequestValidator::fromYaml($this->oasContent);
+                $responseValidator      = ResponseValidator::fromYaml($this->oasContent);
+                break;
+            case "yamlFile":
+                $serverRequestValidator = ServerRequestValidator::fromYamlFile($this->oasContent);
+                $responseValidator      = ResponseValidator::fromYamlFile($this->oasContent);
+                break;
+        }
+
+
         // 1. Validate request
-        $validator           = new ServerRequestValidator($this->oas);
-        $matchedOASOperation = $validator->validate($request);
+        $matchedOASOperation = $serverRequestValidator->validate($request);
 
         // 2. Response
-        $response  = $handler->handle($request);
-        $validator = new ResponseValidator($this->oas);
-        $validator->validate($matchedOASOperation, $response);
+        $response = $handler->handle($request);
+        $responseValidator->validate($matchedOASOperation, $response);
 
         return $response;
     }

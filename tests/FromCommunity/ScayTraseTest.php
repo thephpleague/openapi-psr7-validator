@@ -50,7 +50,7 @@ paths:
                     type: string
 YAML;
 
-        $validator = new ServerRequestValidator(Reader::readFromYaml($yaml));
+        $validator = ServerRequestValidator::fromYaml($yaml);
 
         $psrRequest = (new ServerRequest('post', 'http://localhost:8000/api/v1/products.create'))
             ->withHeader('Content-Type', 'application/json')

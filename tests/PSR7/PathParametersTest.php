@@ -21,7 +21,7 @@ class PathParametersTest extends BaseValidatorTest
         $specFile = __DIR__ . "/../stubs/pathParams.yaml";
         $request  = new ServerRequest("get", "/users/admin");
 
-        $validator = new ServerRequestValidator(Reader::readFromYamlFile($specFile));
+        $validator = ServerRequestValidator::fromYamlFile($specFile);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -32,7 +32,7 @@ class PathParametersTest extends BaseValidatorTest
         $request  = new ServerRequest("get", "/users/wrong");
 
         try {
-            $validator = new ServerRequestValidator(Reader::readFromYamlFile($specFile));
+            $validator = ServerRequestValidator::fromYamlFile($specFile);
             $validator->validate($request);
         } catch (RequestPathParameterMismatch $e) {
             $this->assertEquals('/users/wrong', $e->actualPath());

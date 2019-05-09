@@ -54,7 +54,7 @@ class CompleteTest extends TestCase
     {
         $request = $this->buildGoodRequest();
 
-        $validator = new ServerRequestValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -64,7 +64,7 @@ class CompleteTest extends TestCase
         $response = $this->buildGoodResponse();
         $addr = new OperationAddress("/complete/{param1}/{param2}", "post");
 
-        $validator = new ResponseValidator(Reader::readFromYamlFile($this->apiSpecFile));
+        $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate($addr, $response);
         $this->addToAssertionCount(1);
     }
