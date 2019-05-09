@@ -145,12 +145,19 @@ You can also add your own formats. Like this:
 ```php
 # A format validator must be a callable
 # It must return bool value (true if format matched the data, false otherwise)
+
+# A callable class:
 $customFormat = new class()
 {
     function __invoke($value): bool
     {
         return $value === "good value";
     }
+};
+
+# Or just a closure:
+$customFormat = function ($value): bool {
+    return $value === "good value";
 };
 
 # Register your callable like this before validating your data

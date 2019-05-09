@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\FormatMismatch;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\TypeFormats\Format;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
@@ -95,14 +94,10 @@ schema:
   format: unexpected
 SPEC;
 
-        $unexpectedFormat = new class()
-        {
-            function __invoke($value): bool
-            {
-                return $value === "good value";
-            }
+        $customFormat = function ($value): bool {
+            return $value === "good value";
         };
-        FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);
+        FormatsContainer::registerFormat('string', 'unexpected', $customFormat);
 
         try {
             $schema = $this->loadRawSchema($spec);
