@@ -53,7 +53,7 @@ $validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYamlFile($yamlF
 #or
 $validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYaml(file_get_contents($yamlFile));
 #or
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJson($jsonFile);
+$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJson(file_get_contents($jsonFile));
 #or
 $validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJsonFile($jsonFile);
 
@@ -98,9 +98,9 @@ $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlF
 #or
 $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson($jsonFile);
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_content($jsonFile));
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile(file_get_contents($jsonFile));
+$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
 ```
 
 ### SlimFramework middleware
