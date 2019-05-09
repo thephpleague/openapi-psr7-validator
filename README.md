@@ -235,6 +235,7 @@ People:
 - [Samuel Nela](https://github.com/samnela)
 - [Pavel Batanov](https://github.com/scaytrase)
 - [Christopher L Bray](https://github.com/brayniverse)
+- [David Pauli](https://github.com/dpauli)
 - A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind of inspired me to work on this package. 
 
 Resources:
