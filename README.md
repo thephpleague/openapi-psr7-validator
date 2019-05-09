@@ -36,7 +36,11 @@ words, or schema keywords
 
 There is [a known issue](https://github.com/lezhnev74/openapi-psr7-validator/issues/9) in the underlying `cebe/php-openapi` package that we use
 which prevents you from using `\cebe\openapi\Reader::readFromYamlFile('api.yaml')` on a Windows machine.
-Until the issue is resolved we recommend using `\cebe\openapi\Reader::readFromYaml(file_get_contents('api.yaml'))` instead.
+
+Until the issue is resolved we recommend using loading from file contents like this:
+```
+$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYaml(file_get_contents($yamlFile)); 
+```
 
 ### ServerRequest Message
 You can validate `\Psr\Http\Message\ServerRequestInterface` instance like this:
