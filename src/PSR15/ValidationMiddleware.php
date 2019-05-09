@@ -20,33 +20,15 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ValidationMiddleware implements MiddlewareInterface
 {
-    /** @var string - full path to the YAML file */
-    private $OASSpecFile;
-    /** @var string - json, yaml */
-    private $fileFormat;
+    /** @var OpenApi */
+    private $oas;
 
     /**
-     * @param string $OASSpecFile
-     * @param string $fileFormat
+     * @param OpenApi $oas
      */
-    private function __construct(string $OASSpecFile, string $fileFormat)
+    function __construct(OpenApi $oas)
     {
-        if (!is_file($OASSpecFile)) {
-            throw new \RuntimeException(sprintf("File '%s' not available", $OASSpecFile));
-        }
-
-        $this->OASSpecFile = $OASSpecFile;
-        $this->fileFormat  = $fileFormat;
-    }
-
-    static function fromYamlSpec(string $specFile): self
-    {
-        return new self($specFile, 'yaml');
-    }
-
-    static function fromJsonSpec(string $specFile): self
-    {
-        return new self($specFile, 'json');
+        $this->oas = $oas;
     }
 
     /**
@@ -62,34 +44,15 @@ class ValidationMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $oas = $this->readOAS();
-
         // 1. Validate request
-        $validator           = new ServerRequestValidator($oas);
+        $validator           = new ServerRequestValidator($this->oas);
         $matchedOASOperation = $validator->validate($request);
 
         // 2. Response
         $response  = $handler->handle($request);
-        $validator = new ResponseValidator($oas);
+        $validator = new ResponseValidator($this->oas);
         $validator->validate($matchedOASOperation, $response);
 
         return $response;
     }
-
-    /**
-     * Read OAS in a given format
-     *
-     * @return OpenApi
-     * @throws \cebe\openapi\exceptions\TypeErrorException
-     * @throws \cebe\openapi\exceptions\UnresolvableReferenceException
-     */
-    protected function readOAS(): OpenApi
-    {
-        if ($this->fileFormat == 'yaml') {
-            return Reader::readFromYamlFile($this->OASSpecFile);
-        } else {
-            return Reader::readFromJsonFile($this->OASSpecFile);
-        }
-    }
-
 }
