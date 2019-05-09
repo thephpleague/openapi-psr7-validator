@@ -32,6 +32,25 @@ words, or schema keywords
 
 ## How To Validate
 
+### Resolve references first
+If your OPenAPI file contains references like this:
+```yaml
+...
+  /path1:
+    get:
+      parameters:
+        - $ref: 'schemas.yaml#/components/parameters/HeaderA'
+...
+```
+
+You need to resolve them first before using this package. In other words you need to have a single file with resolved references.
+This constraint mention in [#4](https://github.com/lezhnev74/openapi-psr7-validator/issues/4).
+
+Until the issue is resolved, please use `speccy` tool to resolve dependencies.
+```
+speccy resolve spec.yaml
+```  
+
 ### ServerRequest Message
 You can validate `\Psr\Http\Message\ServerRequestInterface` instance like this:
 
