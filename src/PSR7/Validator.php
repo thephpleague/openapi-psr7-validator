@@ -19,6 +19,7 @@ use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
+use Psr\Http\Message\ServerRequestInterface;
 
 abstract class Validator
 {
@@ -59,7 +60,7 @@ abstract class Validator
     static function fromJsonFile(string $jsonFile): self
     {
         \Respect\Validation\Validator::file()->assert($jsonFile);
-        
+
         $oas = Reader::readFromJsonFile($jsonFile);
         $oas->resolveReferences(new ReferenceContext($oas, realpath($jsonFile)));
         return new static($oas);
@@ -124,7 +125,7 @@ abstract class Validator
      * @param ServerRequest $request
      * @return OperationAddress[]
      */
-    protected function findMatchingOperations(ServerRequest $request): array
+    protected function findMatchingOperations(ServerRequestInterface $request): array
     {
         $pathFinder        = new PathFinder($this->openApi, $request->getUri(), $request->getMethod());
         $matchedOperations = $pathFinder->search();
