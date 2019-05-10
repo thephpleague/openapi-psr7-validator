@@ -3,3 +3,4 @@ vendor/
 docs/
 .phpunit*
 composer.lock
+.phpcs*
