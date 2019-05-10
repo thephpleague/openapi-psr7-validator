@@ -14,7 +14,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use function crc32;
 use function realpath;
 
 abstract class Validator
@@ -27,37 +29,69 @@ abstract class Validator
         $this->openApi = $schema;
     }
 
-    public static function fromYaml(string $yaml) : self
+    public static function fromYaml(string $yaml, ?CacheItemPoolInterface $cache = null) : self
     {
-        $oas = Reader::readFromYaml($yaml);
+        $oas = self::cachedRead($cache, 'openapi_' . crc32($yaml), static function () use ($yaml) {
+            return Reader::readFromYaml($yaml);
+        });
+
         $oas->resolveReferences(new ReferenceContext($oas, '/'));
 
         return new static($oas);
     }
 
-    public static function fromJson(string $json) : self
+    /**
+     * Execute expensive operation if result is not in cache
+     * If cache pool is null, avoid caching at all
+     */
+    protected static function cachedRead(?CacheItemPoolInterface $cache, string $key, callable $expensiveOperation) : OpenApi
     {
-        $oas = Reader::readFromJson($json);
+        if (! $cache) {
+            return $expensiveOperation();
+        }
+
+        $cachedSpec = $cache->getItem($key);
+
+        if (! $cachedSpec->isHit()) {
+            $cachedSpec->set($expensiveOperation());
+            $cache->save($cachedSpec);
+        }
+
+        return $cachedSpec->get();
+    }
+
+    public static function fromJson(string $json, ?CacheItemPoolInterface $cache = null) : self
+    {
+        $oas = self::cachedRead($cache, 'openapi_' . crc32($json), static function () use ($json) {
+            return Reader::readFromJson($json);
+        });
+
         $oas->resolveReferences(new ReferenceContext($oas, '/'));
 
         return new static($oas);
     }
 
-    public static function fromYamlFile(string $yamlFile) : self
+    public static function fromYamlFile(string $yamlFile, ?CacheItemPoolInterface $cache = null) : self
     {
         \Respect\Validation\Validator::file()->assert($yamlFile);
 
-        $oas = Reader::readFromYamlFile($yamlFile);
+        $oas = self::cachedRead($cache, 'openapi_' . crc32(realpath($yamlFile)), static function () use ($yamlFile) {
+            return Reader::readFromYamlFile($yamlFile);
+        });
+
         $oas->resolveReferences(new ReferenceContext($oas, realpath($yamlFile)));
 
         return new static($oas);
     }
 
-    public static function fromJsonFile(string $jsonFile) : self
+    public static function fromJsonFile(string $jsonFile, ?CacheItemPoolInterface $cache = null) : self
     {
         \Respect\Validation\Validator::file()->assert($jsonFile);
 
-        $oas = Reader::readFromJsonFile($jsonFile);
+        $oas = self::cachedRead($cache, 'openapi_' . crc32(realpath($jsonFile)), static function () use ($jsonFile) {
+            return Reader::readFromJsonFile($jsonFile);
+        });
+
         $oas->resolveReferences(new ReferenceContext($oas, realpath($jsonFile)));
 
         return new static($oas);

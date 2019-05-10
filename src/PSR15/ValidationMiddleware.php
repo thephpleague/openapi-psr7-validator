@@ -6,6 +6,7 @@ namespace OpenAPIValidation\PSR15;
 
 use OpenAPIValidation\PSR7\ResponseValidator;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -18,37 +19,40 @@ class ValidationMiddleware implements MiddlewareInterface
     private $oasType;
     /** @var string */
     private $oasContent;
+    /** @var CacheItemPoolInterface */
+    private $cachePool;
 
-    protected function __construct(string $oasType, string $oasContent)
+    protected function __construct(string $oasType, string $oasContent, ?CacheItemPoolInterface $cache)
     {
         Validator::in(['json', 'yaml', 'jsonFile', 'yamlFile'])->assert($oasType);
 
         $this->oasType    = $oasType;
         $this->oasContent = $oasContent;
+        $this->cachePool  = $cache;
     }
 
-    public static function fromYaml(string $yaml) : self
+    public static function fromYaml(string $yaml, ?CacheItemPoolInterface $cache = null) : self
     {
-        return new static('yaml', $yaml);
+        return new static('yaml', $yaml, $cache);
     }
 
-    public static function fromJson(string $json) : self
+    public static function fromJson(string $json, ?CacheItemPoolInterface $cache = null) : self
     {
-        return new static('json', $json);
+        return new static('json', $json, $cache);
     }
 
-    public static function fromYamlFile(string $yamlFile) : self
+    public static function fromYamlFile(string $yamlFile, ?CacheItemPoolInterface $cache = null) : self
     {
         Validator::file()->assert($yamlFile);
 
-        return new static('yamlFile', $yamlFile);
+        return new static('yamlFile', $yamlFile, $cache);
     }
 
-    public static function fromJsonFile(string $jsonFile) : self
+    public static function fromJsonFile(string $jsonFile, ?CacheItemPoolInterface $cache = null) : self
     {
         Validator::file()->assert($jsonFile);
 
-        return new static('jsonFile', $jsonFile);
+        return new static('jsonFile', $jsonFile, $cache);
     }
 
     /**
@@ -62,20 +66,20 @@ class ValidationMiddleware implements MiddlewareInterface
     {
         switch ($this->oasType) {
             case 'json':
-                $serverRequestValidator = ServerRequestValidator::fromJson($this->oasContent);
-                $responseValidator      = ResponseValidator::fromJson($this->oasContent);
+                $serverRequestValidator = ServerRequestValidator::fromJson($this->oasContent, $this->cachePool);
+                $responseValidator      = ResponseValidator::fromJson($this->oasContent, $this->cachePool);
                 break;
             case 'jsonFile':
-                $serverRequestValidator = ServerRequestValidator::fromJsonFile($this->oasContent);
-                $responseValidator      = ResponseValidator::fromJsonFile($this->oasContent);
+                $serverRequestValidator = ServerRequestValidator::fromJsonFile($this->oasContent, $this->cachePool);
+                $responseValidator      = ResponseValidator::fromJsonFile($this->oasContent, $this->cachePool);
                 break;
             case 'yaml':
-                $serverRequestValidator = ServerRequestValidator::fromYaml($this->oasContent);
-                $responseValidator      = ResponseValidator::fromYaml($this->oasContent);
+                $serverRequestValidator = ServerRequestValidator::fromYaml($this->oasContent, $this->cachePool);
+                $responseValidator      = ResponseValidator::fromYaml($this->oasContent, $this->cachePool);
                 break;
             case 'yamlFile':
-                $serverRequestValidator = ServerRequestValidator::fromYamlFile($this->oasContent);
-                $responseValidator      = ResponseValidator::fromYamlFile($this->oasContent);
+                $serverRequestValidator = ServerRequestValidator::fromYamlFile($this->oasContent, $this->cachePool);
+                $responseValidator      = ResponseValidator::fromYamlFile($this->oasContent, $this->cachePool);
                 break;
         }
 
