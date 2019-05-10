@@ -1,16 +1,19 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 07 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Server;
 use Psr\Http\Message\UriInterface;
+use function array_key_exists;
+use function ltrim;
+use function preg_match;
+use function preg_replace;
+use function rtrim;
+use function strtok;
+use function strtolower;
 
 // This class finds operations matching the given URI+method
 // That would be a very simple operation if there were no "Servers" keyword.
@@ -25,11 +28,6 @@ class PathFinder
     /** @var string $method like "get" */
     protected $method;
 
-    /**
-     * @param OpenApi $openApiSpec
-     * @param UriInterface $uri
-     * @param string $method
-     */
     public function __construct(OpenApi $openApiSpec, UriInterface $uri, string $method)
     {
         $this->openApiSpec = $openApiSpec;
@@ -42,7 +40,7 @@ class PathFinder
      *
      * @return OperationAddress[]
      */
-    public function search(): array
+    public function search() : array
     {
         $paths = [];
 
@@ -61,13 +59,15 @@ class PathFinder
         foreach ($opCandidates as $opCandidate) {
             /** @var Server $server */
             foreach ($opCandidate['servers'] as $server) {
-                $fullSpecPath = rtrim($server->url, "/") . "/" . ltrim($opCandidate['addr']->path(), '/');
+                $fullSpecPath = rtrim($server->url, '/') . '/' . ltrim($opCandidate['addr']->path(), '/');
                 // 3.1 Compare this path against the real/given path
-                $uriWithNoQUeryString = strtok((string)$this->uri, "?");
-                if (PathAddress::isPathMatchesSpec($fullSpecPath, $uriWithNoQUeryString)) {
-                    // path matched!
-                    $paths[] = $opCandidate['addr'];
+                $uriWithNoQUeryString = strtok((string) $this->uri, '?');
+                if (! PathAddress::isPathMatchesSpec($fullSpecPath, $uriWithNoQUeryString)) {
+                    continue;
                 }
+
+                // path matched!
+                $paths[] = $opCandidate['addr'];
             }
         }
 
@@ -81,25 +81,25 @@ class PathFinder
      *
      * @return OperationAddress[]
      */
-    private function searchForCandidates(): array
+    private function searchForCandidates() : array
     {
         $matchedOperations = [];
 
         foreach ($this->openApiSpec->paths as $specPath => $pathItemSpec) {
-            # 1. path ends with the same given path (so there can be some prefixes in servers)
-            # like
-            # $this->path: /v1/users/admin
-            # specPath:       /users/{group}
-            # servers:     /v1
-            $pattern = "#" . preg_replace("#{[^}]+}#", "[^/]+", $specPath) . "/?$#";
+            // 1. path ends with the same given path (so there can be some prefixes in servers)
+            // like
+            // $this->path: /v1/users/admin
+            // specPath:       /users/{group}
+            // servers:     /v1
+            $pattern = '#' . preg_replace('#{[^}]+}#', '[^/]+', $specPath) . '/?$#';
 
-            if (!(bool)preg_match($pattern, $this->uri->getPath())) {
+            if (! (bool) preg_match($pattern, $this->uri->getPath())) {
                 continue;
             }
 
-            # 2. method matches
+            // 2. method matches
             foreach ($pathItemSpec->getOperations() as $opMethod => $operation) {
-                if ($opMethod != $this->method) {
+                if ($opMethod !== $this->method) {
                     continue;
                 }
 
@@ -111,30 +111,30 @@ class PathFinder
         return $matchedOperations;
     }
 
-
     /**
      * The global servers array can be overridden on the path level or operation level.
      *
-     * @param OperationAddress $opAddress
      * @return Server[]
      */
-    private function findServersForOperation(OperationAddress $opAddress): array
+    private function findServersForOperation(OperationAddress $opAddress) : array
     {
         $path      = $this->openApiSpec->paths->getPath($opAddress->path());
         $operation = $path->getOperations()[$opAddress->method()];
 
         // 1. Check servers on operation level
-        if (array_key_exists('servers', (array)$operation->getSerializableData())) {
+        if (array_key_exists('servers', (array) $operation->getSerializableData())) {
             return $operation->servers;
-        } elseif (array_key_exists('servers', (array)$path->getSerializableData())) {
-            return $path->servers;
-        } elseif (array_key_exists('servers', (array)$this->openApiSpec->getSerializableData())) {
-            return $this->openApiSpec->servers;
-        } else {
-            # fallback
-            return [new Server(['url' => '/'])];
         }
 
-    }
+        if (array_key_exists('servers', (array) $path->getSerializableData())) {
+            return $path->servers;
+        }
 
+        if (array_key_exists('servers', (array) $this->openApiSpec->getSerializableData())) {
+            return $this->openApiSpec->servers;
+        }
+
+        // fallback
+        return [new Server(['url' => '/'])];
+    }
 }
