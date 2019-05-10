@@ -127,19 +127,19 @@ $app->add($slimMiddleware);
 ```
 
 ### Caching layer / PSR-6 support
-PSR-7 Validator has built-in caching layer (based on [PSR-6](https://www.php-fig.org/psr/psr-6/) interfaces). It is optional.
-You can enable caching is you pass a configured cache pool object to the static constructor like this:
+PSR-7 Validator has a built-in caching layer (based on [PSR-6](https://www.php-fig.org/psr/psr-6/) interfaces). It is optional.
+You enable caching if you pass a configured Cache Pool Object to the static constructor like this:
 ```php
-// Configure the cache pool
+// Configure a PSR-6 Cache Pool
 $cachePool = new ArrayCachePool();
 
-// Pass it as 2nd argument
+// Pass it as a 2nd argument
 \OpenAPIValidation\PSR7\ResponseValidator::fromYamlFile($yamlFile, $cachePool);
 # or
 \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile, $cachePool);
 ```
 
-Cache does not set expiration date for this payload.
+Cache does not set expiration date for its payload.
 
 ### Standalone OpenAPI Validator
 The package contains a standalone validator which can validate any data 
