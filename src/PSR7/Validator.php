@@ -11,6 +11,7 @@ use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response as ResponseSpec;
 use GuzzleHttp\Psr7\ServerRequest;
+use OpenAPIValidation\Foundation\CachingProxy;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
@@ -31,7 +32,7 @@ abstract class Validator
 
     public static function fromYaml(string $yaml, ?CacheItemPoolInterface $cache = null) : self
     {
-        $oas = self::cachedRead($cache, 'openapi_' . crc32($yaml), static function () use ($yaml) {
+        $oas = CachingProxy::cachedRead($cache, 'openapi_' . crc32($yaml), static function () use ($yaml) {
             return Reader::readFromYaml($yaml);
         });
 
@@ -40,29 +41,9 @@ abstract class Validator
         return new static($oas);
     }
 
-    /**
-     * Execute expensive operation if result is not in cache
-     * If cache pool is null, avoid caching at all
-     */
-    protected static function cachedRead(?CacheItemPoolInterface $cache, string $key, callable $expensiveOperation) : OpenApi
-    {
-        if (! $cache) {
-            return $expensiveOperation();
-        }
-
-        $cachedSpec = $cache->getItem($key);
-
-        if (! $cachedSpec->isHit()) {
-            $cachedSpec->set($expensiveOperation());
-            $cache->save($cachedSpec);
-        }
-
-        return $cachedSpec->get();
-    }
-
     public static function fromJson(string $json, ?CacheItemPoolInterface $cache = null) : self
     {
-        $oas = self::cachedRead($cache, 'openapi_' . crc32($json), static function () use ($json) {
+        $oas = CachingProxy::cachedRead($cache, 'openapi_' . crc32($json), static function () use ($json) {
             return Reader::readFromJson($json);
         });
 
@@ -75,7 +56,7 @@ abstract class Validator
     {
         \Respect\Validation\Validator::file()->assert($yamlFile);
 
-        $oas = self::cachedRead($cache, 'openapi_' . crc32(realpath($yamlFile)), static function () use ($yamlFile) {
+        $oas = CachingProxy::cachedRead($cache, 'openapi_' . crc32(realpath($yamlFile)), static function () use ($yamlFile) {
             return Reader::readFromYamlFile($yamlFile);
         });
 
@@ -88,7 +69,7 @@ abstract class Validator
     {
         \Respect\Validation\Validator::file()->assert($jsonFile);
 
-        $oas = self::cachedRead($cache, 'openapi_' . crc32(realpath($jsonFile)), static function () use ($jsonFile) {
+        $oas = CachingProxy::cachedRead($cache, 'openapi_' . crc32(realpath($jsonFile)), static function () use ($jsonFile) {
             return Reader::readFromJsonFile($jsonFile);
         });
 

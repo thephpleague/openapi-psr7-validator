@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use Exception;
+use OpenAPIValidation\Foundation\ArrayHelper;
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
-use OpenAPIValidation\Schema\Utils\ArrayHelper;
 use Respect\Validation\Validator;
 use RuntimeException;
 use Throwable;

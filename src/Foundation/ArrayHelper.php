@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\Utils;
+namespace OpenAPIValidation\Foundation;
 
 use function array_keys;
 use function count;
