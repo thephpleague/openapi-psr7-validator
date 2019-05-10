@@ -10,7 +10,8 @@ expressed in YAML or JSON.
 ![](image.jpg)
 
 ## Requirements
-n/a
+
+- PHP 7.1 or higher
 
 ## Installation
 ```
