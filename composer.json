@@ -37,7 +37,6 @@
     "require-dev": {
         "doctrine/coding-standard": "^6.0",
         "guzzlehttp/psr7": "^1.5",
-        "phpmd/phpmd": "^2.6",
         "phpunit/phpunit": "^7|^8"
     },
     "config": {
