@@ -1,0 +1,73 @@
+#!/bin/sh
+
+#########################
+#                       #
+#     Initializing      #
+#                       #
+#########################
+
+PHPCS_BIN=./vendor/bin/phpcs
+PHPCS_LOG=./.phpcs-report.txt
+PHPCBF_BIN=./vendor/bin/phpcbf
+
+# Check for PHPCS / PHPCBF
+if [[ ! -x ${PHPCS_BIN} ]]; then
+    echo "[PRE-COMMIT] PHP CodeSniffer is not installed locally."
+    echo "[PRE-COMMIT] Please run 'composer install' or check the path: $PHPCS_BIN"
+    exit 1
+fi
+
+if [[ ! -x ${PHPCBF_BIN} ]]; then
+    echo "[PRE-COMMIT] PHP Code Beautifier and Fixer is not installed locally."
+    echo "[PRE-COMMIT] Please run 'composer install' or check the path: $PHPCBF_BIN"
+    exit 1
+fi
+
+
+#########################
+#                       #
+#       Starting        #
+#                       #
+#########################
+
+# All files in staging area (no deletions)
+
+PROJECT=$(git rev-parse --show-toplevel)
+
+    # Coding Standards
+
+    echo "[PRE-COMMIT] Checking PHPCS..."
+
+    # You can change your PHPCS command here
+    ${PHPCS_BIN} -n ${FILES} &> /dev/null
+
+    if [[ $? != 0 ]]
+    then
+        echo "[PRE-COMMIT] Coding standards errors have been detected."
+        echo "[PRE-COMMIT] Running PHP Code Beautifier and Fixer..."
+
+        # Check all codebase according to config file (not only staged files)
+        ${PHPCBF_BIN} -qn  &> /dev/null
+
+        echo "[PRE-COMMIT] Checking PHPCS again..."
+
+        # You can change your PHPCS command here
+        ${PHPCS_BIN} -n --report-file=${PHPCS_LOG}  &> /dev/null
+
+        if [[ $? != 0 ]]
+        then
+            echo "[PRE-COMMIT] PHP Code Beautifier and Fixer wasn't able to solve all problems."
+            echo "[PRE-COMMIT] See log at ${PHPCS_LOG}"
+            exit 1
+        fi
+
+        echo "[PRE-COMMIT] All errors are fixed automatically."
+
+        # stage and commit any changed files
+        STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR HEAD)
+        git add ${STAGED_FILES}
+    else
+        echo "[PRE-COMMIT] No errors found."
+    fi
+
+exit $?
