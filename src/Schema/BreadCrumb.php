@@ -1,12 +1,13 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 04 May 2019
- */
+
 declare(strict_types=1);
 
-
 namespace OpenAPIValidation\Schema;
+
+use RuntimeException;
+use function array_unshift;
+use function is_scalar;
+use function sprintf;
 
 // Breadcrumb addresses a value in a complex structure.
 // It can address an index in the compound array(object)
@@ -18,36 +19,44 @@ class BreadCrumb
     protected $prevCrumb;
 
     /**
-     * @param $compoundIndex . Null means root element
+     * @param int|string|null $compoundIndex suitable for array index
      */
     public function __construct($compoundIndex = null)
     {
-        if (!is_scalar($compoundIndex) && !is_null($compoundIndex)) {
-            throw new \RuntimeException(sprintf("BreadCrumb cannot have non-scalar index: %s", $compoundIndex));
+        if (! is_scalar($compoundIndex) && ($compoundIndex !== null)) {
+            throw new RuntimeException(sprintf('BreadCrumb cannot have non-scalar index: %s', $compoundIndex));
         }
 
         $this->compoundIndex = $compoundIndex;
     }
 
-    function addCrumb($index): self
+    /**
+     * @param string|int $index
+     *
+     * @return BreadCrumb
+     */
+    public function addCrumb($index) : self
     {
         $i            = new self($index);
         $i->prevCrumb = $this;
+
         return $i;
     }
 
     /**
      * Follow the chain of crumbs to build a full chain of keys
-     * @return array
+     *
+     * @return mixed[] - string/int values are allowed
      */
-    public function buildChain(): array
+    public function buildChain() : array
     {
         $keys = [];
 
         $crumb = $this;
         do {
             array_unshift($keys, $crumb->compoundIndex);
-        } while (($crumb = $crumb->prevCrumb) && !is_null($crumb->compoundIndex));
+            $crumb = $crumb->prevCrumb;
+        } while ($crumb && ($crumb->compoundIndex !== null));
 
         return $keys;
     }

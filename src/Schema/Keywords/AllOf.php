@@ -1,13 +1,8 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
-
 namespace OpenAPIValidation\Schema\Keywords;
-
 
 use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\BreadCrumb;
@@ -38,12 +33,11 @@ class AllOf extends BaseKeyword
      * validates successfully against all schemas defined by this keyword's
      * value.
      *
-     * @param $data
+     * @param mixed        $data
      * @param CebeSchema[] $allOf
      */
-    public function validate($data, $allOf): void
+    public function validate($data, array $allOf) : void
     {
-
         Validator::arrayVal()->assert($allOf);
         Validator::each(Validator::instance(CebeSchema::class))->assert($allOf);
 
@@ -53,6 +47,5 @@ class AllOf extends BaseKeyword
             $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType, $breadCrumb);
             $schemaValidator->validate();
         }
-
     }
 }

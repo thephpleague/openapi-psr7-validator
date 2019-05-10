@@ -1,12 +1,17 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 02 May 2019
- */
+
 declare(strict_types=1);
 
-
 namespace OpenAPIValidation\PSR7;
+
+use Exception;
+use function is_numeric;
+use function preg_match;
+use function preg_match_all;
+use function preg_replace;
+use function sprintf;
+use function str_replace;
+use function strtok;
 
 // As seen in OpenApi spec (may include path parameters like /user/{id})
 class PathAddress
@@ -14,23 +19,17 @@ class PathAddress
     /** @var string */
     protected $path;
 
-    /**
-     * @param string $path
-     */
     public function __construct(string $path)
     {
         $this->path = $path;
     }
 
-    /**
-     * @return string
-     */
-    public function path(): string
+    public function path() : string
     {
         return $this->path;
     }
 
-    public function getPathAddress(): self
+    public function getPathAddress() : self
     {
         return new self($this->path);
     }
@@ -44,28 +43,30 @@ class PathAddress
      * returns ["id"=>12]
      *
      * @param string $specPath as seen in OpenAPI spec
-     * @param string $url as seen in actual HTTP Request/ServerRequest
-     * @return array
-     * @throws \Exception
+     * @param string $url      as seen in actual HTTP Request/ServerRequest
+     *
+     * @return mixed[] return array of ["paramName"=>"parsedValue", ...]
+     *
+     * @throws Exception
      */
-    static public function parseParams(string $specPath, string $url): array
+    public static function parseParams(string $specPath, string $url) : array
     {
-        # pattern: /a/{b}/c/{d}
-        # actual:  /a/12/c/some
-        # result:  ['b'=>'12', 'd'=>'some']
+        // pattern: /a/{b}/c/{d}
+        // actual:  /a/12/c/some
+        // result:  ['b'=>'12', 'd'=>'some']
 
         // 0. Filter URL, remove query string
-        $url  = strtok($url, '?');
+        $url = strtok($url, '?');
 
         // 1. Find param names
-        preg_match_all("#{([^}]+)}#", $specPath, $m);
+        preg_match_all('#{([^}]+)}#', $specPath, $m);
         $parameterNames = $m[1];
 
         // 2. Parse param values
-        $pattern = "#" . str_replace(['{', '}'], ['(?<', '>[^/]+)'], $specPath) . "#";
+        $pattern = '#' . str_replace(['{', '}'], ['(?<', '>[^/]+)'], $specPath) . '#';
 
-        if (!preg_match($pattern, $url, $matches)) {
-            throw new \Exception(sprintf("Unable to parse '%s' against the pattern '%s'", $url, $specPath));
+        if (! preg_match($pattern, $url, $matches)) {
+            throw new Exception(sprintf("Unable to parse '%s' against the pattern '%s'", $url, $specPath));
         }
 
         // 3. Combine keys and values
@@ -73,9 +74,9 @@ class PathAddress
         foreach ($parameterNames as $name) {
             $value = $matches[$name];
 
-            # cast numeric
+            // cast numeric
             if (is_numeric($value)) {
-                $value += 0; # that will cast it properly
+                $value += 0; // that will cast it properly
             }
 
             $parsedParams[$name] = $value;
@@ -88,13 +89,12 @@ class PathAddress
      * Checks if path matches a specification
      *
      * @param string $specPath like "/users/{id}"
-     * @param string $path like "/users/12"
-     * @return bool
+     * @param string $path     like "/users/12"
      */
-    static function isPathMatchesSpec(string $specPath, string $path): bool
+    public static function isPathMatchesSpec(string $specPath, string $path) : bool
     {
-        $pattern = "#^" . preg_replace("#{[^}]+}#", "[^/]+", $specPath) . "/?$#";
+        $pattern = '#^' . preg_replace('#{[^}]+}#', '[^/]+', $specPath) . '/?$#';
 
-        return (bool)preg_match($pattern, $path);
+        return (bool) preg_match($pattern, $path);
     }
 }

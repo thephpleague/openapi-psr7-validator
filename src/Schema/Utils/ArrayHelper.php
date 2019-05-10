@@ -1,6 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenAPIValidation\Schema\Utils;
+
+use function array_keys;
+use function count;
+use function range;
 
 final class ArrayHelper
 {
@@ -12,12 +18,11 @@ final class ArrayHelper
      * - if there are only numeric keys (0...N) then it returns true
      * - otherwise, if there are string keys it returns false
      *
-     * @param array $arr
-     * @return bool
+     * @param mixed[] $arr
      */
-    public static function isAssoc(array $arr): bool
+    public static function isAssoc(array $arr) : bool
     {
-        if ([] === $arr) {
+        if ($arr === []) {
             return false;
         }
 

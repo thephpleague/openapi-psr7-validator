@@ -1,17 +1,13 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 03 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\TypeFormats;
 
 // Purpose of this class is to allow customizable/extendable list of formats
 class FormatsContainer
 {
-    /** @var array */
+    /** @var mixed[] - array of types->formats->callables */
     private static $list = [
         'string' => [
             'byte'      => StringByte::class,
@@ -33,7 +29,7 @@ class FormatsContainer
     /**
      * Empty the list
      */
-    static function flush(): void
+    public static function flush() : void
     {
         self::$list = [];
     }
@@ -41,9 +37,9 @@ class FormatsContainer
     /**
      * Put default formats (shipped with the package)
      */
-    static function addDefaults(): void
+    public static function addDefaults() : void
     {
-        # string
+        // string
         self::registerFormat('string', 'byte', StringByte::class);
         self::registerFormat('string', 'date', StringDate::class);
         self::registerFormat('string', 'date-time', StringDateTime::class);
@@ -54,7 +50,7 @@ class FormatsContainer
         self::registerFormat('string', 'ipv4', StringIP4::class);
         self::registerFormat('string', 'ipv6', StringIP6::class);
 
-        # number
+        // number
         self::registerFormat('string', 'float', NumberFloat::class);
         self::registerFormat('string', 'double', NumberDouble::class);
     }
@@ -62,11 +58,9 @@ class FormatsContainer
     /**
      * Add new format to the list
      *
-     * @param string $type
-     * @param string $format
      * @param string|callable $fqcn
      */
-    static function registerFormat(string $type, string $format, $fqcn): void
+    public static function registerFormat(string $type, string $format, $fqcn) : void
     {
         self::$list[$type][$format] = $fqcn;
     }
@@ -74,13 +68,10 @@ class FormatsContainer
     /**
      * Return FQCN for the format validation class
      *
-     * @param string $type
-     * @param string $format
      * @return string|callable|null
      */
-    static function getFormat(string $type, string $format)
+    public static function getFormat(string $type, string $format)
     {
         return self::$list[$type][$format] ?? null;
     }
-
 }

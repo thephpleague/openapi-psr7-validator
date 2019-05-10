@@ -1,16 +1,16 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
+use Exception;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
+use Throwable;
+use function array_unique;
+use function count;
+use function sprintf;
 
 class UniqueItems extends BaseKeyword
 {
@@ -24,20 +24,18 @@ class UniqueItems extends BaseKeyword
      * If not present, this keyword may be considered present with boolean
      * value false.
      *
-     * @param $data
-     * @param bool $uniqueItems
+     * @param mixed $data
      */
-    public function validate($data, bool $uniqueItems): void
+    public function validate($data, bool $uniqueItems) : void
     {
         try {
             Validator::arrayType()->assert($data);
 
-            if (array_unique($data) != count($data)) {
-                throw new \Exception(sprintf("All array items must be unique"));
+            if (array_unique($data) !== count($data)) {
+                throw new Exception(sprintf('All array items must be unique'));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("uniqueItems", $data, $e->getMessage());
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('uniqueItems', $data, $e->getMessage());
         }
     }
 }

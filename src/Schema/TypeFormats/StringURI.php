@@ -1,19 +1,15 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 03 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\TypeFormats;
 
-
-use OpenAPIValidation\Schema\Exception\FormatMismatch;
+use const FILTER_VALIDATE_URL;
+use function filter_var;
 
 class StringURI
 {
-    function __invoke($value): bool
+    public function __invoke(string $value) : bool
     {
         return filter_var($value, FILTER_VALIDATE_URL) !== false;
     }

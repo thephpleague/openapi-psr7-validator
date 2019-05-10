@@ -1,19 +1,17 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
 use cebe\openapi\spec\Schema as CebeSchema;
+use Exception;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
+use Throwable;
+use function sprintf;
 
 class OneOf extends BaseKeyword
 {
@@ -39,10 +37,10 @@ class OneOf extends BaseKeyword
      * validates successfully against exactly one schema defined by this
      * keyword's value.
      *
-     * @param $data
+     * @param mixed        $data
      * @param CebeSchema[] $oneOf
      */
-    public function validate($data, array $oneOf): void
+    public function validate($data, array $oneOf) : void
     {
         try {
             Validator::arrayVal()->assert($oneOf);
@@ -62,11 +60,10 @@ class OneOf extends BaseKeyword
             }
 
             if ($matchedCount !== 1) {
-                throw new \Exception(sprintf("Data must match exactly one schema, but matched %d", $matchedCount));
+                throw new Exception(sprintf('Data must match exactly one schema, but matched %d', $matchedCount));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("oneOf", $data, $e->getMessage(), $e);
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('oneOf', $data, $e->getMessage(), $e);
         }
     }
 }

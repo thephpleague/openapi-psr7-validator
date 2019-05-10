@@ -1,13 +1,8 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 03 May 2019
- */
+
 declare(strict_types=1);
 
-
 namespace OpenAPIValidation\PSR15;
-
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,17 +15,11 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 final class SlimAdapter implements RequestHandlerInterface
 {
-    /**
-     * @var MiddlewareInterface
-     */
+    /** @var MiddlewareInterface */
     private $middleware;
-    /**
-     * @var ResponseInterface
-     */
+    /** @var ResponseInterface */
     private $response;
-    /**
-     * @var callable
-     */
+    /** @var callable */
     private $next;
 
     public function __construct(MiddlewareInterface $middleware)
@@ -38,7 +27,7 @@ final class SlimAdapter implements RequestHandlerInterface
         $this->middleware = $middleware;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next) : ResponseInterface
     {
         $this->response = $response;
         $this->next     = $next;
@@ -48,7 +37,7 @@ final class SlimAdapter implements RequestHandlerInterface
         return $this->middleware->process($request, $this);
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handle(ServerRequestInterface $request) : ResponseInterface
     {
         return ($this->next)($request, $this->response);
     }

@@ -1,18 +1,19 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
 class AdditionalProperties extends BaseKeyword
 {
-    public function validate($data, bool $additionalProperties): void
+    /**
+     * @param mixed $data
+     */
+    public function validate($data, bool $additionalProperties) : void
     {
-        // todo
+        // The additionalProperties keyword specifies the type of values in the dictionary.
+        // Values can be primitives (strings, numbers or boolean values), arrays or objects.
+
+        // Not used. See \OpenAPIValidation\Schema\Keywords\Properties::validate for usage
     }
 }

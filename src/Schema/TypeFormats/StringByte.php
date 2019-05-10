@@ -1,17 +1,18 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 03 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\TypeFormats;
 
+use function base64_decode;
+use function base64_encode;
 
 class StringByte
 {
-    function __invoke($value): bool
+    /**
+     * @param mixed $value
+     */
+    public function __invoke($value) : bool
     {
         //base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw==
 

@@ -1,23 +1,20 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 02 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Request;
 
-
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\OperationAddress;
+use Throwable;
+use function sprintf;
 
 class RequestPathParameterMismatch extends NoOperation
 {
     /** @var string like "/users/admin" */
     protected $actualPath;
 
-    static function fromAddrAndCauseException(OperationAddress $addr, string $actualPath, \Throwable $cause): self
+    public static function fromAddrAndCauseException(OperationAddress $addr, string $actualPath, Throwable $cause) : self
     {
         $i = new self(
             sprintf(
@@ -38,10 +35,7 @@ class RequestPathParameterMismatch extends NoOperation
         return $i;
     }
 
-    /**
-     * @return string
-     */
-    public function actualPath(): string
+    public function actualPath() : string
     {
         return $this->actualPath;
     }

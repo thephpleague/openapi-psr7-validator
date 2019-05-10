@@ -1,10 +1,6 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
@@ -12,7 +8,7 @@ use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
-
+use function array_key_exists;
 
 class Properties extends BaseKeyword
 {
@@ -52,35 +48,39 @@ class Properties extends BaseKeyword
      * schema to all of the properties that weren't validated by
      * "properties" nor "patternProperties".
      *
-     * @param $data
+     * @param mixed        $data
      * @param CebeSchema[] $properties
-     * @param $additionalProperties
+     * @param mixed        $additionalProperties
      */
-    public function validate($data, $properties, $additionalProperties): void
+    public function validate($data, array $properties, $additionalProperties) : void
     {
-
         Validator::arrayType()->assert($data);
         Validator::arrayVal()->assert($properties);
         Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
 
         // Validate against "properties"
         foreach ($properties as $propName => $propSchema) {
-            if (array_key_exists($propName, $data)) {
-                $breadCrumb      = $this->dataBreadCrumb->addCrumb($propName);
-                $schemaValidator = new SchemaValidator($propSchema, $data[$propName], $this->validationDataType, $breadCrumb);
-                $schemaValidator->validate();
+            if (! array_key_exists($propName, $data)) {
+                continue;
             }
+
+            $breadCrumb      = $this->dataBreadCrumb->addCrumb($propName);
+            $schemaValidator = new SchemaValidator($propSchema, $data[$propName], $this->validationDataType, $breadCrumb);
+            $schemaValidator->validate();
         }
 
         // Validate the rest against "additionalProperties"
-        if ($additionalProperties instanceof CebeSchema) {
-            foreach ($data as $propName => $propSchema) {
-                if (!isset($properties[$propName])) { # if not covered by "properties"
-                    $schemaValidator = new SchemaValidator($additionalProperties, $data[$propName], $this->validationDataType);
-                    $schemaValidator->validate();
-                }
-            }
+        if (! ($additionalProperties instanceof CebeSchema)) {
+            return;
         }
 
+        foreach ($data as $propName => $propSchema) {
+            if (isset($properties[$propName])) {
+                continue;
+            }
+            // if not covered by "properties"
+            $schemaValidator = new SchemaValidator($additionalProperties, $data[$propName], $this->validationDataType);
+            $schemaValidator->validate();
+        }
     }
 }

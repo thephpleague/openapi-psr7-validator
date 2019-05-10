@@ -1,19 +1,17 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
 use cebe\openapi\spec\Schema as CebeSchema;
+use Exception;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
+use Throwable;
+use function sprintf;
 
 class Not extends BaseKeyword
 {
@@ -36,10 +34,9 @@ class Not extends BaseKeyword
      * An instance is valid against this keyword if it fails to validate
      * successfully against the schema defined by this keyword.
      *
-     * @param $data
-     * @param CebeSchema $not
+     * @param mixed $data
      */
-    public function validate($data, $not): void
+    public function validate($data, CebeSchema $not) : void
     {
         try {
             Validator::instance(CebeSchema::class)->assert($not);
@@ -49,14 +46,12 @@ class Not extends BaseKeyword
                 $schemaValidator = new SchemaValidator($not, $data, $this->validationDataType, $breadCrumb);
                 $schemaValidator->validate();
 
-                throw new \Exception(sprintf("Data must not match the schema"));
+                throw new Exception(sprintf('Data must not match the schema'));
             } catch (ValidationKeywordFailed $e) {
                 // that did not match... its ok
             }
-
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("not", $data, $e->getMessage());
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('not', $data, $e->getMessage());
         }
     }
 }

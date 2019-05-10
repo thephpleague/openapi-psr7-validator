@@ -1,16 +1,16 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
+use Exception;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
+use Throwable;
+use function count;
+use function in_array;
+use function sprintf;
 
 class Enum extends BaseKeyword
 {
@@ -23,21 +23,20 @@ class Enum extends BaseKeyword
      * An instance validates successfully against this keyword if its value
      * is equal to one of the elements in this keyword's array value.
      *
-     * @param $data
-     * @param array $enum
+     * @param mixed   $data
+     * @param mixed[] $enum - can be strings or numbers
      */
-    public function validate($data, array $enum): void
+    public function validate($data, array $enum) : void
     {
         try {
             Validator::arrayType()->assert($enum);
             Validator::trueVal()->assert(count($enum) >= 1);
 
-            if (!in_array($data, $enum, true)) {
-                throw new \Exception(sprintf("Value must be present in the enum"));
+            if (! in_array($data, $enum, true)) {
+                throw new Exception(sprintf('Value must be present in the enum'));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("enum", $data, $e->getMessage(), $e);
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('enum', $data, $e->getMessage(), $e);
         }
     }
 }

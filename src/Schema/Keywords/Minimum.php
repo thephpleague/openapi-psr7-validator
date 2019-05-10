@@ -1,16 +1,14 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
+use Exception;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
+use Throwable;
+use function sprintf;
 
 class Minimum extends BaseKeyword
 {
@@ -32,27 +30,24 @@ class Minimum extends BaseKeyword
      * false (or not specified), then a numeric instance MAY be equal to the
      * value of "minimum".
      *
-     *
-     * @param $data
-     * @param number $minimum
-     * @param bool $exclusiveMinimum
+     * @param mixed     $data
+     * @param int|float $minimum
      */
-    public function validate($data, $minimum, bool $exclusiveMinimum = false): void
+    public function validate($data, $minimum, bool $exclusiveMinimum = false) : void
     {
         try {
             Validator::numeric()->assert($data);
             Validator::numeric()->assert($minimum);
 
             if ($exclusiveMinimum && $data <= $minimum) {
-                throw new \Exception(sprintf("Value %d must be greater or equal to %d", $data, $minimum));
+                throw new Exception(sprintf('Value %d must be greater or equal to %d', $data, $minimum));
             }
 
-            if (!$exclusiveMinimum && $data < $minimum) {
-                throw new \Exception(sprintf("Value %d must be greater than %d", $data, $minimum));
+            if (! $exclusiveMinimum && $data < $minimum) {
+                throw new Exception(sprintf('Value %d must be greater than %d', $data, $minimum));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("minimum", $data, $e->getMessage(), $e);
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('minimum', $data, $e->getMessage(), $e);
         }
     }
 }

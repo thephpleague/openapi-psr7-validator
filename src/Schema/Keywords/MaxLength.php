@@ -1,16 +1,15 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
+use Exception;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
+use Throwable;
+use function mb_strlen;
+use function sprintf;
 
 class MaxLength extends BaseKeyword
 {
@@ -26,10 +25,9 @@ class MaxLength extends BaseKeyword
      * The length of a string instance is defined as the number of its
      * characters as defined by RFC 7159 [RFC7159].
      *
-     * @param $data
-     * @param int $maxLength
+     * @param mixed $data
      */
-    public function validate($data, $maxLength): void
+    public function validate($data, int $maxLength) : void
     {
         try {
             Validator::stringType()->assert($data);
@@ -37,11 +35,10 @@ class MaxLength extends BaseKeyword
             Validator::trueVal()->assert($maxLength >= 0);
 
             if (mb_strlen($data) > $maxLength) {
-                throw new \Exception(sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
+                throw new Exception(sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("maxLength", $data, $e->getMessage(), $e);
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('maxLength', $data, $e->getMessage(), $e);
         }
     }
 }

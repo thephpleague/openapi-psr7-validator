@@ -1,10 +1,6 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema;
 
@@ -31,13 +27,14 @@ use OpenAPIValidation\Schema\Keywords\Properties;
 use OpenAPIValidation\Schema\Keywords\Required;
 use OpenAPIValidation\Schema\Keywords\Type;
 use OpenAPIValidation\Schema\Keywords\UniqueItems;
+use function count;
 
 // This will load a whole schema and data to validate if one matches another
 class Validator
 {
     // How to treat the data (affects writeOnly/readOnly keywords)
-    const VALIDATE_AS_REQUEST  = 0;
-    const VALIDATE_AS_RESPONSE = 1;
+    public const VALIDATE_AS_REQUEST  = 0;
+    public const VALIDATE_AS_RESPONSE = 1;
 
     /** @var CebeSchema */
     protected $schema;
@@ -49,12 +46,9 @@ class Validator
     protected $validationStrategy;
 
     /**
-     * @param CebeSchema $schema
      * @param mixed $data
-     * @param int $validationStrategy
-     * @param BreadCrumb|null $breadCrumb
      */
-    public function __construct(CebeSchema $schema, $data, $validationStrategy = self::VALIDATE_AS_RESPONSE, BreadCrumb $breadCrumb = null)
+    public function __construct(CebeSchema $schema, $data, int $validationStrategy = self::VALIDATE_AS_RESPONSE, ?BreadCrumb $breadCrumb = null)
     {
         \Respect\Validation\Validator::in([self::VALIDATE_AS_REQUEST, self::VALIDATE_AS_RESPONSE])->assert($validationStrategy);
 
@@ -67,30 +61,25 @@ class Validator
     /**
      * Apply a whole bunch of possible checks by using validation keywords
      */
-    public function validate(): void
+    public function validate() : void
     {
         try {
-            //
             // These keywords are not part of the JSON Schema at all (new to OAS)
-            //
             (new Nullable($this->schema))->validate($this->data, $this->schema->nullable);
 
-
-            //
             // This keywords come directly from JSON Schema Validation, they are the same as in JSON schema
             // https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5
-            //
             if (isset($this->schema->multipleOf)) {
                 (new MultipleOf($this->schema))->validate($this->data, $this->schema->multipleOf);
             }
 
             if (isset($this->schema->maximum)) {
-                $exclusiveMaximum = (bool)(isset($this->schema->exclusiveMaximum) ? $this->schema->exclusiveMaximum : false);
+                $exclusiveMaximum = (bool) ($this->schema->exclusiveMaximum ?? false);
                 (new Maximum($this->schema))->validate($this->data, $this->schema->maximum, $exclusiveMaximum);
             }
 
             if (isset($this->schema->minimum)) {
-                $exclusiveMinimum = (bool)(isset($this->schema->exclusiveMinimum) ? $this->schema->exclusiveMinimum : false);
+                $exclusiveMinimum = (bool) ($this->schema->exclusiveMinimum ?? false);
                 (new Minimum($this->schema))->validate($this->data, $this->schema->minimum, $exclusiveMinimum);
             }
 
@@ -134,10 +123,7 @@ class Validator
                 (new Enum($this->schema))->validate($this->data, $this->schema->enum);
             }
 
-            //
             // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
-            //
-
             if (isset($this->schema->type)) {
                 (new Type($this->schema))->validate($this->data, $this->schema->type, $this->schema->format);
             }
@@ -147,9 +133,12 @@ class Validator
             }
 
             if (isset($this->schema->properties) && count($this->schema->properties)) {
-                $additionalProperties = isset($this->schema->additionalProperties) ? $this->schema->additionalProperties : null;
-                (new Properties($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->properties,
-                    $additionalProperties);
+                $additionalProperties = $this->schema->additionalProperties ?? null;
+                (new Properties($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate(
+                    $this->data,
+                    $this->schema->properties,
+                    $additionalProperties
+                );
             }
 
             if (isset($this->schema->allOf) && count($this->schema->allOf)) {
@@ -168,16 +157,14 @@ class Validator
                 (new Not($this->schema, $this->validationStrategy, $this->prepareBreadCrumb()))->validate($this->data, $this->schema->not);
             }
 
-
             //   ✓  ok, all checks are done
-
         } catch (ValidationKeywordFailed $e) {
             $e->hydrateDataBreadCrumb($this->prepareBreadCrumb());
             throw $e;
         }
     }
 
-    protected function prepareBreadCrumb(): BreadCrumb
+    protected function prepareBreadCrumb() : BreadCrumb
     {
         return $this->dataBreadCrumb ?? new BreadCrumb();
     }

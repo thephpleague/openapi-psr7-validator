@@ -1,16 +1,15 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
+use Exception;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
+use Throwable;
+use function mb_strlen;
+use function sprintf;
 
 class MinLength extends BaseKeyword
 {
@@ -27,10 +26,9 @@ class MinLength extends BaseKeyword
      * "minLength", if absent, may be considered as being present with
      * integer value 0.
      *
-     * @param $data
-     * @param int $minLength
+     * @param mixed $data
      */
-    public function validate($data, $minLength): void
+    public function validate($data, int $minLength) : void
     {
         try {
             Validator::stringType()->assert($data);
@@ -38,11 +36,10 @@ class MinLength extends BaseKeyword
             Validator::trueVal()->assert($minLength >= 0);
 
             if (mb_strlen($data) < $minLength) {
-                throw new \Exception(sprintf("Length of '%d' must be longer or equal to %d", $data, $minLength));
+                throw new Exception(sprintf("Length of '%d' must be longer or equal to %d", $data, $minLength));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("minLength", $data, $e->getMessage(), $e);
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('minLength', $data, $e->getMessage(), $e);
         }
     }
 }

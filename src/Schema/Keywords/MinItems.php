@@ -1,16 +1,15 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
+use Exception;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
+use Throwable;
+use function count;
+use function sprintf;
 
 class MinItems extends BaseKeyword
 {
@@ -24,10 +23,9 @@ class MinItems extends BaseKeyword
      * If this keyword is not present, it may be considered present with a
      * value of 0.
      *
-     * @param $data
-     * @param int $minItems
+     * @param mixed $data
      */
-    public function validate($data, $minItems): void
+    public function validate($data, int $minItems) : void
     {
         try {
             Validator::arrayType()->assert($data);
@@ -35,11 +33,10 @@ class MinItems extends BaseKeyword
             Validator::trueVal()->assert($minItems >= 0);
 
             if (count($data) < $minItems) {
-                throw new \Exception(sprintf("Size of an array must be greater or equal to %d", $minItems));
+                throw new Exception(sprintf('Size of an array must be greater or equal to %d', $minItems));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("minItems", $data, $e->getMessage());
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('minItems', $data, $e->getMessage());
         }
     }
 }

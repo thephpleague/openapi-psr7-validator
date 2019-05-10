@@ -1,29 +1,25 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 02 May 2019
- */
+
 declare(strict_types=1);
 
-
 namespace OpenAPIValidation\PSR7\Validators;
-
 
 use cebe\openapi\spec\Parameter;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
+use function array_key_exists;
 
 class QueryArguments
 {
     use ValidationStrategy;
 
     /**
-     * @param MessageInterface $message
      * @param Parameter[] $specs [queryArgumentName=>schema]
      */
-    public function validate(MessageInterface $message, array $specs): void
+    public function validate(MessageInterface $message, array $specs) : void
     {
         // Note: By default, OpenAPI treats all request parameters as optional.
 
@@ -32,27 +28,24 @@ class QueryArguments
         }
 
         // TODO should implement validation for Request classes
-
     }
 
     /**
-     * @param ServerRequestInterface $message
      * @param Parameter[] $specs
      */
-    private function validateServerRequest(ServerRequestInterface $message, array $specs)
+    private function validateServerRequest(ServerRequestInterface $message, array $specs) : void
     {
         // Check if message misses query argument
         foreach ($specs as $name => $spec) {
-            if (!array_key_exists($name, $message->getQueryParams()) && $spec->required) {
-                throw new \RuntimeException($name, 401);
+            if (! array_key_exists($name, $message->getQueryParams()) && $spec->required) {
+                throw new RuntimeException($name, 401);
             }
         }
 
         // Check if query arguments are invalid
         foreach ($message->getQueryParams() as $name => $argumentValue) {
-
-            # skip if there are no schema for this argument
-            if (!array_key_exists($name, $specs)) {
+            // skip if there are no schema for this argument
+            if (! array_key_exists($name, $specs)) {
                 continue;
             }
 

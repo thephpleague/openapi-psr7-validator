@@ -1,24 +1,24 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 07 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Request\Security;
 
-
 use OpenAPIValidation\PSR7\OperationAddress;
+use RuntimeException;
+use Throwable;
+use function sprintf;
 
-class MalformattedRequestAuthorizationHeader extends \RuntimeException
+class MalformattedRequestAuthorizationHeader extends RuntimeException
 {
+    /** @var OperationAddress */
     protected $addr;
 
-    static function fromOperationAddr(OperationAddress $address, \Throwable $prev = null): self
+    public static function fromOperationAddr(OperationAddress $address, ?Throwable $prev = null) : self
     {
         $i = new self(
-            sprintf("Request [%s,%s]: `Authorization` header must be present",
+            sprintf(
+                'Request [%s,%s]: `Authorization` header must be present',
                 $address->path(),
                 $address->method()
             ),
@@ -27,16 +27,12 @@ class MalformattedRequestAuthorizationHeader extends \RuntimeException
         );
 
         $i->addr = $address;
+
         return $i;
     }
 
-    /**
-     * @return OperationAddress
-     */
-    public function addr(): OperationAddress
+    public function addr() : OperationAddress
     {
         return $this->addr;
     }
-
-
 }

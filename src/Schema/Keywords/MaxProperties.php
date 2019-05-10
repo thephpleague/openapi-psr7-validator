@@ -1,16 +1,15 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
+use Exception;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use Respect\Validation\Validator;
+use Throwable;
+use function count;
+use function sprintf;
 
 class MaxProperties extends BaseKeyword
 {
@@ -21,21 +20,19 @@ class MaxProperties extends BaseKeyword
      * An object instance is valid against "maxProperties" if its number of
      * properties is less than, or equal to, the value of this keyword.
      *
-     * @param $data
-     * @param int $maxProperties
+     * @param mixed $data
      */
-    public function validate($data, $maxProperties): void
+    public function validate($data, int $maxProperties) : void
     {
         try {
             Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($maxProperties >= 0);
 
             if (count($data) > $maxProperties) {
-                throw new \Exception(sprintf("The number of object's properties must be less or equal to %d", $maxProperties));
+                throw new Exception(sprintf("The number of object's properties must be less or equal to %d", $maxProperties));
             }
-
-        } catch (\Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword("maxProperties", $data, $e->getMessage());
+        } catch (Throwable $e) {
+            throw ValidationKeywordFailed::fromKeyword('maxProperties', $data, $e->getMessage());
         }
     }
 }

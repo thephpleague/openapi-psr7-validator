@@ -1,18 +1,15 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-
 use cebe\openapi\spec\Schema as CebeSchema;
+use Exception;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Validator as SchemaValidator;
 use Respect\Validation\Validator;
+use function sprintf;
 
 class Items extends BaseKeyword
 {
@@ -33,17 +30,15 @@ class Items extends BaseKeyword
      * Inline or referenced schema MUST be of a Schema Object and not a standard JSON Schema.
      * items MUST be present if the type is array.
      *
-     * @param $data
-     * @param CebeSchema $itemsSchema
+     * @param mixed $data
      */
-    public function validate($data, $itemsSchema): void
+    public function validate($data, CebeSchema $itemsSchema) : void
     {
-
         Validator::arrayVal()->assert($data);
         Validator::instance(CebeSchema::class)->assert($itemsSchema);
 
-        if (!isset($this->parentSchema->type) || ($this->parentSchema->type != "array")) {
-            throw new \Exception(sprintf("items MUST be present if the type is array"));
+        if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array')) {
+            throw new Exception(sprintf('items MUST be present if the type is array'));
         }
 
         foreach ($data as $dataIndex => $dataItem) {
@@ -51,7 +46,5 @@ class Items extends BaseKeyword
             $schemaValidator = new SchemaValidator($itemsSchema, $dataItem, $this->validationDataType, $breadCrumb);
             $schemaValidator->validate();
         }
-
-
     }
 }

@@ -1,13 +1,8 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 02 May 2019
- */
+
 declare(strict_types=1);
 
-
 namespace OpenAPIValidation\PSR7;
-
 
 use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\Response\ResponseBodyMismatch;
@@ -18,16 +13,13 @@ use OpenAPIValidation\PSR7\Validators\Body;
 use OpenAPIValidation\PSR7\Validators\Headers;
 use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 class ResponseValidator extends Validator
 {
     use ValidationStrategy;
 
-    /**
-     * @param OperationAddress $opAddr
-     * @param ResponseInterface $response
-     */
-    public function validate(OperationAddress $opAddr, ResponseInterface $response): void
+    public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
     {
         $addr = new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode());
 
@@ -38,7 +30,7 @@ class ResponseValidator extends Validator
         try {
             $headersValidator = new Headers();
             $headersValidator->validate($response, $spec->headers);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             switch ($e->getCode()) {
                 case 200:
                     throw UnexpectedResponseHeader::fromResponseAddr($e->getMessage(), $addr);
@@ -55,7 +47,7 @@ class ResponseValidator extends Validator
         try {
             $bodyValidator = new Body();
             $bodyValidator->validate($response, $spec->content);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             switch ($e->getCode()) {
                 case 100:
                     throw UnexpectedResponseContentType::fromResponseAddr($e->getMessage(), $addr, $e);
