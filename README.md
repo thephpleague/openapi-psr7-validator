@@ -127,7 +127,7 @@ $app->add($slimMiddleware);
 ```
 
 ### Caching layer / PSR-6 support
-PSR-7 Validator has a built-in caching layer (based on [PSR-6](https://www.php-fig.org/psr/psr-6/) interfaces). It is optional.
+PSR-7 Validator has a built-in caching layer (based on [PSR-6](https://www.php-fig.org/psr/psr-6/) interfaces) which saves time on parsing OpenAPI specs. It is optional.
 You enable caching if you pass a configured Cache Pool Object to the static constructor like this:
 ```php
 // Configure a PSR-6 Cache Pool
