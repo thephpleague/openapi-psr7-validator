@@ -1,13 +1,9 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 07 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7\Validators;
 
-use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
@@ -106,33 +102,32 @@ components:
       in: cookie
 AND;
 
-
-    function test_it_applies_security_rules_OR_green()
+    function test_it_applies_security_rules_OR_green() : void
     {
-        $request = (new ServerRequest("get", "/products"))->withQueryParams(['server_token1' => 'key value']);
+        $request = (new ServerRequest('get', '/products'))->withQueryParams(['server_token1' => 'key value']);
 
         $validator = ServerRequestValidator::fromYaml($this->specSecurityORUnion);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_missed_apiKey_red()
+    function test_it_validates_missed_apiKey_red() : void
     {
-        $request = (new ServerRequest("get", "/products"))->withQueryParams(['wrongToken' => 'key value']);
+        $request = (new ServerRequest('get', '/products'))->withQueryParams(['wrongToken' => 'key value']);
 
         try {
             $validator = ServerRequestValidator::fromYaml($this->specSecurityORUnion);
             $validator->validate($request);
-            $this->fail("Expected exception");
+            $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
             $this->assertEquals('/products', $e->addr()->path());
             $this->assertEquals('get', $e->addr()->method());
         }
     }
 
-    function test_it_applies_security_rules_AND_green()
+    function test_it_applies_security_rules_AND_green() : void
     {
-        $request = (new ServerRequest("get", "/products"))
+        $request = (new ServerRequest('get', '/products'))
             ->withQueryParams(['server_token1' => 'key value'])
             ->withHeader('server_token2', 'key value');
 
@@ -141,26 +136,26 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_applies_security_rules_AND_red()
+    function test_it_applies_security_rules_AND_red() : void
     {
-        # request has no security header
-        $request = (new ServerRequest("get", "/products"))
+        // request has no security header
+        $request = (new ServerRequest('get', '/products'))
             ->withQueryParams(['server_token1' => 'key value']);
 
         try {
             $validator = ServerRequestValidator::fromYaml($this->specSecurityANDUnion);
             $validator->validate($request);
-            $this->fail("Expected exception");
+            $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
             $this->assertEquals('/products', $e->addr()->path());
             $this->assertEquals('get', $e->addr()->method());
         }
     }
 
-    function test_it_applies_security_rules_AND_OR_combined_green()
+    function test_it_applies_security_rules_AND_OR_combined_green() : void
     {
-        # request has one of allowed security cookies
-        $request = (new ServerRequest("get", "/products"))
+        // request has one of allowed security cookies
+        $request = (new ServerRequest('get', '/products'))
             ->withCookieParams(['server_token3' => 'key value']);
 
         $validator = ServerRequestValidator::fromYaml($this->specSecurityAND_OR_COMBINED);
@@ -168,20 +163,19 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_applies_security_rules_AND_OR_combined_red()
+    function test_it_applies_security_rules_AND_OR_combined_red() : void
     {
-        # request has one security query argument, but misses the second one (required one)
-        $request = (new ServerRequest("get", "/products"))
+        // request has one security query argument, but misses the second one (required one)
+        $request = (new ServerRequest('get', '/products'))
             ->withQueryParams(['server_token1' => 'key value']);
 
         try {
             $validator = ServerRequestValidator::fromYaml($this->specSecurityAND_OR_COMBINED);
             $validator->validate($request);
-            $this->fail("Expected exception");
+            $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
             $this->assertEquals('/products', $e->addr()->path());
             $this->assertEquals('get', $e->addr()->method());
         }
     }
-
 }

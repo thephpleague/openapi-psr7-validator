@@ -1,13 +1,9 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 07 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7\Validators;
 
-use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
@@ -55,10 +51,9 @@ components:
       scheme: basic
 BASIC;
 
-
-    function test_it_checks_bearer_header_green()
+    function test_it_checks_bearer_header_green() : void
     {
-        $request = (new ServerRequest("get", "/products"))
+        $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Bearer ABCDEFG');
 
         $validator = ServerRequestValidator::fromYaml($this->specBearer);
@@ -66,23 +61,23 @@ BASIC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_checks_bearer_header_red()
+    function test_it_checks_bearer_header_red() : void
     {
-        $request = (new ServerRequest("get", "/products"));
+        $request = (new ServerRequest('get', '/products'));
 
         try {
             $validator = ServerRequestValidator::fromYaml($this->specBearer);
             $validator->validate($request);
-            $this->fail("Expected exception");
+            $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
             $this->assertEquals('/products', $e->addr()->path());
             $this->assertEquals('get', $e->addr()->method());
         }
     }
 
-    function test_it_checks_basic_header_green()
+    function test_it_checks_basic_header_green() : void
     {
-        $request = (new ServerRequest("get", "/products"))
+        $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Basic ABCDEFG');
 
         $validator = ServerRequestValidator::fromYaml($this->specBasic);
@@ -90,18 +85,17 @@ BASIC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_checks_basic_header_red()
+    function test_it_checks_basic_header_red() : void
     {
-        $request = (new ServerRequest("get", "/products"));
+        $request = (new ServerRequest('get', '/products'));
 
         try {
             $validator = ServerRequestValidator::fromYaml($this->specBasic);
             $validator->validate($request);
-            $this->fail("Expected exception");
+            $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
             $this->assertEquals('/products', $e->addr()->path());
             $this->assertEquals('get', $e->addr()->method());
         }
     }
-
 }

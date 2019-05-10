@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
@@ -13,8 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 class EnumTest extends SchemaValidatorTest
 {
-
-    function test_it_validates_enum_green()
+    function test_it_validates_enum_green() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,13 +21,13 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = "a";
+        $data   = 'a';
 
         (new Validator($schema, $data))->validate();
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_enum_red()
+    function test_it_validates_enum_red() : void
     {
         $spec = <<<SPEC
 schema:
@@ -42,7 +38,7 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = "c";
+        $data   = 'c';
 
         try {
             (new Validator($schema, $data))->validate();

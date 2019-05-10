@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
@@ -13,8 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 class MaxLengthTest extends SchemaValidatorTest
 {
-
-    function test_it_validates_maxLength_green()
+    function test_it_validates_maxLength_green() : void
     {
         $spec = <<<SPEC
 schema:
@@ -23,13 +19,13 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = "abcde12345";
+        $data   = 'abcde12345';
 
         (new Validator($schema, $data))->validate();
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_maxLength_red()
+    function test_it_validates_maxLength_red() : void
     {
         $spec = <<<SPEC
 schema:
@@ -38,7 +34,7 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = "abcde12345";
+        $data   = 'abcde12345';
 
         try {
             (new Validator($schema, $data))->validate();

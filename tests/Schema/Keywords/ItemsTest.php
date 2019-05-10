@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
@@ -13,9 +10,8 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 class ItemsTest extends SchemaValidatorTest
 {
-    function test_it_validates_items_green()
+    function test_it_validates_items_green() : void
     {
-
         $spec = <<<SPEC
 schema:
   type: array
@@ -30,9 +26,8 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_items_nested_green()
+    function test_it_validates_items_nested_green() : void
     {
-
         $spec = <<<SPEC
 schema:
   type: array
@@ -50,7 +45,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_items_red()
+    function test_it_validates_items_red() : void
     {
         $spec = <<<SPEC
 schema:
@@ -69,7 +64,7 @@ SPEC;
         }
     }
 
-    function test_it_validates_items_nested_red()
+    function test_it_validates_items_nested_red() : void
     {
         $spec = <<<SPEC
 schema:

@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
@@ -13,10 +10,8 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 class NotTest extends SchemaValidatorTest
 {
-
-    function test_it_validates_not_green()
+    function test_it_validates_not_green() : void
     {
-
         $spec = <<<SPEC
 schema:
   not:
@@ -33,9 +28,8 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_not_red()
+    function test_it_validates_not_red() : void
     {
-
         $spec = <<<SPEC
 schema:
   not:
@@ -54,5 +48,4 @@ SPEC;
             $this->assertEquals('not', $e->keyword());
         }
     }
-
 }

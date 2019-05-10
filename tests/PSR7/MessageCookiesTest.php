@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 02 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7;
@@ -17,19 +14,18 @@ use OpenAPIValidation\PSR7\ServerRequestValidator;
 
 class MessageCookiesTest extends BaseValidatorTest
 {
-
-    public function test_it_validates_request_with_cookies_green()
+    public function test_it_validates_request_with_cookies_green() : void
     {
-        $request = $this->makeGoodServerRequest("/cookies", "post");
+        $request = $this->makeGoodServerRequest('/cookies', 'post');
 
         $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_response_with_cookies_green()
+    public function test_it_validates_response_with_cookies_green() : void
     {
-        $addr     = new ResponseAddress("/cookies", "post", 200);
+        $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method());
 
         $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
@@ -37,9 +33,9 @@ class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_response_misses_setcookie_header_green()
+    public function test_it_validates_response_misses_setcookie_header_green() : void
     {
-        $addr     = new ResponseAddress("/cookies", "post", 200);
+        $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method())->withoutHeader('Set-Cookie');
 
         try {
@@ -50,40 +46,36 @@ class MessageCookiesTest extends BaseValidatorTest
         }
     }
 
-
-    public function test_it_validates_request_with_missed_cookie_red()
+    public function test_it_validates_request_with_missed_cookie_red() : void
     {
-        $addr    = new OperationAddress("/cookies", "post");
+        $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
                         ->withCookieParams([]);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
             $validator->validate($request);
-            $this->fail("Exception expected");
+            $this->fail('Exception expected');
         } catch (MissedRequestCookie $e) {
             $this->assertEquals($addr->path(), $e->addr()->path());
             $this->assertEquals($addr->method(), $e->addr()->method());
             $this->assertEquals('session_id', $e->cookieName());
         }
-
     }
 
-    public function test_it_validates_request_with_invalid_cookie_value_red()
+    public function test_it_validates_request_with_invalid_cookie_value_red() : void
     {
-        $addr    = new OperationAddress("/cookies", "post");
+        $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
                         ->withCookieParams(['session_id' => 'goodvalue', 'debug' => 'bad value']);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
             $validator->validate($request);
-            $this->fail("Exception expected");
+            $this->fail('Exception expected');
         } catch (RequestCookiesMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
             $this->assertEquals($addr->method(), $e->method());
         }
-
     }
-
 }

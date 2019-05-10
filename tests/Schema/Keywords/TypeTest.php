@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
@@ -13,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 class TypeTest extends SchemaValidatorTest
 {
-    function test_it_validates_type_green()
+    function test_it_validates_type_green() : void
     {
         $typedValues = [
             'string'  => 'string value',
@@ -25,17 +22,14 @@ class TypeTest extends SchemaValidatorTest
         ];
 
         foreach ($typedValues as $type => $validValue) {
-
-            if ($type == "array") {
+            if ($type === 'array') {
                 $spec = <<<SPEC
 schema:
   type: array
   items:
     type: string
 SPEC;
-
             } else {
-
                 $spec = <<<SPEC
 schema:
   type: $type
@@ -49,13 +43,12 @@ SPEC;
         }
     }
 
-    function test_it_validates_type_red()
+    function test_it_validates_type_red() : void
     {
-
         $typedValues = [
             'string'  => 12,
             'object'  => 'not object',
-            'array'   => ['a' => 1, 'b' => 2], # this is not a plain array (ala JSON)
+            'array'   => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
             'boolean' => [1, 2],
             'number'  => [],
             'integer' => 12.55,
@@ -76,5 +69,4 @@ SPEC;
             }
         }
     }
-
 }

@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
@@ -13,9 +10,8 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 class AllOfTest extends SchemaValidatorTest
 {
-    function test_it_validates_allOf_green()
+    function test_it_validates_allOf_green() : void
     {
-
         $spec = <<<SPEC
 schema:
   allOf:
@@ -36,9 +32,8 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_allOf_red()
+    function test_it_validates_allOf_red() : void
     {
-
         $spec = <<<SPEC
 schema:
   allOf:
@@ -61,5 +56,4 @@ SPEC;
             $this->assertEquals('type', $e->keyword());
         }
     }
-
 }

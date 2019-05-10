@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 02 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7;
@@ -15,24 +12,23 @@ class PathAddressTest extends TestCase
     function dataProviderParse()
     {
         return [
-            ["/users/{id}/group/{group}", "/users/12/group/admin?a=2", ['id' => 12, 'group' => 'admin']],
-            ["/users/{id}", "/users/12?", ['id' => 12]],
-            ["/users/{id}/", "/users/12/", ['id' => 12]],
-            ["/users/{id}/", "/users/22.5/", ['id' => 22.5]],
-            ["/users/{id}/{name}", "/users/22/admin", ['id' => 22, 'name' => 'admin']],
+            ['/users/{id}/group/{group}', '/users/12/group/admin?a=2', ['id' => 12, 'group' => 'admin']],
+            ['/users/{id}', '/users/12?', ['id' => 12]],
+            ['/users/{id}/', '/users/12/', ['id' => 12]],
+            ['/users/{id}/', '/users/22.5/', ['id' => 22.5]],
+            ['/users/{id}/{name}', '/users/22/admin', ['id' => 22, 'name' => 'admin']],
         ];
     }
 
     /**
      * @dataProvider dataProviderParse
      */
-    public function test_it_parses_params(string $spec, string $url, array $result)
+    public function test_it_parses_params(string $spec, string $url, array $result) : void
     {
         $parsed = PathAddress::parseParams($spec, $url);
 
         $this->assertTrue($result === $parsed);
     }
-
 
     function dataProviderMatch()
     {
@@ -53,10 +49,8 @@ class PathAddressTest extends TestCase
     /**
      * @dataProvider dataProviderMatch
      */
-    public function test_it_matches_path_against_spec(string $spec, string $path, bool $result)
+    public function test_it_matches_path_against_spec(string $spec, string $path, bool $result) : void
     {
         $this->assertEquals($result, PathAddress::isPathMatchesSpec($spec, $path));
     }
-
-
 }

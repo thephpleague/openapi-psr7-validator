@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 07 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7;
@@ -14,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class PathFinderTest extends TestCase
 {
-    function test_it_finds_matching_operation()
+    function test_it_finds_matching_operation() : void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"
@@ -33,14 +30,14 @@ paths:
       summary: Product Types
 SPEC;
 
-        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri("/v1/products/10"), "get");
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri('/v1/products/10'), 'get');
         $opAddrs    = $pathFinder->search();
 
         $this->assertCount(1, $opAddrs);
-        $this->assertEquals("/products/{id}", $opAddrs[0]->path());
+        $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
 
-    function test_it_finds_matching_operation_with_parametrized_server()
+    function test_it_finds_matching_operation_with_parametrized_server() : void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"
@@ -59,10 +56,10 @@ paths:
       summary: Product Types
 SPEC;
 
-        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri("/v1/2019-05-07/products/20"), "get");
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri('/v1/2019-05-07/products/20'), 'get');
         $opAddrs    = $pathFinder->search();
 
         $this->assertCount(1, $opAddrs);
-        $this->assertEquals("/products/{id}", $opAddrs[0]->path());
+        $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
 }

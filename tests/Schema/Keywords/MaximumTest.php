@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 01 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
@@ -13,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 class MaximumTest extends SchemaValidatorTest
 {
-    function test_maximum_nonexclusive_keyword_green()
+    function test_maximum_nonexclusive_keyword_green() : void
     {
         $spec = <<<SPEC
 schema:
@@ -28,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_maximum_exclusive_keyword_green()
+    function test_maximum_exclusive_keyword_green() : void
     {
         $spec = <<<SPEC
 schema:
