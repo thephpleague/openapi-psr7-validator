@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
+use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\Reader;
 use cebe\openapi\ReferenceContext;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response as ResponseSpec;
-use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\Foundation\CachingProxy;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use function crc32;
 use function realpath;
@@ -30,6 +31,15 @@ abstract class Validator
         $this->openApi = $schema;
     }
 
+    /**
+     * @param string $yaml
+     * @param CacheItemPoolInterface|null $cache
+     *
+     * @return static
+     *
+     * @throws InvalidArgumentException
+     * @throws UnresolvableReferenceException
+     */
     public static function fromYaml(string $yaml, ?CacheItemPoolInterface $cache = null) : self
     {
         $oas = CachingProxy::cachedRead($cache, 'openapi_' . crc32($yaml), static function () use ($yaml) {
@@ -41,6 +51,15 @@ abstract class Validator
         return new static($oas);
     }
 
+    /**
+     * @param string $json
+     * @param CacheItemPoolInterface|null $cache
+     *
+     * @return static
+     *
+     * @throws InvalidArgumentException
+     * @throws UnresolvableReferenceException
+     */
     public static function fromJson(string $json, ?CacheItemPoolInterface $cache = null) : self
     {
         $oas = CachingProxy::cachedRead($cache, 'openapi_' . crc32($json), static function () use ($json) {
@@ -52,6 +71,15 @@ abstract class Validator
         return new static($oas);
     }
 
+    /**
+     * @param string $yamlFile
+     * @param CacheItemPoolInterface|null $cache
+     *
+     * @return static
+     *
+     * @throws InvalidArgumentException
+     * @throws UnresolvableReferenceException
+     */
     public static function fromYamlFile(string $yamlFile, ?CacheItemPoolInterface $cache = null) : self
     {
         \Respect\Validation\Validator::file()->assert($yamlFile);
@@ -65,6 +93,15 @@ abstract class Validator
         return new static($oas);
     }
 
+    /**
+     * @param string $jsonFile
+     * @param CacheItemPoolInterface|null $cache
+     *
+     * @return static
+     *
+     * @throws InvalidArgumentException
+     * @throws UnresolvableReferenceException
+     */
     public static function fromJsonFile(string $jsonFile, ?CacheItemPoolInterface $cache = null) : self
     {
         \Respect\Validation\Validator::file()->assert($jsonFile);
@@ -94,7 +131,7 @@ abstract class Validator
     }
 
     /**
-     * Find a particualr operation (path + method) in the spec
+     * Find a particular operation (path + method) in the spec
      */
     protected function findOperationSpec(OperationAddress $addr) : Operation
     {
@@ -108,7 +145,7 @@ abstract class Validator
     }
 
     /**
-     * Find a particualr path in the spec
+     * Find a particular path in the spec
      */
     protected function findPathSpec(PathAddress $addr) : PathItem
     {
@@ -126,7 +163,7 @@ abstract class Validator
      * This should consider path parameters as well
      * "/users/12" should match both ["/users/{id}", "/users/{group}"]
      *
-     * @param ServerRequest $request
+     * @param ServerRequestInterface $request
      *
      * @return OperationAddress[]
      */
