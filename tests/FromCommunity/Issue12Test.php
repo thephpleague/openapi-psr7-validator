@@ -1,24 +1,27 @@
 <?php
 /**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 07 May 2019
+ * @author Pavel Batanov <pavel.batanov@lamoda.ru>
+ * Date: 13 May 2019
  */
 declare(strict_types=1);
 
-
 namespace OpenAPIValidationTests\FromCommunity;
 
-
-use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\stream_for;
 
-class ScayTraseTest extends TestCase
+final class Issue12Test extends TestCase
 {
-    # https://github.com/lezhnev74/openapi-psr7-validator/issues/3
-    function test_issue3()
+    /**
+     * https://github.com/lezhnev74/openapi-psr7-validator/issues/12
+     *
+     * @dataProvider getNullableTypeExamples
+     *
+     * @param $example
+     */
+    public function test_issue12($example): void
     {
         $yaml = /** @lang yaml */
             <<<YAML
@@ -38,7 +41,12 @@ paths:
             schema:
               properties:
                 test:
-                  type: integer
+                  nullable: true
+                  type: array
+                  items:
+                    type: integer
+                  minItems: 1
+                  
       responses:
         '200':
           description: OK
@@ -54,10 +62,18 @@ YAML;
 
         $psrRequest = (new ServerRequest('post', 'http://localhost:8000/api/v1/products.create'))
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(stream_for(json_encode(['test' => 20])));
+            ->withBody(stream_for(json_encode(['test' => $example])));
 
         $validator->validate($psrRequest);
 
         $this->addToAssertionCount(1);
+    }
+
+    public function getNullableTypeExamples(): array
+    {
+        return [
+            'nullable null' => [null],
+            'nullable array' => [[123]],
+        ];
     }
 }
