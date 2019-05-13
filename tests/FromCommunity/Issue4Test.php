@@ -5,27 +5,34 @@
  */
 declare(strict_types=1);
 
-
 namespace OpenAPIValidationTests\FromCommunity;
-
 
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 
 # @see https://github.com/lezhnev74/openapi-psr7-validator/issues/4
-class ScayReferenceIssue extends TestCase
+class Issue4Test extends TestCase
 {
-    function test_it_resolves_schema_refs_from_yaml_string_green()
+    public function test_it_resolves_schema_refs_from_yaml_string_green(): void
     {
-        $yamlFile  = __DIR__ . "/../stubs/SchemaWithRefs.yaml";
+        $yamlFile = __DIR__ . "/../stubs/SchemaWithRefs.yaml";
         $validator = ServerRequestValidator::fromYamlFile($yamlFile);
 
         $validator->validate($this->makeRequest());
         $this->addToAssertionCount(1);
     }
 
-    protected function makeRequest()
+    public function test_it_resolves_schema_refs_from_yaml_file_green(): void
+    {
+        $yamlFile = __DIR__ . "/../stubs/SchemaWithRefs.yaml";
+        $validator = ServerRequestValidator::fromYaml(file_get_contents($yamlFile));
+
+        $validator->validate($this->makeRequest());
+        $this->addToAssertionCount(1);
+    }
+
+    protected function makeRequest(): ServerRequest
     {
         return new ServerRequest(
             'POST',
@@ -42,14 +49,4 @@ class ScayReferenceIssue extends TestCase
 JSON
         );
     }
-
-    function test_it_resolves_schema_refs_from_yaml_file_green()
-    {
-        $yamlFile  = __DIR__ . "/../stubs/SchemaWithRefs.yaml";
-        $validator = ServerRequestValidator::fromYaml(file_get_contents($yamlFile));
-
-        $validator->validate($this->makeRequest());
-        $this->addToAssertionCount(1);
-    }
-
 }

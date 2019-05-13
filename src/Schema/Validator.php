@@ -64,6 +64,10 @@ class Validator
     public function validate() : void
     {
         try {
+            if ($this->schema->nullable && $this->data === null) {
+                return;
+            }
+
             // These keywords are not part of the JSON Schema at all (new to OAS)
             (new Nullable($this->schema))->validate($this->data, $this->schema->nullable);
 
