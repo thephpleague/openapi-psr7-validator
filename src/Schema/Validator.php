@@ -64,12 +64,13 @@ class Validator
     public function validate() : void
     {
         try {
-            if ($this->schema->nullable && $this->data === null) {
-                return;
-            }
-
             // These keywords are not part of the JSON Schema at all (new to OAS)
             (new Nullable($this->schema))->validate($this->data, $this->schema->nullable);
+
+            // We don't want to validate any more if the value is a valid Null
+            if ($this->data === null) {
+                return;
+            }
 
             // This keywords come directly from JSON Schema Validation, they are the same as in JSON schema
             // https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5
