@@ -104,7 +104,7 @@ $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_c
 $middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
 ```
 
-### SlimFramework middleware
+### SlimFramework Middleware
 Slim framework uses slightly different middleware interface, so here is an 
 adapter which you can use like this:
 
@@ -126,7 +126,7 @@ $slimMiddleware = new \OpenAPIValidation\PSR15\SlimAdapter($psr15Middleware);
 $app->add($slimMiddleware);
 ```
 
-### Caching layer / PSR-6 support
+### Caching Layer / PSR-6 Support
 PSR-7 Validator has a built-in caching layer (based on [PSR-6](https://www.php-fig.org/psr/psr-6/) interfaces) which saves time on parsing OpenAPI specs. It is optional.
 You enable caching if you pass a configured Cache Pool Object to the static constructor like this:
 ```php
@@ -282,6 +282,19 @@ You can run the tests with:
 ```
 vendor/bin/phpunit
 ```
+
+## Contribution Guide
+Feel free to open an Issue or add a Pull request. 
+There is a certain code style that this package follows: [doctrine/coding-standard](https://www.doctrine-project.org/projects/doctrine-coding-standard/en/latest/reference/index.html#introduction).
+
+To conform to this style please use a git hook, shipped with this package at `.githooks/pre-commit`.
+
+How to use it:
+1. Clone the package locally and navigate to the folder
+2. Create a symlink to the hook like this: `ln -s -f ../../.githooks/pre-commit .git/hooks/pre-commit`
+3. Add execution rights: `chmod +x .git/hooks/pre-commit`
+4. Now commit any new changes and the code will be checked and formatted accordingly.
+5. If there are any issues with your code, check the log here: `.phpcs-report.txt`
 
 ## Credits
 People:
