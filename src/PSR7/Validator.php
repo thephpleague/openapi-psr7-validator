@@ -32,9 +32,6 @@ abstract class Validator
     }
 
     /**
-     * @param string $yaml
-     * @param CacheItemPoolInterface|null $cache
-     *
      * @return static
      *
      * @throws InvalidArgumentException
@@ -52,9 +49,6 @@ abstract class Validator
     }
 
     /**
-     * @param string $json
-     * @param CacheItemPoolInterface|null $cache
-     *
      * @return static
      *
      * @throws InvalidArgumentException
@@ -72,9 +66,6 @@ abstract class Validator
     }
 
     /**
-     * @param string $yamlFile
-     * @param CacheItemPoolInterface|null $cache
-     *
      * @return static
      *
      * @throws InvalidArgumentException
@@ -94,9 +85,6 @@ abstract class Validator
     }
 
     /**
-     * @param string $jsonFile
-     * @param CacheItemPoolInterface|null $cache
-     *
      * @return static
      *
      * @throws InvalidArgumentException
@@ -162,8 +150,6 @@ abstract class Validator
      * Check the openapi spec and find matching operations(path+method)
      * This should consider path parameters as well
      * "/users/12" should match both ["/users/{id}", "/users/{group}"]
-     *
-     * @param ServerRequestInterface $request
      *
      * @return OperationAddress[]
      */
