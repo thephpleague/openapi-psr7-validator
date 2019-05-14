@@ -29,6 +29,7 @@
         }
     },
     "require": {
+        "php": ">=7.1",
         "ext-json": "*",
         "cebe/php-openapi": "^1.0",
         "psr/cache": "^1.0",

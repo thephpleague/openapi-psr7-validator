@@ -6,6 +6,7 @@ namespace OpenAPIValidation\PSR7;
 
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\Header as HeaderSpec;
+use cebe\openapi\spec\OpenApi;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\Request\MissedRequestCookie;
 use OpenAPIValidation\PSR7\Exception\Request\MissedRequestHeader;
@@ -36,8 +37,18 @@ use function json_encode;
 use function property_exists;
 use function strtolower;
 
-class ServerRequestValidator extends Validator
+class ServerRequestValidator
 {
+    use SpecFinder;
+
+    /** @var OpenApi */
+    protected $openApi;
+
+    public function __construct(OpenApi $schema)
+    {
+        $this->openApi = $schema;
+    }
+
     /**
      * @return OperationAddress which matched the Request
      */
@@ -283,7 +294,11 @@ class ServerRequestValidator extends Validator
         } catch (Throwable $e) {
             switch ($e->getCode()) {
                 default:
-                    throw RequestPathParameterMismatch::fromAddrAndCauseException($addr, $serverRequest->getUri()->getPath(), $e);
+                    throw RequestPathParameterMismatch::fromAddrAndCauseException(
+                        $addr,
+                        $serverRequest->getUri()->getPath(),
+                        $e
+                    );
             }
         }
     }
@@ -304,7 +319,11 @@ class ServerRequestValidator extends Validator
         // 2. Validate collected params
         try {
             $pathValidator = new Security();
-            $pathValidator->validate($serverRequest, $securitySpecs, $this->openApi->components ? $this->openApi->components->securitySchemes : []);
+            $pathValidator->validate(
+                $serverRequest,
+                $securitySpecs,
+                $this->openApi->components ? $this->openApi->components->securitySchemes : []
+            );
         } catch (Throwable $e) {
             switch ($e->getCode()) {
                 case 601:

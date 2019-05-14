@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
+use cebe\openapi\spec\OpenApi;
 use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\Response\ResponseBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\Response\ResponseHeadersMismatch;
@@ -11,13 +12,20 @@ use OpenAPIValidation\PSR7\Exception\Response\UnexpectedResponseContentType;
 use OpenAPIValidation\PSR7\Exception\Response\UnexpectedResponseHeader;
 use OpenAPIValidation\PSR7\Validators\Body;
 use OpenAPIValidation\PSR7\Validators\Headers;
-use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
-class ResponseValidator extends Validator
+class ResponseValidator
 {
-    use ValidationStrategy;
+    use SpecFinder;
+
+    /** @var OpenApi */
+    protected $openApi;
+
+    public function __construct(OpenApi $schema)
+    {
+        $this->openApi = $schema;
+    }
 
     public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
     {

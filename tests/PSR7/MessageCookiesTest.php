@@ -9,8 +9,7 @@ use OpenAPIValidation\PSR7\Exception\Request\RequestCookiesMismatch;
 use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ResponseAddress;
-use OpenAPIValidation\PSR7\ResponseValidator;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use OpenAPIValidation\PSR7\ValidatorBuilder;
 
 final class MessageCookiesTest extends BaseValidatorTest
 {
@@ -18,7 +17,7 @@ final class MessageCookiesTest extends BaseValidatorTest
     {
         $request = $this->makeGoodServerRequest('/cookies', 'post');
 
-        $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -28,7 +27,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method());
 
-        $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
         $validator->validate($addr, $response);
         $this->addToAssertionCount(1);
     }
@@ -39,7 +38,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $response = $this->makeGoodResponse($addr->path(), $addr->method())->withoutHeader('Set-Cookie');
 
         try {
-            $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
             $validator->validate($addr, $response);
         } catch (MissedResponseHeader $e) {
             $this->assertEquals('Set-Cookie', $e->headerName());
@@ -53,7 +52,7 @@ final class MessageCookiesTest extends BaseValidatorTest
             ->withCookieParams([]);
 
         try {
-            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (MissedRequestCookie $e) {
@@ -70,7 +69,7 @@ final class MessageCookiesTest extends BaseValidatorTest
             ->withCookieParams(['session_id' => 'goodvalue', 'debug' => 'bad value']);
 
         try {
-            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (RequestCookiesMismatch $e) {

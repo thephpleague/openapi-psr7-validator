@@ -40,7 +40,7 @@ which prevents you from using `\cebe\openapi\Reader::readFromYamlFile('api.yaml'
 
 Until the issue is resolved we recommend using loading from file contents like this:
 ```
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYaml(file_get_contents($yamlFile)); 
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_contents($yamlFile))->getServerRequestValidator(); 
 ```
 
 ### ServerRequest Message
@@ -50,13 +50,13 @@ You can validate `\Psr\Http\Message\ServerRequestInterface` instance like this:
 $yamlFile = "api.yaml";
 $jsonFile = "api.json";
 
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYamlFile($yamlFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile($yamlFile)->getServerRequestValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYaml(file_get_contents($yamlFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_contents($yamlFile))->getServerRequestValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJson(file_get_contents($jsonFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJson(file_get_contents($jsonFile))->getServerRequestValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJsonFile($jsonFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonFile)->getServerRequestValidator();
 
 $validator->validate($request);
 ```
@@ -72,13 +72,13 @@ Example:
 $yamlFile = "api.yaml";
 $jsonFile = "api.json";
 
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromYamlFile($yamlFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile($yamlFile)->getResponseValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromYaml(file_get_contents($yamlFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_contents($yamlFile))->getResponseValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromJson(file_get_contents($jsonFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJson(file_get_contents($jsonFile))->getResponseValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromJsonFile($jsonFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonFile)->getResponseValidator();
 
 $operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 'get') ;
 
@@ -134,12 +134,16 @@ You enable caching if you pass a configured Cache Pool Object to the static cons
 $cachePool = new ArrayCachePool();
 
 // Pass it as a 2nd argument
-\OpenAPIValidation\PSR7\ResponseValidator::fromYamlFile($yamlFile, $cachePool);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)
+    ->fromYamlFile($yamlFile)
+    ->setCache($cachePool)
+    ->getResponseValidator();
 # or
 \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile, $cachePool);
 ```
 
-Cache does not set expiration date for its payload.
+PSR-15 cache does not set expiration date for its payload. For PSR-7 cache you can use `->setCache($pool, $ttl)` call 
+to set proper ttl (or explicit `null`)
 
 ### Standalone OpenAPI Validator
 The package contains a standalone validator which can validate any data 
