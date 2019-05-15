@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Pavel Batanov <pavel.batanov@lamoda.ru>
- * Date: 13 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\FromCommunity;
@@ -11,17 +8,18 @@ use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\stream_for;
+use function json_encode;
 
 final class Issue12Test extends TestCase
 {
     /**
      * https://github.com/lezhnev74/openapi-psr7-validator/issues/12
      *
-     * @dataProvider getNullableTypeExamples
-     *
      * @param $example
+     *
+     * @dataProvider getNullableTypeExamples
      */
-    public function test_issue12($example): void
+    public function test_issue12($example) : void
     {
         $yaml = /** @lang yaml */
             <<<YAML
@@ -69,7 +67,7 @@ YAML;
         $this->addToAssertionCount(1);
     }
 
-    public function getNullableTypeExamples(): array
+    public function getNullableTypeExamples() : array
     {
         return [
             'nullable null' => [null],

@@ -1,8 +1,5 @@
 <?php
-/**
- * @author Dmitry Lezhnev <lezhnev.work@gmail.com>
- * Date: 07 May 2019
- */
+
 declare(strict_types=1);
 
 namespace OpenAPIValidationTests\FromCommunity;
@@ -11,11 +8,12 @@ use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\stream_for;
+use function json_encode;
 
 class Issue3Test extends TestCase
 {
-    # https://github.com/lezhnev74/openapi-psr7-validator/issues/3
-    public function test_issue3(): void
+    // https://github.com/lezhnev74/openapi-psr7-validator/issues/3
+    public function test_issue3() : void
     {
         $yaml = /** @lang yaml */
             <<<YAML
