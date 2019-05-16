@@ -17,8 +17,6 @@ final class ArrayHelper
      * To distinguish the two it evaluates keys of PHP array:
      * - if there are only numeric keys (0...N) then it returns true
      * - otherwise, if there are string keys it returns false
-     *
-     * @param mixed[] $arr
      */
     public static function isAssoc(array $arr) : bool
     {
@@ -26,6 +24,6 @@ final class ArrayHelper
             return false;
         }
 
-        return array_keys($arr) === range(0, count($arr) - 1);
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 }
