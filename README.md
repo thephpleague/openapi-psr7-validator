@@ -224,8 +224,8 @@ The package throws a list of various exceptions which you can catch and
 handle. There are some of them:
 - Schema related:
     - `\OpenAPIValidation\Schema\Exception\ValidationKeywordFailed` - data does 
-    not match given keyword's rule. For example `type:string` won't match integer 
-    `12`.
+    not match given keyword's rule. 
+    - `\OpenAPIValidation\Schema\Exception\TypeMismatch` - data mismatched a given type. For example `type:string` and value is `12`
     - `\OpenAPIValidation\Schema\Exception\FormatMismatch` - data mismatched a 
     given type format. For example `type: string, format: email` won't match 
     `not-email`.
