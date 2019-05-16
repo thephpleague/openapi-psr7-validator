@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
+use cebe\openapi\spec\Type as CebeType;
 use OpenAPIValidation\Foundation\ArrayHelper;
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
+use OpenAPIValidation\Schema\Exception\InvalidSchemaException;
+use OpenAPIValidation\Schema\Exception\TypeException;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use Respect\Validation\Validator;
 use RuntimeException;
 use Throwable;
 use function class_exists;
-use function count;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -53,41 +54,42 @@ class Type extends BaseKeyword
             }
 
             switch ($type) {
-                case 'boolean':
+                case CebeType::BOOLEAN:
                     if (! is_bool($data)) {
-                        throw new Exception(sprintf("Value '%s' is not a boolean", $data));
+                        throw TypeException::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                     }
                     break;
-                case 'object':
+                case CebeType::OBJECT:
                     if (! is_object($data) && ! is_array($data)) {
-                        throw new Exception(sprintf("Value '%s' is not an object", $data));
+                        throw TypeException::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
                     }
                     break;
                 case 'array':
-                    if (count($data) && ! (is_array($data) && ArrayHelper::isAssoc($data))) {
-                        throw new Exception(sprintf("Value '%s' is not an array", $data));
+                    // no constant here yet https://github.com/cebe/php-openapi/pull/24
+                    if (! is_array($data) || ArrayHelper::isAssoc($data)) {
+                        throw TypeException::becauseTypeDoesNotMatch('array', $data);
                     }
                     if (! isset($this->parentSchema->items)) {
-                        throw new Exception(sprintf('items MUST be present if the type is array'));
+                        throw new InvalidSchemaException(sprintf('items MUST be present if the type is array'));
                     }
                     break;
-                case 'number':
+                case CebeType::NUMBER:
                     if (! is_numeric($data)) {
-                        throw new Exception(sprintf("Value '%s' is not a number", $data));
+                        throw TypeException::becauseTypeDoesNotMatch(CebeType::NUMBER, $data);
                     }
                     break;
-                case 'integer':
+                case CebeType::INTEGER:
                     if (! is_int($data)) {
-                        throw new Exception(sprintf("Value '%s' is not an integer", $data));
+                        throw TypeException::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                     }
                     break;
-                case 'string':
+                case CebeType::STRING:
                     if (! is_string($data)) {
-                        throw new Exception(sprintf("Value '%s' is not a string", $data));
+                        throw TypeException::becauseTypeDoesNotMatch(CebeType::STRING, $data);
                     }
                     break;
                 default:
-                    throw new Exception("Type '%s' is unexpected", $type);
+                    throw TypeException::becauseTypeIsNotKnown($type);
             }
 
             // 2. Validate format now

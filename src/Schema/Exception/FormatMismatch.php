@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Exception;
 
-use LogicException;
 use function sprintf;
 
 // Indicates that data did not match a given type's "format"
-class FormatMismatch extends LogicException
+class FormatMismatch extends TypeException
 {
     /** @var string */
     protected $format;
 
-    /**
-     * @param mixed $value
-     *
-     * @return FormatMismatch
-     */
     public static function fromFormat(string $format, $value) : self
     {
         $i         = new self(sprintf("Value '%s' does not match format %s", $value, $format));
