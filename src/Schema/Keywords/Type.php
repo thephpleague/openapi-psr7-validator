@@ -7,11 +7,9 @@ namespace OpenAPIValidation\Schema\Keywords;
 use cebe\openapi\spec\Type as CebeType;
 use OpenAPIValidation\Foundation\ArrayHelper;
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
-use OpenAPIValidation\Schema\Exception\InvalidSchemaException;
 use OpenAPIValidation\Schema\Exception\TypeException;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
-use Respect\Validation\Validator;
 use RuntimeException;
 use Throwable;
 use function class_exists;
@@ -39,10 +37,6 @@ class Type extends BaseKeyword
     public function validate($data, string $type, ?string $format = null) : void
     {
         try {
-            if ($this->parentSchema->nullable && $data === null) {
-                return;
-            }
-
             switch ($type) {
                 case CebeType::BOOLEAN:
                     if (! is_bool($data)) {
