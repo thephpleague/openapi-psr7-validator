@@ -26,6 +26,6 @@ final class ArrayHelper
             return false;
         }
 
-        return array_keys($arr) === range(0, count($arr) - 1);
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 }
