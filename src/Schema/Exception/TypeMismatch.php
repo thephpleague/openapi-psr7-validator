@@ -8,11 +8,16 @@ use Exception;
 use function gettype;
 use function sprintf;
 
-class TypeException extends Exception
+class TypeMismatch extends Exception
 {
+    /**
+     * @param mixed $value
+     *
+     * @return TypeMismatch
+     */
     public static function becauseTypeDoesNotMatch(string $expected, $value) : self
     {
-        return new self(sprintf('Value expected to be %s, %s given.', $expected, gettype($value)));
+        return new self(sprintf("Value expected to be '%s', '%s' given.", $expected, gettype($value)));
     }
 
     public static function becauseTypeIsNotKnown(string $type) : self

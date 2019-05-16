@@ -7,7 +7,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 use cebe\openapi\spec\Type as CebeType;
 use OpenAPIValidation\Foundation\ArrayHelper;
 use OpenAPIValidation\Schema\Exception\FormatMismatch;
-use OpenAPIValidation\Schema\Exception\TypeException;
+use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use RuntimeException;
@@ -40,37 +40,37 @@ class Type extends BaseKeyword
             switch ($type) {
                 case CebeType::BOOLEAN:
                     if (! is_bool($data)) {
-                        throw TypeException::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
+                        throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                     }
                     break;
                 case CebeType::OBJECT:
                     if (! is_object($data) && ! is_array($data)) {
-                        throw TypeException::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
+                        throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
                     }
                     break;
                 case 'array':
                     // no constant here yet https://github.com/cebe/php-openapi/pull/24
                     if (! is_array($data) || ArrayHelper::isAssoc($data)) {
-                        throw TypeException::becauseTypeDoesNotMatch('array', $data);
+                        throw TypeMismatch::becauseTypeDoesNotMatch('array', $data);
                     }
                     break;
                 case CebeType::NUMBER:
                     if (! is_numeric($data)) {
-                        throw TypeException::becauseTypeDoesNotMatch(CebeType::NUMBER, $data);
+                        throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::NUMBER, $data);
                     }
                     break;
                 case CebeType::INTEGER:
                     if (! is_int($data)) {
-                        throw TypeException::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
+                        throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                     }
                     break;
                 case CebeType::STRING:
                     if (! is_string($data)) {
-                        throw TypeException::becauseTypeDoesNotMatch(CebeType::STRING, $data);
+                        throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::STRING, $data);
                     }
                     break;
                 default:
-                    throw TypeException::becauseTypeIsNotKnown($type);
+                    throw TypeMismatch::becauseTypeIsNotKnown($type);
             }
 
             // 2. Validate format now

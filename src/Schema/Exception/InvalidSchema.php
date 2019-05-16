@@ -6,6 +6,6 @@ namespace OpenAPIValidation\Schema\Exception;
 
 use Exception;
 
-class InvalidSchemaException extends Exception
+class InvalidSchema extends Exception
 {
 }
