@@ -39,16 +39,6 @@ class Type extends BaseKeyword
     public function validate($data, string $type, ?string $format = null) : void
     {
         try {
-            Validator::in([
-                0 => 'boolean',
-                1 => 'object',
-                2 => 'array',
-                3 => 'number',
-                4 => 'integer',
-                5 => 'string',
-                // Note that there is no null type; instead, the nullable attribute is used as a modifier of the base type.
-            ])->stringType()->assert($type);
-
             if ($this->parentSchema->nullable && $data === null) {
                 return;
             }
@@ -68,9 +58,6 @@ class Type extends BaseKeyword
                     // no constant here yet https://github.com/cebe/php-openapi/pull/24
                     if (! is_array($data) || ArrayHelper::isAssoc($data)) {
                         throw TypeException::becauseTypeDoesNotMatch('array', $data);
-                    }
-                    if (! isset($this->parentSchema->items)) {
-                        throw new InvalidSchemaException(sprintf('items MUST be present if the type is array'));
                     }
                     break;
                 case CebeType::NUMBER:
