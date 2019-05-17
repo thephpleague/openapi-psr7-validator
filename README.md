@@ -95,13 +95,13 @@ PSR-15 middleware can be used like this:
 $yamlFile = 'api.yaml';
 $jsonFile = 'api.json';
 
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYamlFile($yamlFile)->getValidationMiddleware();
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYaml(file_get_contents($yamlFile))->getValidationMiddleware();
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_contents($jsonFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJsonFile($jsonFile)->getValidationMiddleware();
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJson(file_get_contents($jsonFile))->getValidationMiddleware();
 ```
 
 ### SlimFramework Middleware
@@ -112,13 +112,13 @@ adapter which you can use like this:
 $yamlFile = 'api.yaml';
 $jsonFile = 'api.json';
 
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYamlFile($yamlFile)->getValidationMiddleware();
 #or
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYaml(file_get_contents($yamlFile))->getValidationMiddleware();
 #or
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJsonFile($jsonFile)->getValidationMiddleware();
 #or
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_contents($jsonFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJson(file_get_contents($jsonFile))->getValidationMiddleware();
 
 $slimMiddleware = new \OpenAPIValidation\PSR15\SlimAdapter($psr15Middleware);
 
