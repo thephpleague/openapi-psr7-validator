@@ -1,14 +1,26 @@
 language: php
 
 php:
+  - nightly
   - "7.3"
   - "7.2"
   - "7.1"
+
+env:
+  - RUN_PHPUNIT=1 CSCHECK=0
+
+matrix:
+  include:
+    - php: "7.1"
+      env: RUN_PHPUNIT=0 CSCHECK=1
+
+  allow_failures:
+    - php: nightly
 
 before_script:
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
 
 script:
-  - vendor/bin/phpunit -c phpunit.xml
-  - vendor/bin/phpcs
+  - if [ "$RUN_PHPUNIT" = "1" ]; then vendor/bin/phpunit -c phpunit.xml; fi;
+  - if [ "$CSCHECK" = "1" ]; then vendor/bin/phpcs; fi;
