@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 final class PathAddressTest extends TestCase
 {
+    /**
+     * @return mixed[][]
+     */
     public function dataProviderParse() : array
     {
         return [
@@ -21,6 +24,8 @@ final class PathAddressTest extends TestCase
     }
 
     /**
+     * @param mixed[] $result
+     *
      * @dataProvider dataProviderParse
      */
     public function testItParsesParams(string $spec, string $url, array $result) : void
@@ -30,6 +35,9 @@ final class PathAddressTest extends TestCase
         $this->assertTrue($result === $parsed);
     }
 
+    /**
+     * @return mixed[][]
+     */
     public function dataProviderMatch() : array
     {
         return [

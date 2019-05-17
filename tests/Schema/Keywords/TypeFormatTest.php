@@ -65,6 +65,9 @@ SPEC;
 
         $unexpectedFormat = new class()
         {
+            /**
+             * @param mixed $value
+             */
             public function __invoke($value) : bool
             {
                 return $value === 'good value';

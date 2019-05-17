@@ -15,7 +15,7 @@ final class Issue12Test extends TestCase
     /**
      * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/12
      *
-     * @param null|mixed[]
+     * @param mixed[]|null $example
      *
      * @dataProvider getNullableTypeExamples
      */
