@@ -39,14 +39,15 @@ use function strtolower;
 
 class ServerRequestValidator
 {
-    use SpecFinder;
-
     /** @var OpenApi */
     protected $openApi;
+    /** @var SpecFinder */
+    protected $finder;
 
     public function __construct(OpenApi $schema)
     {
         $this->openApi = $schema;
+        $this->finder  = new SpecFinder($this->openApi);
     }
 
     /**
@@ -61,7 +62,7 @@ class ServerRequestValidator
         // If there is only one - then proceed with checking
         // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
         // "This request matched operations A,B and C, but mismatched its schemas."
-        $matchingOperationsAddrs = $this->findMatchingOperations($serverRequest);
+        $matchingOperationsAddrs = $this->finder->findMatchingOperations($serverRequest);
 
         if (! $matchingOperationsAddrs) {
             throw NoOperation::fromPathAndMethod($path, $method);
@@ -116,7 +117,7 @@ class ServerRequestValidator
      */
     protected function validateHeaders(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         // 1. Validate Headers
         // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
@@ -133,7 +134,7 @@ class ServerRequestValidator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'header') {
                 continue;
@@ -161,7 +162,7 @@ class ServerRequestValidator
 
     private function validateCookies(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         $cookieSpecs = [];
 
@@ -175,7 +176,7 @@ class ServerRequestValidator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'cookie') {
                 continue;
@@ -200,7 +201,7 @@ class ServerRequestValidator
 
     private function validateBody(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         if (! $spec->requestBody) {
             return;
@@ -221,7 +222,7 @@ class ServerRequestValidator
 
     private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         // 1. Collect operation-level params
         $querySpecs = [];
@@ -235,7 +236,7 @@ class ServerRequestValidator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'query') {
                 continue;
@@ -264,7 +265,7 @@ class ServerRequestValidator
      */
     private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         // 1. Collect operation-level params
         $pathSpecs = [];
@@ -278,7 +279,7 @@ class ServerRequestValidator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'path') {
                 continue;
@@ -305,7 +306,7 @@ class ServerRequestValidator
 
     private function validateSecurity(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $opSpec = $this->findOperationSpec($addr);
+        $opSpec = $this->finder->findOperationSpec($addr);
 
         // 1. Collect security params
         if (property_exists($opSpec->getSerializableData(), 'security')) {

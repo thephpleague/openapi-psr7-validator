@@ -17,14 +17,15 @@ use Throwable;
 
 class ResponseValidator
 {
-    use SpecFinder;
-
     /** @var OpenApi */
     protected $openApi;
+    /** @var SpecFinder */
+    protected $finder;
 
     public function __construct(OpenApi $schema)
     {
         $this->openApi = $schema;
+        $this->finder  = new SpecFinder($this->openApi);
     }
 
     public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
@@ -32,7 +33,7 @@ class ResponseValidator
         $addr = new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode());
 
         // 0. Find appropriate schema to validate against
-        $spec = $this->findResponseSpec($addr);
+        $spec = $this->finder->findResponseSpec($addr);
 
         // 1. Validate Headers
         try {

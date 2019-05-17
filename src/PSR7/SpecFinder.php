@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
+use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response as ResponseSpec;
@@ -13,12 +14,20 @@ use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use Psr\Http\Message\ServerRequestInterface;
 
-trait SpecFinder
+final class SpecFinder
 {
+    /** @var OpenApi */
+    private $openApi;
+
+    public function __construct(OpenApi $openApi)
+    {
+        $this->openApi = $openApi;
+    }
+
     /**
      * Find a particular operation (path + method) in the spec
      */
-    protected function findOperationSpec(OperationAddress $addr) : Operation
+    public function findOperationSpec(OperationAddress $addr) : Operation
     {
         $pathSpec = $this->findPathSpec($addr);
 
@@ -32,7 +41,7 @@ trait SpecFinder
     /**
      * Find a particular path in the spec
      */
-    protected function findPathSpec(PathAddress $addr) : PathItem
+    public function findPathSpec(PathAddress $addr) : PathItem
     {
         $pathSpec = $this->openApi->paths->getPath($addr->path());
 
@@ -46,7 +55,7 @@ trait SpecFinder
     /**
      * Find the schema which describes a given response
      */
-    protected function findResponseSpec(ResponseAddress $addr) : ResponseSpec
+    public function findResponseSpec(ResponseAddress $addr) : ResponseSpec
     {
         $operation = $this->findOperationSpec($addr->getOperationAddress());
 
@@ -71,7 +80,7 @@ trait SpecFinder
      *
      * @return OperationAddress[]
      */
-    protected function findMatchingOperations(ServerRequestInterface $request) : array
+    public function findMatchingOperations(ServerRequestInterface $request) : array
     {
         $pathFinder = new PathFinder($this->openApi, $request->getUri(), $request->getMethod());
 
