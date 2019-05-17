@@ -142,8 +142,10 @@ $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)
 \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile, $cachePool);
 ```
 
-PSR-15 cache does not set expiration date for its payload. For PSR-7 cache you can use `->setCache($pool, $ttl)` call 
-to set proper ttl (or explicit `null`)
+You can use `->setCache($pool, $ttl)` call for both PSR-7 and PSR-15 builder in order to set proper ttl (or explicit `null`)
+
+If you want take control over the cache key for schema item, or your cache does not support cache key generation by itself
+you can `->overrideCacheKey('my_custom_key')` to ensure cache uses key you want.
 
 ### Standalone OpenAPI Validator
 The package contains a standalone validator which can validate any data 
