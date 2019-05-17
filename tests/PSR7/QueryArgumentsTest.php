@@ -10,7 +10,7 @@ use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
-class QueryArgumentsTest extends BaseValidatorTest
+final class QueryArgumentsTest extends BaseValidatorTest
 {
     public function test_it_validates_request_query_arguments_green() : void
     {
@@ -25,8 +25,8 @@ class QueryArgumentsTest extends BaseValidatorTest
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withUri(new Uri('/read'))
-                        ->withQueryParams([]);
+            ->withUri(new Uri('/read'))
+            ->withQueryParams([]);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
@@ -42,8 +42,8 @@ class QueryArgumentsTest extends BaseValidatorTest
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withUri(new Uri('/read?limit=wrong'))
-                        ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
+            ->withUri(new Uri('/read?limit=wrong'))
+            ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);

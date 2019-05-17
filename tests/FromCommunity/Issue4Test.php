@@ -9,8 +9,10 @@ use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 use function file_get_contents;
 
-// @see https://github.com/lezhnev74/openapi-psr7-validator/issues/4
-class Issue4Test extends TestCase
+/**
+ * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/4
+ */
+final class Issue4Test extends TestCase
 {
     public function test_it_resolves_schema_refs_from_yaml_string_green() : void
     {

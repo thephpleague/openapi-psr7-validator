@@ -12,7 +12,7 @@ use OpenAPIValidation\PSR7\ResponseAddress;
 use OpenAPIValidation\PSR7\ResponseValidator;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
-class MessageCookiesTest extends BaseValidatorTest
+final class MessageCookiesTest extends BaseValidatorTest
 {
     public function test_it_validates_request_with_cookies_green() : void
     {
@@ -50,7 +50,7 @@ class MessageCookiesTest extends BaseValidatorTest
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withCookieParams([]);
+            ->withCookieParams([]);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
@@ -67,7 +67,7 @@ class MessageCookiesTest extends BaseValidatorTest
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withCookieParams(['session_id' => 'goodvalue', 'debug' => 'bad value']);
+            ->withCookieParams(['session_id' => 'goodvalue', 'debug' => 'bad value']);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);

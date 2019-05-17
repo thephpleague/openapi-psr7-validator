@@ -8,7 +8,7 @@ use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\MultipleOperationsMismatchForRequest;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
-class ServerRequestMultipleMatchesTest extends BaseValidatorTest
+final class ServerRequestMultipleMatchesTest extends BaseValidatorTest
 {
     public function test_it_matches_single_operation_red() : void
     {

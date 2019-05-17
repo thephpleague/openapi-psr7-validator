@@ -8,16 +8,16 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class TypeTest extends SchemaValidatorTest
+final class TypeTest extends SchemaValidatorTest
 {
-    function test_it_validates_type_green() : void
+    public function test_it_validates_type_green() : void
     {
         $typedValues = [
-            'string'  => 'string value',
-            'object'  => ['a' => 1],
-            'array'   => ['a', 'b'],
+            'string' => 'string value',
+            'object' => ['a' => 1],
+            'array' => ['a', 'b'],
             'boolean' => true,
-            'number'  => 0.54,
+            'number' => 0.54,
             'integer' => 1,
         ];
 
@@ -43,14 +43,14 @@ SPEC;
         }
     }
 
-    function test_it_validates_type_red() : void
+    public function test_it_validates_type_red() : void
     {
         $typedValues = [
-            'string'  => 12,
-            'object'  => 'not object',
-            'array'   => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
+            'string' => 12,
+            'object' => 'not object',
+            'array' => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
             'boolean' => [1, 2],
-            'number'  => [],
+            'number' => [],
             'integer' => 12.55,
         ];
 

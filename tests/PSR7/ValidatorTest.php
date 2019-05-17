@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7;
 
 use Cache\Adapter\PHPArray\ArrayCachePool;
-use OpenAPIValidation\PSR7\Validator;
+use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 use function copy;
 use function file_put_contents;
 use function sys_get_temp_dir;
 use function tempnam;
 
-class ValidatorTest extends TestCase
+final class ValidatorTest extends TestCase
 {
     public function test_it_caches_parsed_openapi_spec_green() : void
     {
@@ -25,16 +25,12 @@ class ValidatorTest extends TestCase
         copy(__DIR__ . '/../stubs/uber.yaml', $oasFile);
 
         // parse file
-        $v1 = MockValidator::fromYamlFile($oasFile, $cache);
+        $v1 = ServerRequestValidator::fromYamlFile($oasFile, $cache);
 
         // drop oas file contents and read again
         file_put_contents($oasFile, 'rubbish');
-        $v2 = MockValidator::fromYamlFile($oasFile, $cache);
+        $v2 = ServerRequestValidator::fromYamlFile($oasFile, $cache);
 
-        $this->addToAssertionCount(1);
+        self::assertEquals($v1, $v2);
     }
-}
-
-class MockValidator extends Validator
-{
 }

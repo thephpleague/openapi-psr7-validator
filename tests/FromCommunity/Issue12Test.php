@@ -13,13 +13,13 @@ use function json_encode;
 final class Issue12Test extends TestCase
 {
     /**
-     * https://github.com/lezhnev74/openapi-psr7-validator/issues/12
+     * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/12
      *
-     * @param $example
+     * @param null|mixed[]
      *
      * @dataProvider getNullableTypeExamples
      */
-    public function test_issue12($example) : void
+    public function test_issue12(?array $example) : void
     {
         $yaml = /** @lang yaml */
             <<<YAML
@@ -67,6 +67,9 @@ YAML;
         $this->addToAssertionCount(1);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getNullableTypeExamples() : array
     {
         return [

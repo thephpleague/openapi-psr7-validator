@@ -7,9 +7,9 @@ namespace OpenAPIValidationTests\PSR7;
 use OpenAPIValidation\PSR7\PathAddress;
 use PHPUnit\Framework\TestCase;
 
-class PathAddressTest extends TestCase
+final class PathAddressTest extends TestCase
 {
-    function dataProviderParse()
+    public function dataProviderParse() : array
     {
         return [
             ['/users/{id}/group/{group}', '/users/12/group/admin?a=2', ['id' => 12, 'group' => 'admin']],
@@ -30,7 +30,7 @@ class PathAddressTest extends TestCase
         $this->assertTrue($result === $parsed);
     }
 
-    function dataProviderMatch()
+    public function dataProviderMatch() : array
     {
         return [
             ['/users/{id}', '/users/12?data=extended', true],

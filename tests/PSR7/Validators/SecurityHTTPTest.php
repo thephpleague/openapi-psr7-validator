@@ -9,9 +9,10 @@ use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 
-class SecurityHTTPTest extends TestCase
+final class SecurityHTTPTest extends TestCase
 {
-    protected $specBearer = <<<BEARER
+    /** @var string */
+    private $specBearer = <<<BEARER
 openapi: "3.0.0"
 info:
   title: Uber API
@@ -31,7 +32,8 @@ components:
       scheme: bearer
 BEARER;
 
-    protected $specBasic = <<<BASIC
+    /** @var string */
+    private $specBasic = <<<BASIC
 openapi: "3.0.0"
 info:
   title: Uber API
@@ -51,7 +53,7 @@ components:
       scheme: basic
 BASIC;
 
-    function test_it_checks_bearer_header_green() : void
+    public function test_it_checks_bearer_header_green() : void
     {
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Bearer ABCDEFG');
@@ -61,9 +63,9 @@ BASIC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_checks_bearer_header_red() : void
+    public function test_it_checks_bearer_header_red() : void
     {
-        $request = (new ServerRequest('get', '/products'));
+        $request = new ServerRequest('get', '/products');
 
         try {
             $validator = ServerRequestValidator::fromYaml($this->specBearer);
@@ -75,7 +77,7 @@ BASIC;
         }
     }
 
-    function test_it_checks_basic_header_green() : void
+    public function test_it_checks_basic_header_green() : void
     {
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Basic ABCDEFG');
@@ -85,9 +87,9 @@ BASIC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_checks_basic_header_red() : void
+    public function test_it_checks_basic_header_red() : void
     {
-        $request = (new ServerRequest('get', '/products'));
+        $request = new ServerRequest('get', '/products');
 
         try {
             $validator = ServerRequestValidator::fromYaml($this->specBasic);

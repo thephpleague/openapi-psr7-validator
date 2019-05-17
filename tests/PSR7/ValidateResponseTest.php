@@ -12,7 +12,7 @@ use OpenAPIValidation\PSR7\ResponseValidator;
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
-class ValidateResponseTest extends BaseValidatorTest
+final class ValidateResponseTest extends BaseValidatorTest
 {
     public function test_it_validates_message_green() : void
     {
@@ -26,8 +26,8 @@ class ValidateResponseTest extends BaseValidatorTest
     public function test_it_validates_binary_response_green() : void
     {
         $response = $this->makeGoodResponse('/path1', 'get')
-                         ->withHeader('Content-Type', 'image/jpeg')
-                         ->withBody(stream_for(__DIR__ . '/../stubs/image.jpg'));
+            ->withHeader('Content-Type', 'image/jpeg')
+            ->withBody(stream_for(__DIR__ . '/../stubs/image.jpg'));
 
         $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate(new OperationAddress('/path1', 'get'), $response);

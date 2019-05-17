@@ -13,7 +13,7 @@ use OpenAPIValidation\PSR7\ServerRequestValidator;
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
-class ServerRequestTest extends BaseValidatorTest
+final class ServerRequestTest extends BaseValidatorTest
 {
     public function test_it_validates_message_green() : void
     {
@@ -28,7 +28,7 @@ class ServerRequestTest extends BaseValidatorTest
     {
         $body    = ['name' => 'Alex'];
         $request = $this->makeGoodServerRequest('/request-body', 'post')
-                        ->withBody(stream_for(json_encode($body)));
+            ->withBody(stream_for(json_encode($body)));
 
         $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate($request);
@@ -40,7 +40,7 @@ class ServerRequestTest extends BaseValidatorTest
         $addr    = new OperationAddress('/request-body', 'post');
         $body    = ['name' => 1000];
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withBody(stream_for(json_encode($body)));
+            ->withBody(stream_for(json_encode($body)));
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
@@ -55,8 +55,8 @@ class ServerRequestTest extends BaseValidatorTest
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withoutHeader('Content-Type')
-                        ->withHeader('Content-Type', 'unexpected/content');
+            ->withoutHeader('Content-Type')
+            ->withHeader('Content-Type', 'unexpected/content');
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);

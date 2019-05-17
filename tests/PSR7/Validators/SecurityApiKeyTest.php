@@ -9,10 +9,14 @@ use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 use PHPUnit\Framework\TestCase;
 
-class SecurityApiKeyTest extends TestCase
+final class SecurityApiKeyTest extends TestCase
 {
-    // Security schemes united as AND
-    protected $specSecurityORUnion = <<<OR
+    /**
+     * Security schemes united as AND
+     *
+     * @var string
+     */
+    private $specSecurityORUnion = <<<OR
 openapi: "3.0.0"
 info:
   title: Uber API
@@ -43,8 +47,12 @@ components:
       in: cookie
 OR;
 
-    // Security schemes united as OR
-    protected $specSecurityANDUnion = <<<AND
+    /**
+     * Security schemes united as OR
+     *
+     * @var string
+     */
+    private $specSecurityANDUnion = <<<AND
 openapi: "3.0.0"
 info:
   title: Uber API
@@ -70,8 +78,12 @@ components:
       in: header
 AND;
 
-    // Security schemes united as OR
-    protected $specSecurityAND_OR_COMBINED = <<<AND
+    /**
+     * Security schemes united as OR
+     *
+     * @var string
+     */
+    private $specSecurityAND_OR_COMBINED = <<<AND
 openapi: "3.0.0"
 info:
   title: Uber API
@@ -102,7 +114,7 @@ components:
       in: cookie
 AND;
 
-    function test_it_applies_security_rules_OR_green() : void
+    public function test_it_applies_security_rules_OR_green() : void
     {
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['server_token1' => 'key value']);
 
@@ -111,7 +123,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_missed_apiKey_red() : void
+    public function test_it_validates_missed_apiKey_red() : void
     {
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['wrongToken' => 'key value']);
 
@@ -125,7 +137,7 @@ AND;
         }
     }
 
-    function test_it_applies_security_rules_AND_green() : void
+    public function test_it_applies_security_rules_AND_green() : void
     {
         $request = (new ServerRequest('get', '/products'))
             ->withQueryParams(['server_token1' => 'key value'])
@@ -136,7 +148,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_applies_security_rules_AND_red() : void
+    public function test_it_applies_security_rules_AND_red() : void
     {
         // request has no security header
         $request = (new ServerRequest('get', '/products'))
@@ -152,7 +164,7 @@ AND;
         }
     }
 
-    function test_it_applies_security_rules_AND_OR_combined_green() : void
+    public function test_it_applies_security_rules_AND_OR_combined_green() : void
     {
         // request has one of allowed security cookies
         $request = (new ServerRequest('get', '/products'))
@@ -163,7 +175,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_applies_security_rules_AND_OR_combined_red() : void
+    public function test_it_applies_security_rules_AND_OR_combined_red() : void
     {
         // request has one security query argument, but misses the second one (required one)
         $request = (new ServerRequest('get', '/products'))
