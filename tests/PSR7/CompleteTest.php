@@ -24,10 +24,29 @@ use function json_encode;
 // - request body,
 // - response header
 // - response body
-class CompleteTest extends TestCase
+final class CompleteTest extends TestCase
 {
     /** @var string string */
     protected $apiSpecFile = __DIR__ . '/../stubs/complete.yaml';
+
+    public function testRequestGreen() : void
+    {
+        $request = $this->buildGoodRequest();
+
+        $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testResponseGreen() : void
+    {
+        $response = $this->buildGoodResponse();
+        $addr     = new OperationAddress('/complete/{param1}/{param2}', 'post');
+
+        $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
+        $validator->validate($addr, $response);
+        $this->addToAssertionCount(1);
+    }
 
     protected function buildGoodRequest() : ServerRequestInterface
     {
@@ -44,24 +63,5 @@ class CompleteTest extends TestCase
         return (new Response())
             ->withHeader('Content-Type', 'application/json')
             ->withBody(stream_for(json_encode(['propA' => PHP_INT_MAX])));
-    }
-
-    function test_request_green() : void
-    {
-        $request = $this->buildGoodRequest();
-
-        $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
-        $validator->validate($request);
-        $this->addToAssertionCount(1);
-    }
-
-    function test_response_green() : void
-    {
-        $response = $this->buildGoodResponse();
-        $addr     = new OperationAddress('/complete/{param1}/{param2}', 'post');
-
-        $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
-        $validator->validate($addr, $response);
-        $this->addToAssertionCount(1);
     }
 }

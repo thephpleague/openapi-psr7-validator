@@ -8,9 +8,9 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class RequiredTest extends SchemaValidatorTest
+final class RequiredTest extends SchemaValidatorTest
 {
-    function test_it_validates_required_green() : void
+    public function testItValidatesRequiredGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -27,7 +27,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_properties_writeOnly_green() : void
+    public function testItValidatesPropertiesWriteOnlyGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -50,7 +50,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_required_red() : void
+    public function testItValidatesRequiredRed() : void
     {
         $spec = <<<SPEC
 schema:
@@ -70,7 +70,7 @@ SPEC;
         }
     }
 
-    function test_it_validates_properties_red() : void
+    public function testItValidatesPropertiesRed() : void
     {
         $spec = <<<SPEC
 schema:

@@ -10,9 +10,9 @@ use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
-class QueryArgumentsTest extends BaseValidatorTest
+final class QueryArgumentsTest extends BaseValidatorTest
 {
-    public function test_it_validates_request_query_arguments_green() : void
+    public function testItValidatesRequestQueryArgumentsGreen() : void
     {
         $request = $this->makeGoodServerRequest('/read', 'get');
 
@@ -21,12 +21,12 @@ class QueryArgumentsTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_request_missed_query_arguments_green() : void
+    public function testItValidatesRequestMissedQueryArgumentsGreen() : void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withUri(new Uri('/read'))
-                        ->withQueryParams([]);
+            ->withUri(new Uri('/read'))
+            ->withQueryParams([]);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
@@ -38,12 +38,12 @@ class QueryArgumentsTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_request_invalid_query_arguments_green() : void
+    public function testItValidatesRequestInvalidQueryArgumentsGreen() : void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withUri(new Uri('/read?limit=wrong'))
-                        ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
+            ->withUri(new Uri('/read?limit=wrong'))
+            ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);

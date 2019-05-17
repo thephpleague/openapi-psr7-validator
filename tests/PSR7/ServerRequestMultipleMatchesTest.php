@@ -8,9 +8,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\MultipleOperationsMismatchForRequest;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
-class ServerRequestMultipleMatchesTest extends BaseValidatorTest
+final class ServerRequestMultipleMatchesTest extends BaseValidatorTest
 {
-    public function test_it_matches_single_operation_red() : void
+    public function testItMatchesSingleOperationRed() : void
     {
         // This matches at least two paths
         $specFile = __DIR__ . '/../stubs/multipleMatches.yaml';
@@ -21,7 +21,7 @@ class ServerRequestMultipleMatchesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_checks_against_multiple_matched_operations_red() : void
+    public function testItChecksAgainstMultipleMatchedOperationsRed() : void
     {
         // This matches at least two paths
         $specFile = __DIR__ . '/../stubs/multipleMatches.yaml';

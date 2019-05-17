@@ -9,9 +9,9 @@ use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class TypeFormatTest extends SchemaValidatorTest
+final class TypeFormatTest extends SchemaValidatorTest
 {
-    function test_it_validates_type_format_green() : void
+    public function testItValidatesTypeFormatGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -24,7 +24,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_type_invalid_format_red() : void
+    public function testItValidatesTypeInvalidFormatRed() : void
     {
         $spec = <<<SPEC
 schema:
@@ -42,7 +42,7 @@ SPEC;
         }
     }
 
-    function test_it_unexpected_format_ignored_green() : void
+    public function testItUnexpectedFormatIgnoredGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -55,7 +55,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_allows_custom_format_green() : void
+    public function testItAllowsCustomFormatGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -65,6 +65,9 @@ SPEC;
 
         $unexpectedFormat = new class()
         {
+            /**
+             * @param mixed $value
+             */
             public function __invoke($value) : bool
             {
                 return $value === 'good value';
@@ -77,7 +80,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_allows_custom_format_red() : void
+    public function testItAllowsCustomFormatRed() : void
     {
         $spec = <<<SPEC
 schema:

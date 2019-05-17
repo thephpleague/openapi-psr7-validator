@@ -7,9 +7,9 @@ namespace OpenAPIValidationTests\Schema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 
-class InvalidDataTrackingTest extends SchemaValidatorTest
+final class InvalidDataTrackingTest extends SchemaValidatorTest
 {
-    function test_it_shows_invalid_data_address() : void
+    public function testItShowsInvalidDataAddress() : void
     {
         $spec = <<<SPEC
 schema:
@@ -30,7 +30,7 @@ SPEC;
         }
     }
 
-    function test_it_shows_invalid_data_address_nested() : void
+    public function testItShowsInvalidDataAddressNested() : void
     {
         $spec = <<<SPEC
 schema:

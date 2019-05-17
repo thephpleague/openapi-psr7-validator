@@ -8,9 +8,9 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class MinItemsTest extends SchemaValidatorTest
+final class MinItemsTest extends SchemaValidatorTest
 {
-    function test_it_validates_minItems_green() : void
+    public function testItValidatesMinItemsGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -27,7 +27,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_minItems_red() : void
+    public function testItValidatesMinItemsRed() : void
     {
         $spec = <<<SPEC
 schema:

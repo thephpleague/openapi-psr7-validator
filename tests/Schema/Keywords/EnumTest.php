@@ -8,9 +8,9 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class EnumTest extends SchemaValidatorTest
+final class EnumTest extends SchemaValidatorTest
 {
-    function test_it_validates_enum_green() : void
+    public function testItValidatesEnumGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -27,7 +27,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_enum_red() : void
+    public function testItValidatesEnumRed() : void
     {
         $spec = <<<SPEC
 schema:

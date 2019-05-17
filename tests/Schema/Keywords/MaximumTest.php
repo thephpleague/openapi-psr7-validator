@@ -8,9 +8,9 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class MaximumTest extends SchemaValidatorTest
+final class MaximumTest extends SchemaValidatorTest
 {
-    function test_maximum_nonexclusive_keyword_green() : void
+    public function testMaximumNonexclusiveKeywordGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_maximum_exclusive_keyword_green() : void
+    public function testMaximumExclusiveKeywordGreen() : void
     {
         $spec = <<<SPEC
 schema:

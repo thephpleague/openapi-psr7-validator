@@ -8,9 +8,9 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class NotTest extends SchemaValidatorTest
+final class NotTest extends SchemaValidatorTest
 {
-    function test_it_validates_not_green() : void
+    public function testItValidatesNotGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -28,7 +28,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_not_red() : void
+    public function testItValidatesNotRed() : void
     {
         $spec = <<<SPEC
 schema:

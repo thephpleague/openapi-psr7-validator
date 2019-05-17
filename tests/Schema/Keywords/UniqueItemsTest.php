@@ -8,9 +8,9 @@ use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
-class UniqueItemsTest extends SchemaValidatorTest
+final class UniqueItemsTest extends SchemaValidatorTest
 {
-    function test_it_validates_uniqueItems_green() : void
+    public function testItValidatesUniqueItemsGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -26,7 +26,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    function test_it_validates_uniqueItems_red() : void
+    public function testItValidatesUniqueItemsRed() : void
     {
         $spec = <<<SPEC
 schema:

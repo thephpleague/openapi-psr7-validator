@@ -9,9 +9,9 @@ use GuzzleHttp\Psr7\Uri;
 use OpenAPIValidation\PSR7\PathFinder;
 use PHPUnit\Framework\TestCase;
 
-class PathFinderTest extends TestCase
+final class PathFinderTest extends TestCase
 {
-    function test_it_finds_matching_operation() : void
+    public function testItFindsMatchingOperation() : void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"
@@ -37,7 +37,7 @@ SPEC;
         $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
 
-    function test_it_finds_matching_operation_with_parametrized_server() : void
+    public function testItFindsMatchingOperationWithParametrizedServer() : void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"

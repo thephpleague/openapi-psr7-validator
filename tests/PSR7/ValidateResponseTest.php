@@ -12,9 +12,9 @@ use OpenAPIValidation\PSR7\ResponseValidator;
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
-class ValidateResponseTest extends BaseValidatorTest
+final class ValidateResponseTest extends BaseValidatorTest
 {
-    public function test_it_validates_message_green() : void
+    public function testItValidatesMessageGreen() : void
     {
         $response = $this->makeGoodResponse('/path1', 'get');
 
@@ -23,18 +23,18 @@ class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_binary_response_green() : void
+    public function testItValidatesBinaryResponseGreen() : void
     {
         $response = $this->makeGoodResponse('/path1', 'get')
-                         ->withHeader('Content-Type', 'image/jpeg')
-                         ->withBody(stream_for(__DIR__ . '/../stubs/image.jpg'));
+            ->withHeader('Content-Type', 'image/jpeg')
+            ->withBody(stream_for(__DIR__ . '/../stubs/image.jpg'));
 
         $validator = ResponseValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate(new OperationAddress('/path1', 'get'), $response);
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_message_wrong_body_value_red() : void
+    public function testItValidatesMessageWrongBodyValueRed() : void
     {
         $addr     = new OperationAddress('/path1', 'get');
         $body     = [];
@@ -51,7 +51,7 @@ class ValidateResponseTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_wrong_header_value_red() : void
+    public function testItValidatesMessageWrongHeaderValueRed() : void
     {
         $addr = new OperationAddress('/path1', 'get');
 
@@ -68,7 +68,7 @@ class ValidateResponseTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_misses_header_red() : void
+    public function testItValidatesMessageMissesHeaderRed() : void
     {
         $addr = new OperationAddress('/path1', 'get');
 

@@ -13,9 +13,9 @@ use OpenAPIValidation\PSR7\ServerRequestValidator;
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
-class ServerRequestTest extends BaseValidatorTest
+final class ServerRequestTest extends BaseValidatorTest
 {
-    public function test_it_validates_message_green() : void
+    public function testItValidatesMessageGreen() : void
     {
         $request = $this->makeGoodServerRequest('/path1', 'get');
 
@@ -24,23 +24,23 @@ class ServerRequestTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_body_green() : void
+    public function testItValidatesBodyGreen() : void
     {
         $body    = ['name' => 'Alex'];
         $request = $this->makeGoodServerRequest('/request-body', 'post')
-                        ->withBody(stream_for(json_encode($body)));
+            ->withBody(stream_for(json_encode($body)));
 
         $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_body_has_invalid_payload_red() : void
+    public function testItValidatesBodyHasInvalidPayloadRed() : void
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $body    = ['name' => 1000];
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withBody(stream_for(json_encode($body)));
+            ->withBody(stream_for(json_encode($body)));
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
@@ -51,12 +51,12 @@ class ServerRequestTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_body_has_unexpected_type_red() : void
+    public function testItValidatesBodyHasUnexpectedTypeRed() : void
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withoutHeader('Content-Type')
-                        ->withHeader('Content-Type', 'unexpected/content');
+            ->withoutHeader('Content-Type')
+            ->withHeader('Content-Type', 'unexpected/content');
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
@@ -68,7 +68,7 @@ class ServerRequestTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_wrong_header_value_red() : void
+    public function testItValidatesMessageWrongHeaderValueRed() : void
     {
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
@@ -83,7 +83,7 @@ class ServerRequestTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_missed_header_red() : void
+    public function testItValidatesMessageMissedHeaderRed() : void
     {
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');

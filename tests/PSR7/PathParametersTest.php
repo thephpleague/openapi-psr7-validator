@@ -8,9 +8,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\RequestPathParameterMismatch;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
-class PathParametersTest extends BaseValidatorTest
+final class PathParametersTest extends BaseValidatorTest
 {
-    public function test_it_validates_request_query_arguments_green() : void
+    public function testItValidatesRequestQueryArgumentsGreen() : void
     {
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/admin');
@@ -20,7 +20,7 @@ class PathParametersTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_request_missed_query_arguments_green() : void
+    public function testItValidatesRequestMissedQueryArgumentsGreen() : void
     {
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/wrong');

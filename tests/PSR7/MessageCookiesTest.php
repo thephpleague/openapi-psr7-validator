@@ -12,9 +12,9 @@ use OpenAPIValidation\PSR7\ResponseAddress;
 use OpenAPIValidation\PSR7\ResponseValidator;
 use OpenAPIValidation\PSR7\ServerRequestValidator;
 
-class MessageCookiesTest extends BaseValidatorTest
+final class MessageCookiesTest extends BaseValidatorTest
 {
-    public function test_it_validates_request_with_cookies_green() : void
+    public function testItValidatesRequestWithCookiesGreen() : void
     {
         $request = $this->makeGoodServerRequest('/cookies', 'post');
 
@@ -23,7 +23,7 @@ class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_response_with_cookies_green() : void
+    public function testItValidatesResponseWithCookiesGreen() : void
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method());
@@ -33,7 +33,7 @@ class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_response_misses_setcookie_header_green() : void
+    public function testItValidatesResponseMissesSetcookieHeaderGreen() : void
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method())->withoutHeader('Set-Cookie');
@@ -46,11 +46,11 @@ class MessageCookiesTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_request_with_missed_cookie_red() : void
+    public function testItValidatesRequestWithMissedCookieRed() : void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withCookieParams([]);
+            ->withCookieParams([]);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
@@ -63,11 +63,11 @@ class MessageCookiesTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_request_with_invalid_cookie_value_red() : void
+    public function testItValidatesRequestWithInvalidCookieValueRed() : void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
-                        ->withCookieParams(['session_id' => 'goodvalue', 'debug' => 'bad value']);
+            ->withCookieParams(['session_id' => 'goodvalue', 'debug' => 'bad value']);
 
         try {
             $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
