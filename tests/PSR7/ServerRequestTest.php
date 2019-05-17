@@ -15,7 +15,7 @@ use function json_encode;
 
 final class ServerRequestTest extends BaseValidatorTest
 {
-    public function test_it_validates_message_green() : void
+    public function testItValidatesMessageGreen() : void
     {
         $request = $this->makeGoodServerRequest('/path1', 'get');
 
@@ -24,7 +24,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_body_green() : void
+    public function testItValidatesBodyGreen() : void
     {
         $body    = ['name' => 'Alex'];
         $request = $this->makeGoodServerRequest('/request-body', 'post')
@@ -35,7 +35,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_body_has_invalid_payload_red() : void
+    public function testItValidatesBodyHasInvalidPayloadRed() : void
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $body    = ['name' => 1000];
@@ -51,7 +51,7 @@ final class ServerRequestTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_body_has_unexpected_type_red() : void
+    public function testItValidatesBodyHasUnexpectedTypeRed() : void
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -68,7 +68,7 @@ final class ServerRequestTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_wrong_header_value_red() : void
+    public function testItValidatesMessageWrongHeaderValueRed() : void
     {
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
@@ -83,7 +83,7 @@ final class ServerRequestTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_missed_header_red() : void
+    public function testItValidatesMessageMissedHeaderRed() : void
     {
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');

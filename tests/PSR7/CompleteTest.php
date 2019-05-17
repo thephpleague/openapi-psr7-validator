@@ -29,7 +29,7 @@ final class CompleteTest extends TestCase
     /** @var string string */
     protected $apiSpecFile = __DIR__ . '/../stubs/complete.yaml';
 
-    public function test_request_green() : void
+    public function testRequestGreen() : void
     {
         $request = $this->buildGoodRequest();
 
@@ -38,7 +38,7 @@ final class CompleteTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function test_response_green() : void
+    public function testResponseGreen() : void
     {
         $response = $this->buildGoodResponse();
         $addr     = new OperationAddress('/complete/{param1}/{param2}', 'post');

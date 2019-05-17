@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MaxItemsTest extends SchemaValidatorTest
 {
-    public function test_it_validates_maxItems_green() : void
+    public function testItValidatesMaxItemsGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -27,7 +27,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_maxItems_red() : void
+    public function testItValidatesMaxItemsRed() : void
     {
         $spec = <<<SPEC
 schema:

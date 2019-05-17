@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MaxLengthTest extends SchemaValidatorTest
 {
-    public function test_it_validates_maxLength_green() : void
+    public function testItValidatesMaxLengthGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_maxLength_red() : void
+    public function testItValidatesMaxLengthRed() : void
     {
         $spec = <<<SPEC
 schema:

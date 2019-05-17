@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MinPropertiesTest extends SchemaValidatorTest
 {
-    public function test_it_validates_minProperties_green() : void
+    public function testItValidatesMinPropertiesGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -24,7 +24,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_minProperties_red() : void
+    public function testItValidatesMinPropertiesRed() : void
     {
         $spec = <<<SPEC
 schema:

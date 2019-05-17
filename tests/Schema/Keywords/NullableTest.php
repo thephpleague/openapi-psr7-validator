@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class NullableTest extends SchemaValidatorTest
 {
-    public function test_it_validates_nullable_green() : void
+    public function testItValidatesNullableGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_nullable_red() : void
+    public function testItValidatesNullableRed() : void
     {
         $spec = <<<SPEC
 schema:

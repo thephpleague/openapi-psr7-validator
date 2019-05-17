@@ -9,7 +9,7 @@ use OpenAPIValidation\Schema\Validator;
 
 final class InvalidDataTrackingTest extends SchemaValidatorTest
 {
-    public function test_it_shows_invalid_data_address() : void
+    public function testItShowsInvalidDataAddress() : void
     {
         $spec = <<<SPEC
 schema:
@@ -30,7 +30,7 @@ SPEC;
         }
     }
 
-    public function test_it_shows_invalid_data_address_nested() : void
+    public function testItShowsInvalidDataAddressNested() : void
     {
         $spec = <<<SPEC
 schema:

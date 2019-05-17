@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class AnyOfTest extends SchemaValidatorTest
 {
-    public function test_it_validates_anyOf_green() : void
+    public function testItValidatesAnyOfGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -36,7 +36,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_anyOf_red() : void
+    public function testItValidatesAnyOfRed() : void
     {
         $spec = <<<SPEC
 schema:

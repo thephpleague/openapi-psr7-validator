@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class BreadCrumbTest extends TestCase
 {
-    public function test_it_can_build_chain_properly() : void
+    public function testItCanBuildChainProperly() : void
     {
         $crumb1 = new BreadCrumb();
         $crumb2 = $crumb1->addCrumb('key1');

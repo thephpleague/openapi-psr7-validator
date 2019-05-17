@@ -12,7 +12,7 @@ use OpenAPIValidation\PSR7\ServerRequestValidator;
 
 final class QueryArgumentsTest extends BaseValidatorTest
 {
-    public function test_it_validates_request_query_arguments_green() : void
+    public function testItValidatesRequestQueryArgumentsGreen() : void
     {
         $request = $this->makeGoodServerRequest('/read', 'get');
 
@@ -21,7 +21,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_request_missed_query_arguments_green() : void
+    public function testItValidatesRequestMissedQueryArgumentsGreen() : void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -38,7 +38,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_request_invalid_query_arguments_green() : void
+    public function testItValidatesRequestInvalidQueryArgumentsGreen() : void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())

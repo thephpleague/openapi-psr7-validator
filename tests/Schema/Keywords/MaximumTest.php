@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MaximumTest extends SchemaValidatorTest
 {
-    public function test_maximum_nonexclusive_keyword_green() : void
+    public function testMaximumNonexclusiveKeywordGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_maximum_exclusive_keyword_green() : void
+    public function testMaximumExclusiveKeywordGreen() : void
     {
         $spec = <<<SPEC
 schema:

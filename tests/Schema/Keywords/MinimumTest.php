@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MinimumTest extends SchemaValidatorTest
 {
-    public function test_minimum_nonexclusive_keyword_green() : void
+    public function testMinimumNonexclusiveKeywordGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_minimum_exclusive_keyword_green() : void
+    public function testMinimumExclusiveKeywordGreen() : void
     {
         $spec = <<<SPEC
 schema:

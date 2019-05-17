@@ -14,7 +14,7 @@ use function json_encode;
 
 final class ValidateResponseTest extends BaseValidatorTest
 {
-    public function test_it_validates_message_green() : void
+    public function testItValidatesMessageGreen() : void
     {
         $response = $this->makeGoodResponse('/path1', 'get');
 
@@ -23,7 +23,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_binary_response_green() : void
+    public function testItValidatesBinaryResponseGreen() : void
     {
         $response = $this->makeGoodResponse('/path1', 'get')
             ->withHeader('Content-Type', 'image/jpeg')
@@ -34,7 +34,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_message_wrong_body_value_red() : void
+    public function testItValidatesMessageWrongBodyValueRed() : void
     {
         $addr     = new OperationAddress('/path1', 'get');
         $body     = [];
@@ -51,7 +51,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_wrong_header_value_red() : void
+    public function testItValidatesMessageWrongHeaderValueRed() : void
     {
         $addr = new OperationAddress('/path1', 'get');
 
@@ -68,7 +68,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_message_misses_header_red() : void
+    public function testItValidatesMessageMissesHeaderRed() : void
     {
         $addr = new OperationAddress('/path1', 'get');
 

@@ -14,7 +14,7 @@ use OpenAPIValidation\PSR7\ServerRequestValidator;
 
 final class MessageCookiesTest extends BaseValidatorTest
 {
-    public function test_it_validates_request_with_cookies_green() : void
+    public function testItValidatesRequestWithCookiesGreen() : void
     {
         $request = $this->makeGoodServerRequest('/cookies', 'post');
 
@@ -23,7 +23,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_response_with_cookies_green() : void
+    public function testItValidatesResponseWithCookiesGreen() : void
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method());
@@ -33,7 +33,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_response_misses_setcookie_header_green() : void
+    public function testItValidatesResponseMissesSetcookieHeaderGreen() : void
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method())->withoutHeader('Set-Cookie');
@@ -46,7 +46,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_request_with_missed_cookie_red() : void
+    public function testItValidatesRequestWithMissedCookieRed() : void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -63,7 +63,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         }
     }
 
-    public function test_it_validates_request_with_invalid_cookie_value_red() : void
+    public function testItValidatesRequestWithInvalidCookieValueRed() : void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())

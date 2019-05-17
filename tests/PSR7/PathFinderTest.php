@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PathFinderTest extends TestCase
 {
-    public function test_it_finds_matching_operation() : void
+    public function testItFindsMatchingOperation() : void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"
@@ -37,7 +37,7 @@ SPEC;
         $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
 
-    public function test_it_finds_matching_operation_with_parametrized_server() : void
+    public function testItFindsMatchingOperationWithParametrizedServer() : void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"

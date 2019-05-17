@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class ItemsTest extends SchemaValidatorTest
 {
-    public function test_it_validates_items_green() : void
+    public function testItValidatesItemsGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -26,7 +26,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_items_nested_green() : void
+    public function testItValidatesItemsNestedGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -45,7 +45,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_items_red() : void
+    public function testItValidatesItemsRed() : void
     {
         $spec = <<<SPEC
 schema:
@@ -64,7 +64,7 @@ SPEC;
         }
     }
 
-    public function test_it_validates_items_nested_red() : void
+    public function testItValidatesItemsNestedRed() : void
     {
         $spec = <<<SPEC
 schema:

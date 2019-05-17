@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MultipleOfTest extends SchemaValidatorTest
 {
-    public function test_it_validates_multipleof_green() : void
+    public function testItValidatesMultipleofGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_multipleof_red() : void
+    public function testItValidatesMultipleofRed() : void
     {
         $spec = <<<SPEC
 schema:

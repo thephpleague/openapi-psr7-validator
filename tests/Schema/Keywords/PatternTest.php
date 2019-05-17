@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class PatternTest extends SchemaValidatorTest
 {
-    public function test_it_validates_pattern_green() : void
+    public function testItValidatesPatternGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_pattern_red() : void
+    public function testItValidatesPatternRed() : void
     {
         $spec = <<<SPEC
 schema:

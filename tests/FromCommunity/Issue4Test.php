@@ -14,7 +14,7 @@ use function file_get_contents;
  */
 final class Issue4Test extends TestCase
 {
-    public function test_it_resolves_schema_refs_from_yaml_string_green() : void
+    public function testItResolvesSchemaRefsFromYamlStringGreen() : void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
         $validator = ServerRequestValidator::fromYamlFile($yamlFile);
@@ -23,7 +23,7 @@ final class Issue4Test extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_resolves_schema_refs_from_yaml_file_green() : void
+    public function testItResolvesSchemaRefsFromYamlFileGreen() : void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
         $validator = ServerRequestValidator::fromYaml(file_get_contents($yamlFile));

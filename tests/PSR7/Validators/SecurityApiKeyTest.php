@@ -114,7 +114,7 @@ components:
       in: cookie
 AND;
 
-    public function test_it_applies_security_rules_OR_green() : void
+    public function testItAppliesSecurityRulesORGreen() : void
     {
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['server_token1' => 'key value']);
 
@@ -123,7 +123,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_missed_apiKey_red() : void
+    public function testItValidatesMissedApiKeyRed() : void
     {
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['wrongToken' => 'key value']);
 
@@ -137,7 +137,7 @@ AND;
         }
     }
 
-    public function test_it_applies_security_rules_AND_green() : void
+    public function testItAppliesSecurityRulesANDGreen() : void
     {
         $request = (new ServerRequest('get', '/products'))
             ->withQueryParams(['server_token1' => 'key value'])
@@ -148,7 +148,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_applies_security_rules_AND_red() : void
+    public function testItAppliesSecurityRulesANDRed() : void
     {
         // request has no security header
         $request = (new ServerRequest('get', '/products'))
@@ -164,7 +164,7 @@ AND;
         }
     }
 
-    public function test_it_applies_security_rules_AND_OR_combined_green() : void
+    public function testItAppliesSecurityRulesANDORCombinedGreen() : void
     {
         // request has one of allowed security cookies
         $request = (new ServerRequest('get', '/products'))
@@ -175,7 +175,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_applies_security_rules_AND_OR_combined_red() : void
+    public function testItAppliesSecurityRulesANDORCombinedRed() : void
     {
         // request has one security query argument, but misses the second one (required one)
         $request = (new ServerRequest('get', '/products'))

@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class TypeTest extends SchemaValidatorTest
 {
-    public function test_it_validates_type_green() : void
+    public function testItValidatesTypeGreen() : void
     {
         $typedValues = [
             'string' => 'string value',
@@ -43,7 +43,7 @@ SPEC;
         }
     }
 
-    public function test_it_validates_type_red() : void
+    public function testItValidatesTypeRed() : void
     {
         $typedValues = [
             'string' => 12,

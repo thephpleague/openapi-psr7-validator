@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class PropertiesTest extends SchemaValidatorTest
 {
-    public function test_it_validates_properties_green() : void
+    public function testItValidatesPropertiesGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -27,7 +27,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_additional_properties_green() : void
+    public function testItValidatesAdditionalPropertiesGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -46,7 +46,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_properties_red() : void
+    public function testItValidatesPropertiesRed() : void
     {
         $spec = <<<SPEC
 schema:
@@ -68,7 +68,7 @@ SPEC;
         }
     }
 
-    public function test_it_validates_additional_properties_red() : void
+    public function testItValidatesAdditionalPropertiesRed() : void
     {
         $spec = <<<SPEC
 schema:

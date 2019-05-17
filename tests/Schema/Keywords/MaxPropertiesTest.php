@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MaxPropertiesTest extends SchemaValidatorTest
 {
-    public function test_it_validates_maxProperties_green() : void
+    public function testItValidatesMaxPropertiesGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -24,7 +24,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_maxProperties_red() : void
+    public function testItValidatesMaxPropertiesRed() : void
     {
         $spec = <<<SPEC
 schema:

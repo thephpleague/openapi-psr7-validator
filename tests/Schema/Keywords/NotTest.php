@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class NotTest extends SchemaValidatorTest
 {
-    public function test_it_validates_not_green() : void
+    public function testItValidatesNotGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -28,7 +28,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_not_red() : void
+    public function testItValidatesNotRed() : void
     {
         $spec = <<<SPEC
 schema:

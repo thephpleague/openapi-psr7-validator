@@ -19,7 +19,7 @@ final class Issue12Test extends TestCase
      *
      * @dataProvider getNullableTypeExamples
      */
-    public function test_issue12(?array $example) : void
+    public function testIssue12(?array $example) : void
     {
         $yaml = /** @lang yaml */
             <<<YAML

@@ -23,7 +23,7 @@ final class PathAddressTest extends TestCase
     /**
      * @dataProvider dataProviderParse
      */
-    public function test_it_parses_params(string $spec, string $url, array $result) : void
+    public function testItParsesParams(string $spec, string $url, array $result) : void
     {
         $parsed = PathAddress::parseParams($spec, $url);
 
@@ -49,7 +49,7 @@ final class PathAddressTest extends TestCase
     /**
      * @dataProvider dataProviderMatch
      */
-    public function test_it_matches_path_against_spec(string $spec, string $path, bool $result) : void
+    public function testItMatchesPathAgainstSpec(string $spec, string $path, bool $result) : void
     {
         $this->assertEquals($result, PathAddress::isPathMatchesSpec($spec, $path));
     }

@@ -14,7 +14,7 @@ use function tempnam;
 
 final class ValidatorTest extends TestCase
 {
-    public function test_it_caches_parsed_openapi_spec_green() : void
+    public function testItCachesParsedOpenapiSpecGreen() : void
     {
         // configure cache
         $pool  = [];

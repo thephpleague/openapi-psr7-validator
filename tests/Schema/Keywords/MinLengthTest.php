@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MinLengthTest extends SchemaValidatorTest
 {
-    public function test_it_validates_minLength_green() : void
+    public function testItValidatesMinLengthGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function test_it_validates_minLength_red() : void
+    public function testItValidatesMinLengthRed() : void
     {
         $spec = <<<SPEC
 schema:
