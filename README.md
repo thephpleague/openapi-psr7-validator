@@ -57,6 +57,9 @@ $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_c
 $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJson(file_get_contents($jsonFile))->getServerRequestValidator();
 #or
 $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonFile)->getServerRequestValidator();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($schema)->getServerRequestValidator();
 
 $validator->validate($request);
 ```
@@ -79,6 +82,9 @@ $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_c
 $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJson(file_get_contents($jsonFile))->getResponseValidator();
 #or
 $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonFile)->getResponseValidator();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($schema)->getResponseValidator();
 
 $operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 'get') ;
 
@@ -102,6 +108,9 @@ $psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->f
 $psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJsonFile($jsonFile)->getValidationMiddleware();
 #or
 $psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJson(file_get_contents($jsonFile))->getValidationMiddleware();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidationMiddlewareBuilder)->fromSchema($schema)->getValidationMiddleware();
 ```
 
 ### SlimFramework Middleware
@@ -119,6 +128,9 @@ $psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->f
 $psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJsonFile($jsonFile)->getValidationMiddleware();
 #or
 $psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJson(file_get_contents($jsonFile))->getValidationMiddleware();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidationMiddlewareBuilder)->fromSchema($schema)->getValidationMiddleware();
 
 $slimMiddleware = new \OpenAPIValidation\PSR15\SlimAdapter($psr15Middleware);
 
