@@ -6,16 +6,17 @@ namespace OpenAPIValidationTests\PSR7;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\RequestPathParameterMismatch;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use OpenAPIValidation\PSR7\ValidatorBuilder;
+use PHPUnit\Framework\TestCase;
 
-final class PathParametersTest extends BaseValidatorTest
+final class PathParametersTest extends TestCase
 {
     public function testItValidatesRequestQueryArgumentsGreen() : void
     {
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/admin');
 
-        $validator = ServerRequestValidator::fromYamlFile($specFile);
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -26,7 +27,7 @@ final class PathParametersTest extends BaseValidatorTest
         $request  = new ServerRequest('get', '/users/wrong');
 
         try {
-            $validator = ServerRequestValidator::fromYamlFile($specFile);
+            $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
             $validator->validate($request);
         } catch (RequestPathParameterMismatch $e) {
             $this->assertEquals('/users/wrong', $e->actualPath());

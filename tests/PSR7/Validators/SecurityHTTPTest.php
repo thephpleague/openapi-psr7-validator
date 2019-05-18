@@ -6,7 +6,7 @@ namespace OpenAPIValidationTests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
 final class SecurityHTTPTest extends TestCase
@@ -58,7 +58,7 @@ BASIC;
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Bearer ABCDEFG');
 
-        $validator = ServerRequestValidator::fromYaml($this->specBearer);
+        $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServiceRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -68,7 +68,7 @@ BASIC;
         $request = new ServerRequest('get', '/products');
 
         try {
-            $validator = ServerRequestValidator::fromYaml($this->specBearer);
+            $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServiceRequestValidator();
             $validator->validate($request);
             $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
@@ -82,7 +82,7 @@ BASIC;
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Basic ABCDEFG');
 
-        $validator = ServerRequestValidator::fromYaml($this->specBasic);
+        $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServiceRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -92,7 +92,7 @@ BASIC;
         $request = new ServerRequest('get', '/products');
 
         try {
-            $validator = ServerRequestValidator::fromYaml($this->specBasic);
+            $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServiceRequestValidator();
             $validator->validate($request);
             $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {

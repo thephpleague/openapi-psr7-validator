@@ -6,9 +6,10 @@ namespace OpenAPIValidationTests\PSR7;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Request\MultipleOperationsMismatchForRequest;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use OpenAPIValidation\PSR7\ValidatorBuilder;
+use PHPUnit\Framework\TestCase;
 
-final class ServerRequestMultipleMatchesTest extends BaseValidatorTest
+final class ServerRequestMultipleMatchesTest extends TestCase
 {
     public function testItMatchesSingleOperationRed() : void
     {
@@ -16,7 +17,7 @@ final class ServerRequestMultipleMatchesTest extends BaseValidatorTest
         $specFile = __DIR__ . '/../stubs/multipleMatches.yaml';
         $request  = new ServerRequest('get', '/users/goodstring');
 
-        $validator = ServerRequestValidator::fromYamlFile($specFile);
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -28,7 +29,7 @@ final class ServerRequestMultipleMatchesTest extends BaseValidatorTest
         $request  = new ServerRequest('get', '/users/12.33');
 
         try {
-            $validator = ServerRequestValidator::fromYamlFile($specFile);
+            $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (MultipleOperationsMismatchForRequest $e) {

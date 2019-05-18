@@ -8,7 +8,7 @@ use GuzzleHttp\Psr7\Uri;
 use OpenAPIValidation\PSR7\Exception\Request\MissedRequestQueryArgument;
 use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
 use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use OpenAPIValidation\PSR7\ValidatorBuilder;
 
 final class QueryArgumentsTest extends BaseValidatorTest
 {
@@ -16,7 +16,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
     {
         $request = $this->makeGoodServerRequest('/read', 'get');
 
-        $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -29,7 +29,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
             ->withQueryParams([]);
 
         try {
-            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
             $validator->validate($request);
         } catch (MissedRequestQueryArgument $e) {
             $this->assertEquals($addr->path(), $e->addr()->path());
@@ -46,7 +46,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
             ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
 
         try {
-            $validator = ServerRequestValidator::fromYamlFile($this->apiSpecFile);
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
             $validator->validate($request);
         } catch (RequestQueryArgumentMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());

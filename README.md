@@ -40,7 +40,7 @@ which prevents you from using `\cebe\openapi\Reader::readFromYamlFile('api.yaml'
 
 Until the issue is resolved we recommend using loading from file contents like this:
 ```
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYaml(file_get_contents($yamlFile)); 
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_contents($yamlFile))->getServerRequestValidator(); 
 ```
 
 ### ServerRequest Message
@@ -50,13 +50,16 @@ You can validate `\Psr\Http\Message\ServerRequestInterface` instance like this:
 $yamlFile = "api.yaml";
 $jsonFile = "api.json";
 
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYamlFile($yamlFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile($yamlFile)->getServerRequestValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromYaml(file_get_contents($yamlFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_contents($yamlFile))->getServerRequestValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJson(file_get_contents($jsonFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJson(file_get_contents($jsonFile))->getServerRequestValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ServerRequestValidator::fromJsonFile($jsonFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonFile)->getServerRequestValidator();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($schema)->getServerRequestValidator();
 
 $validator->validate($request);
 ```
@@ -72,13 +75,16 @@ Example:
 $yamlFile = "api.yaml";
 $jsonFile = "api.json";
 
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromYamlFile($yamlFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile($yamlFile)->getResponseValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromYaml(file_get_contents($yamlFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_contents($yamlFile))->getResponseValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromJson(file_get_contents($jsonFile));
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJson(file_get_contents($jsonFile))->getResponseValidator();
 #or
-$validator = \OpenAPIValidation\PSR7\ResponseValidator::fromJsonFile($jsonFile);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonFile)->getResponseValidator();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($schema)->getResponseValidator();
 
 $operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 'get') ;
 
@@ -95,13 +101,16 @@ PSR-15 middleware can be used like this:
 $yamlFile = 'api.yaml';
 $jsonFile = 'api.json';
 
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYamlFile($yamlFile)->getValidationMiddleware();
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYaml(file_get_contents($yamlFile))->getValidationMiddleware();
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_contents($jsonFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJsonFile($jsonFile)->getValidationMiddleware();
 #or
-$middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJson(file_get_contents($jsonFile))->getValidationMiddleware();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidationMiddlewareBuilder)->fromSchema($schema)->getValidationMiddleware();
 ```
 
 ### SlimFramework Middleware
@@ -112,13 +121,16 @@ adapter which you can use like this:
 $yamlFile = 'api.yaml';
 $jsonFile = 'api.json';
 
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYamlFile($yamlFile)->getValidationMiddleware();
 #or
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromYaml(file_get_contents($yamlFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromYaml(file_get_contents($yamlFile))->getValidationMiddleware();
 #or
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJsonFile($jsonFile);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJsonFile($jsonFile)->getValidationMiddleware();
 #or
-$psr15Middleware = \OpenAPIValidation\PSR15\ValidationMiddleware::fromJson(file_get_contents($jsonFile));
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)->fromJson(file_get_contents($jsonFile))->getValidationMiddleware();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidationMiddlewareBuilder)->fromSchema($schema)->getValidationMiddleware();
 
 $slimMiddleware = new \OpenAPIValidation\PSR15\SlimAdapter($psr15Middleware);
 
@@ -134,12 +146,19 @@ You enable caching if you pass a configured Cache Pool Object to the static cons
 $cachePool = new ArrayCachePool();
 
 // Pass it as a 2nd argument
-\OpenAPIValidation\PSR7\ResponseValidator::fromYamlFile($yamlFile, $cachePool);
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)
+    ->fromYamlFile($yamlFile)
+    ->setCache($cachePool)
+    ->getResponseValidator();
 # or
 \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile, $cachePool);
 ```
 
-Cache does not set expiration date for its payload.
+You can use `->setCache($pool, $ttl)` call for both PSR-7 and PSR-15 builder in order to set 
+[proper expiration ttl in seconds (or explicit `null`)](https://www.php-fig.org/psr/psr-6/#definitions)
+
+If you want take control over the cache key for schema item, or your cache does not support cache key generation by itself
+you can `->overrideCacheKey('my_custom_key')` to ensure cache uses key you want.
 
 ### Standalone OpenAPI Validator
 The package contains a standalone validator which can validate any data 

@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
-use function file_get_contents;
 
 /**
  * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/4
@@ -17,7 +16,7 @@ final class Issue4Test extends TestCase
     public function testItResolvesSchemaRefsFromYamlStringGreen() : void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
-        $validator = ServerRequestValidator::fromYamlFile($yamlFile);
+        $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServiceRequestValidator();
 
         $validator->validate($this->makeRequest());
         $this->addToAssertionCount(1);
@@ -26,7 +25,7 @@ final class Issue4Test extends TestCase
     public function testItResolvesSchemaRefsFromYamlFileGreen() : void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
-        $validator = ServerRequestValidator::fromYaml(file_get_contents($yamlFile));
+        $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServiceRequestValidator();
 
         $validator->validate($this->makeRequest());
         $this->addToAssertionCount(1);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
@@ -47,7 +47,7 @@ paths:
                     type: string
 YAML;
 
-        $validator = ServerRequestValidator::fromYaml($yaml);
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServiceRequestValidator();
 
         $psrRequest = (new ServerRequest('post', 'http://localhost:8000/api/v1/products.create'))
             ->withHeader('Content-Type', 'application/json')

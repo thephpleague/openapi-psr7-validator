@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Exception;
 
-// Indicates that data was not matched against a schema's keyword
-
-
 use LogicException;
 use OpenAPIValidation\Schema\BreadCrumb;
 use Throwable;
 
+// Indicates that data was not matched against a schema's keyword
 class ValidationKeywordFailed extends LogicException
 {
     /** @var string */

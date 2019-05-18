@@ -6,6 +6,7 @@ namespace OpenAPIValidation\PSR7;
 
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\Header as HeaderSpec;
+use cebe\openapi\spec\OpenApi;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\Request\MissedRequestCookie;
 use OpenAPIValidation\PSR7\Exception\Request\MissedRequestHeader;
@@ -36,8 +37,19 @@ use function json_encode;
 use function property_exists;
 use function strtolower;
 
-class ServerRequestValidator extends Validator
+class ServerRequestValidator
 {
+    /** @var OpenApi */
+    protected $openApi;
+    /** @var SpecFinder */
+    protected $finder;
+
+    public function __construct(OpenApi $schema)
+    {
+        $this->openApi = $schema;
+        $this->finder  = new SpecFinder($this->openApi);
+    }
+
     /**
      * @return OperationAddress which matched the Request
      */
@@ -50,7 +62,7 @@ class ServerRequestValidator extends Validator
         // If there is only one - then proceed with checking
         // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
         // "This request matched operations A,B and C, but mismatched its schemas."
-        $matchingOperationsAddrs = $this->findMatchingOperations($serverRequest);
+        $matchingOperationsAddrs = $this->finder->findMatchingOperations($serverRequest);
 
         if (! $matchingOperationsAddrs) {
             throw NoOperation::fromPathAndMethod($path, $method);
@@ -105,7 +117,7 @@ class ServerRequestValidator extends Validator
      */
     protected function validateHeaders(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         // 1. Validate Headers
         // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
@@ -122,7 +134,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'header') {
                 continue;
@@ -150,7 +162,7 @@ class ServerRequestValidator extends Validator
 
     private function validateCookies(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         $cookieSpecs = [];
 
@@ -164,7 +176,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'cookie') {
                 continue;
@@ -189,7 +201,7 @@ class ServerRequestValidator extends Validator
 
     private function validateBody(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         if (! $spec->requestBody) {
             return;
@@ -210,7 +222,7 @@ class ServerRequestValidator extends Validator
 
     private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         // 1. Collect operation-level params
         $querySpecs = [];
@@ -224,7 +236,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'query') {
                 continue;
@@ -253,7 +265,7 @@ class ServerRequestValidator extends Validator
      */
     private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->findOperationSpec($addr);
+        $spec = $this->finder->findOperationSpec($addr);
 
         // 1. Collect operation-level params
         $pathSpecs = [];
@@ -267,7 +279,7 @@ class ServerRequestValidator extends Validator
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'path') {
                 continue;
@@ -283,14 +295,18 @@ class ServerRequestValidator extends Validator
         } catch (Throwable $e) {
             switch ($e->getCode()) {
                 default:
-                    throw RequestPathParameterMismatch::fromAddrAndCauseException($addr, $serverRequest->getUri()->getPath(), $e);
+                    throw RequestPathParameterMismatch::fromAddrAndCauseException(
+                        $addr,
+                        $serverRequest->getUri()->getPath(),
+                        $e
+                    );
             }
         }
     }
 
     private function validateSecurity(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $opSpec = $this->findOperationSpec($addr);
+        $opSpec = $this->finder->findOperationSpec($addr);
 
         // 1. Collect security params
         if (property_exists($opSpec->getSerializableData(), 'security')) {
@@ -304,7 +320,11 @@ class ServerRequestValidator extends Validator
         // 2. Validate collected params
         try {
             $pathValidator = new Security();
-            $pathValidator->validate($serverRequest, $securitySpecs, $this->openApi->components ? $this->openApi->components->securitySchemes : []);
+            $pathValidator->validate(
+                $serverRequest,
+                $securitySpecs,
+                $this->openApi->components ? $this->openApi->components->securitySchemes : []
+            );
         } catch (Throwable $e) {
             switch ($e->getCode()) {
                 case 601:
