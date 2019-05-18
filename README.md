@@ -154,7 +154,8 @@ $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)
 \OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile, $cachePool);
 ```
 
-You can use `->setCache($pool, $ttl)` call for both PSR-7 and PSR-15 builder in order to set proper ttl (or explicit `null`)
+You can use `->setCache($pool, $ttl)` call for both PSR-7 and PSR-15 builder in order to set 
+[proper expiration ttl in seconds (or explicit `null`)](https://www.php-fig.org/psr/psr-6/#definitions)
 
 If you want take control over the cache key for schema item, or your cache does not support cache key generation by itself
 you can `->overrideCacheKey('my_custom_key')` to ensure cache uses key you want.
