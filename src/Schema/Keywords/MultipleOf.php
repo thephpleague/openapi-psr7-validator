@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function sprintf;
 
 class MultipleOf extends BaseKeyword
@@ -18,6 +18,8 @@ class MultipleOf extends BaseKeyword
      *
      * @param mixed     $data
      * @param int|float $multipleOf
+     *
+     * @throws ValidationKeywordFailed
      */
     public function validate($data, $multipleOf) : void
     {
@@ -25,11 +27,12 @@ class MultipleOf extends BaseKeyword
             Validator::numeric()->assert($data);
             Validator::numeric()->positive()->assert($multipleOf);
 
-            if ($data % $multipleOf) {
-                throw new Exception(sprintf('Division by %d did not resulted in integer', $multipleOf));
+            $value = $data / $multipleOf;
+            if ($value - (int) $value !== 0.0) {
+                throw ValidationKeywordFailed::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
             }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('multipleOf', $data, $e->getMessage(), $e);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
     }
 }

@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use Exception;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function array_unique;
 use function count;
 use function sprintf;
@@ -34,6 +35,8 @@ class Required extends BaseKeyword
      *
      * @param mixed    $data
      * @param string[] $required
+     *
+     * @throws ValidationKeywordFailed
      */
     public function validate($data, array $required) : void
     {
@@ -52,23 +55,27 @@ class Required extends BaseKeyword
                 if (! $propertyFound) {
                     // respect writeOnly/readOnly keywords
                     if ((
-                            $this->parentSchema->properties[$reqProperty]->writeOnly &&
-                            $this->validationDataType === \OpenAPIValidation\Schema\Validator::VALIDATE_AS_RESPONSE
+                            ($this->parentSchema->properties[$reqProperty]->writeOnly ?? false) &&
+                            $this->validationDataType === SchemaValidator::VALIDATE_AS_RESPONSE
                         )
                         ||
                         (
-                            $this->parentSchema->properties[$reqProperty]->readOnly &&
-                            $this->validationDataType === \OpenAPIValidation\Schema\Validator::VALIDATE_AS_REQUEST
+                            ($this->parentSchema->properties[$reqProperty]->readOnly ?? false) &&
+                            $this->validationDataType === SchemaValidator::VALIDATE_AS_REQUEST
                         )
                     ) {
                         continue;
                     }
 
-                    throw new Exception(sprintf("Required property '%s' must be present in the object", $reqProperty));
+                    throw ValidationKeywordFailed::fromKeyword(
+                        'required',
+                        $data,
+                        sprintf("Required property '%s' must be present in the object", $reqProperty)
+                    );
                 }
             }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('required', $data, $e->getMessage(), $e);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
     }
 }

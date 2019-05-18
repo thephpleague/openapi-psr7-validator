@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -46,8 +46,8 @@ class Cookies
                 continue;
             }
 
-            $validator = new SchemaValidator($specs[$cookieName]->schema, $cookieValue, $this->detectValidationStrategy($message));
-            $validator->validate();
+            $validator = new SchemaValidator($this->detectValidationStrategy($message));
+            $validator->validate($cookieValue, $specs[$cookieName]->schema);
         }
     }
 }

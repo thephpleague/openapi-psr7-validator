@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function preg_match;
 use function sprintf;
 use function strlen;
@@ -24,6 +24,8 @@ class Pattern extends BaseKeyword
      * not implicitly anchored.
      *
      * @param mixed $data
+     *
+     * @throws ValidationKeywordFailed
      */
     public function validate($data, string $pattern) : void
     {
@@ -37,10 +39,10 @@ class Pattern extends BaseKeyword
             }
 
             if (! preg_match($pattern, $data)) {
-                throw new Exception(sprintf('Data does not match pattern \'%s\'', $pattern));
+                throw ValidationKeywordFailed::fromKeyword('pattern', $data, sprintf('Data does not match pattern \'%s\'', $pattern));
             }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('pattern', $data, $e->getMessage());
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
     }
 }

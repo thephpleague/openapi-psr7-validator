@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Exception;
 
-use LogicException;
-use OpenAPIValidation\Schema\BreadCrumb;
 use Throwable;
 
 // Indicates that data was not matched against a schema's keyword
-class ValidationKeywordFailed extends LogicException
+class ValidationKeywordFailed extends SchemaMismatch
 {
     /** @var string */
     protected $keyword;
-    /** @var mixed */
-    protected $data;
-    /** @var BreadCrumb */
-    protected $dataBreadCrumb;
 
     /**
      * @param mixed $data
@@ -35,27 +29,5 @@ class ValidationKeywordFailed extends LogicException
     public function keyword() : string
     {
         return $this->keyword;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function data()
-    {
-        return $this->data;
-    }
-
-    public function dataBreadCrumb() : ?BreadCrumb
-    {
-        return $this->dataBreadCrumb;
-    }
-
-    public function hydrateDataBreadCrumb(BreadCrumb $dataBreadCrumb) : void
-    {
-        if ($this->dataBreadCrumb !== null) {
-            return;
-        }
-
-        $this->dataBreadCrumb = $dataBreadCrumb;
     }
 }

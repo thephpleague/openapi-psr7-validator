@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use Exception;
 use OpenAPIValidation\Schema\BreadCrumb;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function sprintf;
 
@@ -31,20 +33,25 @@ class Items extends BaseKeyword
      * items MUST be present if the type is array.
      *
      * @param mixed $data
+     *
+     * @throws SchemaMismatch
      */
     public function validate($data, CebeSchema $itemsSchema) : void
     {
-        Validator::arrayVal()->assert($data);
-        Validator::instance(CebeSchema::class)->assert($itemsSchema);
+        try {
+            Validator::arrayVal()->assert($data);
+            Validator::instance(CebeSchema::class)->assert($itemsSchema);
 
-        if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array')) {
-            throw new Exception(sprintf('items MUST be present if the type is array'));
-        }
+            if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array')) {
+                throw new InvalidSchema(sprintf('items MUST be present if the type is array'));
+            }
 
-        foreach ($data as $dataIndex => $dataItem) {
-            $breadCrumb      = $this->dataBreadCrumb->addCrumb($dataIndex);
-            $schemaValidator = new SchemaValidator($itemsSchema, $dataItem, $this->validationDataType, $breadCrumb);
-            $schemaValidator->validate();
+            $schemaValidator = new SchemaValidator($this->validationDataType);
+            foreach ($data as $dataIndex => $dataItem) {
+                $schemaValidator->validate($dataItem, $itemsSchema, $this->dataBreadCrumb->addCrumb($dataIndex));
+            }
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
     }
 }

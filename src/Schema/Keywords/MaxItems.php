@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function count;
 use function sprintf;
 
@@ -21,6 +21,8 @@ class MaxItems extends BaseKeyword
      * than, or equal to, the value of this keyword.
      *
      * @param mixed $data
+     *
+     * @throws ValidationKeywordFailed
      */
     public function validate($data, int $maxItems) : void
     {
@@ -30,10 +32,14 @@ class MaxItems extends BaseKeyword
             Validator::trueVal()->assert($maxItems >= 0);
 
             if (count($data) > $maxItems) {
-                throw new Exception(sprintf('Size of an array must be less or equal to %d', $maxItems));
+                throw ValidationKeywordFailed::fromKeyword(
+                    'maxItems',
+                    $data,
+                    sprintf('Size of an array must be less or equal to %d', $maxItems)
+                );
             }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('maxItems', $data, $e->getMessage());
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
     }
 }

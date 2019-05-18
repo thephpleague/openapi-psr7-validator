@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class EnumTest extends SchemaValidatorTest
@@ -23,7 +23,7 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = 'a';
 
-        (new Validator($schema, $data))->validate();
+        (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -41,7 +41,7 @@ SPEC;
         $data   = 'c';
 
         try {
-            (new Validator($schema, $data))->validate();
+            (new SchemaValidator())->validate($data, $schema);
         } catch (ValidationKeywordFailed $e) {
             $this->assertEquals('enum', $e->keyword());
         }

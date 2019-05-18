@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MultipleOfTest extends SchemaValidatorTest
@@ -21,7 +21,7 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = 10.0;
 
-        (new Validator($schema, $data))->validate();
+        (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -37,7 +37,8 @@ SPEC;
         $data   = 1;
 
         try {
-            (new Validator($schema, $data))->validate();
+            (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation should not pass');
         } catch (ValidationKeywordFailed $e) {
             $this->assertEquals('multipleOf', $e->keyword());
         }

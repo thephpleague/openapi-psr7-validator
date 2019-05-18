@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class NotTest extends SchemaValidatorTest
@@ -24,7 +24,7 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = ['name' => 10];
 
-        (new Validator($schema, $data))->validate();
+        (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -43,7 +43,7 @@ SPEC;
         $data   = ['name' => 'Dima', 'age' => 10];
 
         try {
-            (new Validator($schema, $data))->validate();
+            (new SchemaValidator())->validate($data, $schema);
         } catch (ValidationKeywordFailed $e) {
             $this->assertEquals('not', $e->keyword());
         }

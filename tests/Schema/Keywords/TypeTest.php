@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\Exception\TypeMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class TypeTest extends SchemaValidatorTest
@@ -38,7 +38,7 @@ SPEC;
 
             $schema = $this->loadRawSchema($spec);
 
-            (new Validator($schema, $validValue))->validate();
+            (new SchemaValidator())->validate($validValue, $schema);
             $this->addToAssertionCount(1);
         }
     }
@@ -62,11 +62,8 @@ SPEC;
 
             $schema = $this->loadRawSchema($spec);
 
-            try {
-                (new Validator($schema, $invalidValue))->validate();
-            } catch (ValidationKeywordFailed $e) {
-                $this->assertEquals('type', $e->keyword());
-            }
+            $this->expectException(TypeMismatch::class);
+            (new SchemaValidator())->validate($invalidValue, $schema);
         }
     }
 }

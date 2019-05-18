@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use Exception;
 use OpenAPIValidation\Schema\BreadCrumb;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function sprintf;
 
 class OneOf extends BaseKeyword
@@ -39,6 +40,8 @@ class OneOf extends BaseKeyword
      *
      * @param mixed        $data
      * @param CebeSchema[] $oneOf
+     *
+     * @throws ValidationKeywordFailed
      */
     public function validate($data, array $oneOf) : void
     {
@@ -47,23 +50,22 @@ class OneOf extends BaseKeyword
             Validator::each(Validator::instance(CebeSchema::class))->assert($oneOf);
 
             // Validate against all schemas
-            $matchedCount = 0;
+            $matchedCount    = 0;
+            $schemaValidator = new SchemaValidator($this->validationDataType);
             foreach ($oneOf as $schema) {
                 try {
-                    $breadCrumb      = $this->dataBreadCrumb;
-                    $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType, $breadCrumb);
-                    $schemaValidator->validate();
+                    $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
                     $matchedCount++;
-                } catch (ValidationKeywordFailed $e) {
+                } catch (SchemaMismatch $e) {
                     // that did not match... its ok
                 }
             }
 
             if ($matchedCount !== 1) {
-                throw new Exception(sprintf('Data must match exactly one schema, but matched %d', $matchedCount));
+                throw ValidationKeywordFailed::fromKeyword('oneOf', $data, sprintf('Data must match exactly one schema, but matched %d', $matchedCount));
             }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('oneOf', $data, $e->getMessage(), $e);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
     }
 }

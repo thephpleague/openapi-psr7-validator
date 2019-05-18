@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
-use Exception;
 use OpenAPIValidation\PSR7\PathAddress;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,6 +18,8 @@ class Path
     /**
      * @param Parameter[] $specs       [paramName=>Parameter]
      * @param string      $pathPattern like "/users/{id}"
+     *
+     * @throws ValidationKeywordFailed
      */
     public function validate(MessageInterface $message, array $specs, string $pathPattern) : void
     {
@@ -33,17 +35,18 @@ class Path
     /**
      * @param Parameter[] $specs
      *
-     * @throws Exception
+     * @throws ValidationKeywordFailed
      */
     private function validateServerRequest(ServerRequestInterface $message, array $specs, string $pathPattern) : void
     {
         $path             = $message->getUri()->getPath();
         $pathParsedParams = PathAddress::parseParams($pathPattern, $path); // ['id'=>12]
 
+        $validator = new SchemaValidator($this->detectValidationStrategy($message));
+
         // Check if params are invalid
         foreach ($pathParsedParams as $name => $value) {
-            $validator = new SchemaValidator($specs[$name]->schema, $value, $this->detectValidationStrategy($message));
-            $validator->validate();
+            $validator->validate($value, $specs[$name]->schema);
         }
     }
 }

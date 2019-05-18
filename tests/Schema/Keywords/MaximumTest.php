@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MaximumTest extends SchemaValidatorTest
@@ -21,7 +21,7 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = 100;
 
-        (new Validator($schema, $data))->validate();
+        (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -38,7 +38,7 @@ SPEC;
         $data   = 100;
 
         try {
-            (new Validator($schema, $data))->validate();
+            (new SchemaValidator())->validate($data, $schema);
         } catch (ValidationKeywordFailed $e) {
             $this->assertEquals('maximum', $e->keyword());
         }
