@@ -33,6 +33,9 @@ class Required extends BaseKeyword
      * An object instance is valid against this keyword if its property set
      * contains all elements in this keyword's array value.
      *
+     * If a readOnly or writeOnly property is included in the required list, required affects just the relevant scope – responses only or requests only.
+     * That is, read-only required properties apply to responses only, and write-only required properties – to requests only.
+     *
      * @param mixed    $data
      * @param string[] $required
      *
