@@ -10,34 +10,70 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class MultipleOfTest extends SchemaValidatorTest
 {
-    public function testItValidatesMultipleofGreen() : void
+    /**
+     * @return number[][] of arguments
+     */
+    public function validDatasets() : array
+    {
+        return [
+            [4, 2],
+            [10.0, 2],
+            [10, .5],
+            [9.9, .3],
+        ];
+    }
+
+    /**
+     * @return number[][] of arguments
+     */
+    public function invalidDatasets() : array
+    {
+        return [
+            [4, 3],
+            [10.0, 3],
+            [10, .11],
+            [9.9, .451],
+        ];
+    }
+
+    /**
+     * @param int|float $number
+     * @param int|float $multipleOf
+     *
+     * @dataProvider validDatasets
+     */
+    public function testItValidatesMultipleofGreen($number, $multipleOf) : void
     {
         $spec = <<<SPEC
 schema:
   type: number
-  multipleOf: 2
+  multipleOf: $multipleOf
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = 10.0;
 
-        (new SchemaValidator())->validate($data, $schema);
+        (new SchemaValidator())->validate($number, $schema);
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesMultipleofRed() : void
+    /**
+     * @param int|float $number
+     * @param int|float $multipleOf
+     *
+     * @dataProvider invalidDatasets
+     */
+    public function testItValidatesMultipleofRed($number, $multipleOf) : void
     {
         $spec = <<<SPEC
 schema:
   type: number
-  multipleOf: 2
+  multipleOf: $multipleOf
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = 1;
 
         try {
-            (new SchemaValidator())->validate($data, $schema);
+            (new SchemaValidator())->validate($number, $schema);
             $this->fail('Validation should not pass');
         } catch (ValidationKeywordFailed $e) {
             $this->assertEquals('multipleOf', $e->keyword());
