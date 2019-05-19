@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 
 class Nullable extends BaseKeyword
 {
@@ -13,12 +13,12 @@ class Nullable extends BaseKeyword
      *
      * @param mixed $data
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, bool $nullable) : void
     {
         if (! $nullable && ($data === null)) {
-            throw ValidationKeywordFailed::fromKeyword('nullable', $data, 'Value cannot be null');
+            throw KeywordMismatch::fromKeyword('nullable', $data, 'Value cannot be null');
         }
     }
 }

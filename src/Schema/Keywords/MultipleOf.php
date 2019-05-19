@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function sprintf;
@@ -19,7 +19,7 @@ class MultipleOf extends BaseKeyword
      * @param mixed     $data
      * @param int|float $multipleOf
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, $multipleOf) : void
     {
@@ -29,7 +29,7 @@ class MultipleOf extends BaseKeyword
 
             $value = $data / $multipleOf;
             if ((float) ($value - (int) $value) !== 0.0) {
-                throw ValidationKeywordFailed::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
+                throw KeywordMismatch::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
             }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);

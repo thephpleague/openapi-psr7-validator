@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function count;
@@ -25,7 +25,7 @@ class Enum extends BaseKeyword
      * @param mixed   $data
      * @param mixed[] $enum - can be strings or numbers
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, array $enum) : void
     {
@@ -34,7 +34,7 @@ class Enum extends BaseKeyword
             Validator::trueVal()->assert(count($enum) >= 1);
 
             if (! in_array($data, $enum, true)) {
-                throw ValidationKeywordFailed::fromKeyword('enum', $data, 'Value must be present in the enum');
+                throw KeywordMismatch::fromKeyword('enum', $data, 'Value must be present in the enum');
             }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);

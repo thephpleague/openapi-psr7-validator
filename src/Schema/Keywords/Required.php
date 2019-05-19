@@ -6,7 +6,7 @@ namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
@@ -39,7 +39,7 @@ class Required extends BaseKeyword
      * @param mixed    $data
      * @param string[] $required
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, array $required) : void
     {
@@ -70,7 +70,7 @@ class Required extends BaseKeyword
                         continue;
                     }
 
-                    throw ValidationKeywordFailed::fromKeyword(
+                    throw KeywordMismatch::fromKeyword(
                         'required',
                         $data,
                         sprintf("Required property '%s' must be present in the object", $reqProperty)

@@ -6,7 +6,7 @@ namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
 use OpenAPIValidation\PSR7\PathAddress;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,7 +19,7 @@ class Path
      * @param Parameter[] $specs       [paramName=>Parameter]
      * @param string      $pathPattern like "/users/{id}"
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate(MessageInterface $message, array $specs, string $pathPattern) : void
     {
@@ -35,7 +35,7 @@ class Path
     /**
      * @param Parameter[] $specs
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     private function validateServerRequest(ServerRequestInterface $message, array $specs, string $pathPattern) : void
     {

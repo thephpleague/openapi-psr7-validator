@@ -7,8 +7,8 @@ namespace OpenAPIValidation\Schema\Keywords;
 use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
@@ -40,7 +40,7 @@ class AnyOf extends BaseKeyword
      * @param mixed        $data
      * @param CebeSchema[] $anyOf
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, array $anyOf) : void
     {
@@ -59,7 +59,7 @@ class AnyOf extends BaseKeyword
                 }
             }
 
-            throw ValidationKeywordFailed::fromKeyword('anyOf', $data, 'Data must match at least one schema');
+            throw KeywordMismatch::fromKeyword('anyOf', $data, 'Data must match at least one schema');
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }

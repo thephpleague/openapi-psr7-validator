@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function mb_strlen;
@@ -27,7 +27,7 @@ class MaxLength extends BaseKeyword
      *
      * @param mixed $data
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, int $maxLength) : void
     {
@@ -37,7 +37,7 @@ class MaxLength extends BaseKeyword
             Validator::trueVal()->assert($maxLength >= 0);
 
             if (mb_strlen($data) > $maxLength) {
-                throw ValidationKeywordFailed::fromKeyword('maxLength', $data, sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
+                throw KeywordMismatch::fromKeyword('maxLength', $data, sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
             }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);

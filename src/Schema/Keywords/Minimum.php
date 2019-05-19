@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function sprintf;
@@ -33,7 +33,7 @@ class Minimum extends BaseKeyword
      * @param mixed     $data
      * @param int|float $minimum
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, $minimum, bool $exclusiveMinimum = false) : void
     {
@@ -42,7 +42,7 @@ class Minimum extends BaseKeyword
             Validator::numeric()->assert($minimum);
 
             if ($exclusiveMinimum && $data <= $minimum) {
-                throw ValidationKeywordFailed::fromKeyword(
+                throw KeywordMismatch::fromKeyword(
                     'minimum',
                     $data,
                     sprintf('Value %d must be greater or equal to %d', $data, $minimum)
@@ -50,7 +50,7 @@ class Minimum extends BaseKeyword
             }
 
             if (! $exclusiveMinimum && $data < $minimum) {
-                throw ValidationKeywordFailed::fromKeyword(
+                throw KeywordMismatch::fromKeyword(
                     'minimum',
                     $data,
                     sprintf('Value %d must be greater than %d', $data, $minimum)

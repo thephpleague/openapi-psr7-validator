@@ -7,7 +7,7 @@ namespace OpenAPIValidation\Schema\Exception;
 use Throwable;
 
 // Indicates that data was not matched against a schema's keyword
-class ValidationKeywordFailed extends SchemaMismatch
+class KeywordMismatch extends SchemaMismatch
 {
     /** @var string */
     protected $keyword;
@@ -15,7 +15,7 @@ class ValidationKeywordFailed extends SchemaMismatch
     /**
      * @param mixed $data
      *
-     * @return ValidationKeywordFailed
+     * @return KeywordMismatch
      */
     public static function fromKeyword(string $keyword, $data, ?string $message = null, ?Throwable $prev = null) : self
     {

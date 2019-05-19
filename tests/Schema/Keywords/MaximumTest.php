@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
@@ -39,7 +39,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
-        } catch (ValidationKeywordFailed $e) {
+        } catch (KeywordMismatch $e) {
             $this->assertEquals('maximum', $e->keyword());
         }
     }

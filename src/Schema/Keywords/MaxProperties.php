@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function count;
@@ -22,7 +22,7 @@ class MaxProperties extends BaseKeyword
      *
      * @param mixed $data
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, int $maxProperties) : void
     {
@@ -31,7 +31,7 @@ class MaxProperties extends BaseKeyword
             Validator::trueVal()->assert($maxProperties >= 0);
 
             if (count($data) > $maxProperties) {
-                throw ValidationKeywordFailed::fromKeyword(
+                throw KeywordMismatch::fromKeyword(
                     'maxProperties',
                     $data,
                     sprintf("The number of object's properties must be less or equal to %d", $maxProperties)

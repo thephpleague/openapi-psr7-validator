@@ -7,8 +7,8 @@ namespace OpenAPIValidation\Schema\Keywords;
 use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
@@ -36,7 +36,7 @@ class Not extends BaseKeyword
      *
      * @param mixed $data
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, CebeSchema $not) : void
     {
@@ -51,7 +51,7 @@ class Not extends BaseKeyword
                 return;
             }
 
-            throw ValidationKeywordFailed::fromKeyword('not', $data, 'Data must not match the schema');
+            throw KeywordMismatch::fromKeyword('not', $data, 'Data must not match the schema');
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }

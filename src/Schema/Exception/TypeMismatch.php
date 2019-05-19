@@ -7,7 +7,7 @@ namespace OpenAPIValidation\Schema\Exception;
 use function gettype;
 use function sprintf;
 
-class TypeMismatch extends ValidationKeywordFailed
+class TypeMismatch extends KeywordMismatch
 {
     /**
      * @param mixed $value

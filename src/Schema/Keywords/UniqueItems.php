@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function array_unique;
@@ -25,7 +25,7 @@ class UniqueItems extends BaseKeyword
      *
      * @param mixed $data
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate($data, bool $uniqueItems) : void
     {
@@ -37,7 +37,7 @@ class UniqueItems extends BaseKeyword
             Validator::arrayType()->assert($data);
 
             if (array_unique($data) !== count($data)) {
-                throw ValidationKeywordFailed::fromKeyword('uniqueItems', $data, 'All array items must be unique');
+                throw KeywordMismatch::fromKeyword('uniqueItems', $data, 'All array items must be unique');
             }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);

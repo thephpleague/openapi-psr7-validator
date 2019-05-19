@@ -6,7 +6,7 @@ namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
 use OpenAPIValidation\Schema\BreadCrumb;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,7 +20,7 @@ class QueryArguments
     /**
      * @param Parameter[] $specs [queryArgumentName=>schema]
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     public function validate(MessageInterface $message, array $specs) : void
     {
@@ -35,7 +35,7 @@ class QueryArguments
     /**
      * @param Parameter[] $specs
      *
-     * @throws ValidationKeywordFailed
+     * @throws KeywordMismatch
      */
     private function validateServerRequest(ServerRequestInterface $message, array $specs) : void
     {
