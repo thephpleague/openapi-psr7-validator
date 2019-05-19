@@ -28,7 +28,7 @@ class MultipleOf extends BaseKeyword
             Validator::numeric()->positive()->assert($multipleOf);
 
             $value = $data / $multipleOf;
-            if ($value - (int) $value !== 0.0) {
+            if ((float) ($value - (int) $value) !== 0.0) {
                 throw ValidationKeywordFailed::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
             }
         } catch (ExceptionInterface $e) {
