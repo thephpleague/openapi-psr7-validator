@@ -239,61 +239,37 @@ $customFormat = function ($value): bool {
 ```
 
 ## Exceptions
-The package throws a list of various exceptions which you can catch and 
-handle. There are some of them:
+The package throws a list of various exceptions which you can catch and handle. There are some of them:
 - Schema related:
-    - `\OpenAPIValidation\Schema\Exception\ValidationKeywordFailed` - data does 
-    not match given keyword's rule. 
-    - `\OpenAPIValidation\Schema\Exception\TypeMismatch` - data mismatched a given type. For example `type:string` and value is `12`
-    - `\OpenAPIValidation\Schema\Exception\FormatMismatch` - data mismatched a 
-    given type format. For example `type: string, format: email` won't match 
-    `not-email`.
+    - `\OpenAPIValidation\Schema\Exception\KeywordMismatch` - Indicates that data was not matched against a schema's keyword
+        - `\OpenAPIValidation\Schema\Exception\TypeMismatch` - Validation for `type` keyword failed against a given data. For example `type:string` and value is `12`
+        - `\OpenAPIValidation\Schema\Exception\FormatMismatch` - data mismatched a given type format. For example `type: string, format: email` won't match `not-email`.
 - PSR7 Messages related:
-    - `\OpenAPIValidation\PSR7\Exception\NoContentType` - Response contains 
-    no Content-Type header. General HTTP errors.
+    - `\OpenAPIValidation\PSR7\Exception\NoContentType` - HTTP message(request/response) contains no Content-Type header. General HTTP errors.
     - `\OpenAPIValidation\PSR7\Exception\NoPath` - path is not found in the spec
-    - `\OpenAPIValidation\PSR7\Exception\NoOperation` - operation os not 
-    found in the path
-    - `\OpenAPIValidation\PSR7\Exception\NoResponseCode` - response code not 
-    found under the operation in the spec
+    - `\OpenAPIValidation\PSR7\Exception\NoOperation` - operation os not found in the path
+    - `\OpenAPIValidation\PSR7\Exception\NoResponseCode` - response code not found under the operation in the spec
     - Request related:
         - `\OpenAPIValidation\PSR7\Exception
-        \MultipleOperationsMismatchForRequest` - request matched multiple 
-        operations in the spec, but validation failed for all of them.
-        - `\OpenAPIValidation\PSR7\Exception\MissedRequestCookie` - Request 
-        does not contain expected cookie
-        - `\OpenAPIValidation\PSR7\Exception\MissedRequestHeader` - Request 
-        does not contain expected header
-        - `\OpenAPIValidation\PSR7\Exception\MissedRequestQueryArgument` - 
-        Request does not have expected query argument
-        - `\OpenAPIValidation\PSR7\Exception\RequestBodyMismatch` - request's
-         body does not match the specification schema
-        - `\OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch` - 
-        request's cookie does not match the specification schema
-        - `\OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch` - 
-        request's headers do not match spec schema
-        - `\OpenAPIValidation\PSR7\Exception\RequestPathParameterMismatch` - 
-        request's path does not match spec's path template
-        - `\OpenAPIValidation\PSR7\Exception\RequestQueryArgumentMismatch` - 
-        request's query arguments does not match the spec schema
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestContentType` - 
-        request's body content type is unexpected
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader` - 
-        request carries unexpected header
+        \MultipleOperationsMismatchForRequest` - request matched multiple operations in the spec, but validation failed for all of them.
+        - `\OpenAPIValidation\PSR7\Exception\MissedRequestCookie` - Request does not contain expected cookie
+        - `\OpenAPIValidation\PSR7\Exception\MissedRequestHeader` - Request does not contain expected header
+        - `\OpenAPIValidation\PSR7\Exception\MissedRequestQueryArgument` - Request does not have expected query argument
+        - `\OpenAPIValidation\PSR7\Exception\RequestBodyMismatch` - request's body does not match the specification schema
+        - `\OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch` - request's cookie does not match the specification schema
+        - `\OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch` - request's headers do not match spec schema
+        - `\OpenAPIValidation\PSR7\Exception\RequestPathParameterMismatch` - request's path does not match spec's path template
+        - `\OpenAPIValidation\PSR7\Exception\RequestQueryArgumentMismatch` -  request's query arguments does not match the spec schema
+        - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestContentType` -  request's body content type is unexpected
+        - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader` -  request carries unexpected header
         - `\OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey` - described security apiKey not found in the request
         - `\OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch` - request does not match with the described security requirements  
     - Response related:
-        - `\OpenAPIValidation\PSR7\Exception\MissedResponseHeader` - response
-         does not have a header
-        - `\OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch` - response
-         body does not match a schema
-        - `\OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch` - 
-        response headers do not match the spec
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseHeader` - 
-        response contains header not mentioned in the spec
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType` -
-         response contains unexpected content-type 
-
+        - `\OpenAPIValidation\PSR7\Exception\MissedResponseHeader` - response does not have a header
+        - `\OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch` - response body does not match a schema
+        - `\OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch` - response headers do not match the spec
+        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseHeader` - response contains header not mentioned in the spec
+        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType` - response contains unexpected content-type
 
 ## Testing
 You can run the tests with:

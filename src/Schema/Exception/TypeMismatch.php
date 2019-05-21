@@ -7,6 +7,7 @@ namespace OpenAPIValidation\Schema\Exception;
 use function gettype;
 use function sprintf;
 
+// Validation for 'type' keyword failed against a given data
 class TypeMismatch extends KeywordMismatch
 {
     /**
