@@ -47,21 +47,21 @@ class AnyOf extends BaseKeyword
         try {
             Validator::arrayVal()->assert($anyOf);
             Validator::each(Validator::instance(CebeSchema::class))->assert($anyOf);
-
-            foreach ($anyOf as $schema) {
-                $schemaValidator = new SchemaValidator($this->validationDataType);
-                try {
-                    $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
-
-                    return;
-                } catch (SchemaMismatch $e) {
-                    // that did not match... its ok
-                }
-            }
-
-            throw KeywordMismatch::fromKeyword('anyOf', $data, 'Data must match at least one schema');
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
+
+        foreach ($anyOf as $schema) {
+            $schemaValidator = new SchemaValidator($this->validationDataType);
+            try {
+                $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
+
+                return;
+            } catch (SchemaMismatch $e) {
+                // that did not match... its ok
+            }
+        }
+
+        throw KeywordMismatch::fromKeyword('anyOf', $data, 'Data must match at least one schema');
     }
 }

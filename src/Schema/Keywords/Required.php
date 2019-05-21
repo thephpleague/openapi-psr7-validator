@@ -48,37 +48,37 @@ class Required extends BaseKeyword
             Validator::arrayType()->assert($required);
             Validator::each(Validator::stringType())->assert($required);
             Validator::trueVal()->assert(count(array_unique($required)) === count($required));
-
-            foreach ($required as $reqProperty) {
-                $propertyFound = false;
-                foreach ($data as $property => $value) {
-                    $propertyFound = $propertyFound || ($reqProperty === $property);
-                }
-
-                if (! $propertyFound) {
-                    // respect writeOnly/readOnly keywords
-                    if ((
-                            ($this->parentSchema->properties[$reqProperty]->writeOnly ?? false) &&
-                            $this->validationDataType === SchemaValidator::VALIDATE_AS_RESPONSE
-                        )
-                        ||
-                        (
-                            ($this->parentSchema->properties[$reqProperty]->readOnly ?? false) &&
-                            $this->validationDataType === SchemaValidator::VALIDATE_AS_REQUEST
-                        )
-                    ) {
-                        continue;
-                    }
-
-                    throw KeywordMismatch::fromKeyword(
-                        'required',
-                        $data,
-                        sprintf("Required property '%s' must be present in the object", $reqProperty)
-                    );
-                }
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        foreach ($required as $reqProperty) {
+            $propertyFound = false;
+            foreach ($data as $property => $value) {
+                $propertyFound = $propertyFound || ($reqProperty === $property);
+            }
+
+            if (! $propertyFound) {
+                // respect writeOnly/readOnly keywords
+                if ((
+                        ($this->parentSchema->properties[$reqProperty]->writeOnly ?? false) &&
+                        $this->validationDataType === SchemaValidator::VALIDATE_AS_RESPONSE
+                    )
+                    ||
+                    (
+                        ($this->parentSchema->properties[$reqProperty]->readOnly ?? false) &&
+                        $this->validationDataType === SchemaValidator::VALIDATE_AS_REQUEST
+                    )
+                ) {
+                    continue;
+                }
+
+                throw KeywordMismatch::fromKeyword(
+                    'required',
+                    $data,
+                    sprintf("Required property '%s' must be present in the object", $reqProperty)
+                );
+            }
         }
     }
 }

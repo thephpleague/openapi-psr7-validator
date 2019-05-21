@@ -29,6 +29,7 @@ class MinLength extends BaseKeyword
      * @param mixed $data
      *
      * @throws KeywordMismatch
+     * @throws InvalidSchema
      */
     public function validate($data, int $minLength) : void
     {
@@ -36,16 +37,16 @@ class MinLength extends BaseKeyword
             Validator::stringType()->assert($data);
             Validator::intVal()->assert($minLength);
             Validator::trueVal()->assert($minLength >= 0);
-
-            if (mb_strlen($data) < $minLength) {
-                throw KeywordMismatch::fromKeyword(
-                    'minLength',
-                    $data,
-                    sprintf("Length of '%d' must be longer or equal to %d", $data, $minLength)
-                );
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (mb_strlen($data) < $minLength) {
+            throw KeywordMismatch::fromKeyword(
+                'minLength',
+                $data,
+                sprintf("Length of '%d' must be longer or equal to %d", $data, $minLength)
+            );
         }
     }
 }

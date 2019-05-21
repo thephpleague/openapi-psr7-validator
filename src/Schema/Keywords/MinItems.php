@@ -33,12 +33,12 @@ class MinItems extends BaseKeyword
             Validator::arrayType()->assert($data);
             Validator::intVal()->assert($minItems);
             Validator::trueVal()->assert($minItems >= 0);
-
-            if (count($data) < $minItems) {
-                throw KeywordMismatch::fromKeyword('minItems', $data, sprintf('Size of an array must be greater or equal to %d', $minItems));
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (count($data) < $minItems) {
+            throw KeywordMismatch::fromKeyword('minItems', $data, sprintf('Size of an array must be greater or equal to %d', $minItems));
         }
     }
 }

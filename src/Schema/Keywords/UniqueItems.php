@@ -35,12 +35,12 @@ class UniqueItems extends BaseKeyword
 
         try {
             Validator::arrayType()->assert($data);
-
-            if (array_unique($data) !== count($data)) {
-                throw KeywordMismatch::fromKeyword('uniqueItems', $data, 'All array items must be unique');
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (array_unique($data) !== count($data)) {
+            throw KeywordMismatch::fromKeyword('uniqueItems', $data, 'All array items must be unique');
         }
     }
 }

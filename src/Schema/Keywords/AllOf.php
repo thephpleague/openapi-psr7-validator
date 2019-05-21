@@ -46,14 +46,14 @@ final class AllOf extends BaseKeyword
         try {
             Validator::arrayVal()->assert($allOf);
             Validator::each(Validator::instance(CebeSchema::class))->assert($allOf);
-
-            // Validate against all schemas
-            $schemaValidator = new SchemaValidator($this->validationDataType);
-            foreach ($allOf as $schema) {
-                $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
-            }
         } catch (ExceptionInterface $exception) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($exception);
+        }
+
+        // Validate against all schemas
+        $schemaValidator = new SchemaValidator($this->validationDataType);
+        foreach ($allOf as $schema) {
+            $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
         }
     }
 }

@@ -32,16 +32,16 @@ class MinProperties extends BaseKeyword
         try {
             Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($minProperties >= 0);
-
-            if (count($data) < $minProperties) {
-                throw KeywordMismatch::fromKeyword(
-                    'minProperties',
-                    $data,
-                    sprintf("The number of object's properties must be greater or equal to %d", $minProperties)
-                );
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (count($data) < $minProperties) {
+            throw KeywordMismatch::fromKeyword(
+                'minProperties',
+                $data,
+                sprintf("The number of object's properties must be greater or equal to %d", $minProperties)
+            );
         }
     }
 }

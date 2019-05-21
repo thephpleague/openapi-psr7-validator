@@ -40,24 +40,24 @@ class Maximum extends BaseKeyword
         try {
             Validator::numeric()->assert($data);
             Validator::numeric()->assert($maximum);
-
-            if ($exclusiveMaximum && $data >= $maximum) {
-                throw KeywordMismatch::fromKeyword(
-                    'maximum',
-                    $data,
-                    sprintf('Value %d must be less or equal to %d', $data, $maximum)
-                );
-            }
-
-            if (! $exclusiveMaximum && $data > $maximum) {
-                throw KeywordMismatch::fromKeyword(
-                    'maximum',
-                    $data,
-                    sprintf('Value %d must be less than %d', $data, $maximum)
-                );
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if ($exclusiveMaximum && $data >= $maximum) {
+            throw KeywordMismatch::fromKeyword(
+                'maximum',
+                $data,
+                sprintf('Value %d must be less or equal to %d', $data, $maximum)
+            );
+        }
+
+        if (! $exclusiveMaximum && $data > $maximum) {
+            throw KeywordMismatch::fromKeyword(
+                'maximum',
+                $data,
+                sprintf('Value %d must be less than %d', $data, $maximum)
+            );
         }
     }
 }

@@ -7,6 +7,7 @@ namespace OpenAPIValidation\Schema\Exception;
 use RuntimeException;
 use Throwable;
 
+// Something wrong with the OpenAPI schema. This sort of errors should have been caught by cebe's underlying package.
 final class InvalidSchema extends RuntimeException
 {
     public static function becauseDefensiveSchemaValidationFailed(Throwable $e) : self

@@ -42,18 +42,18 @@ class Not extends BaseKeyword
     {
         try {
             Validator::instance(CebeSchema::class)->assert($not);
-
-            $schemaValidator = new SchemaValidator($this->validationDataType);
-
-            try {
-                $schemaValidator->validate($data, $not, $this->dataBreadCrumb);
-            } catch (SchemaMismatch $e) {
-                return;
-            }
-
-            throw KeywordMismatch::fromKeyword('not', $data, 'Data must not match the schema');
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
+
+        $schemaValidator = new SchemaValidator($this->validationDataType);
+
+        try {
+            $schemaValidator->validate($data, $not, $this->dataBreadCrumb);
+        } catch (SchemaMismatch $e) {
+            return;
+        }
+
+        throw KeywordMismatch::fromKeyword('not', $data, 'Data must not match the schema');
     }
 }

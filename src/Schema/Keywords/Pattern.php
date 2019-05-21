@@ -32,17 +32,17 @@ class Pattern extends BaseKeyword
         try {
             Validator::stringType()->assert($data);
             Validator::stringType()->assert($pattern);
-
-            // add anchors
-            if ($pattern[0] !== $pattern[strlen($pattern) - 1]) {
-                $pattern = sprintf('#%s#', $pattern);
-            }
-
-            if (! preg_match($pattern, $data)) {
-                throw KeywordMismatch::fromKeyword('pattern', $data, sprintf('Data does not match pattern \'%s\'', $pattern));
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        // add anchors
+        if ($pattern[0] !== $pattern[strlen($pattern) - 1]) {
+            $pattern = sprintf('#%s#', $pattern);
+        }
+
+        if (! preg_match($pattern, $data)) {
+            throw KeywordMismatch::fromKeyword('pattern', $data, sprintf('Data does not match pattern \'%s\'', $pattern));
         }
     }
 }

@@ -30,16 +30,16 @@ class MaxItems extends BaseKeyword
             Validator::arrayType()->assert($data);
             Validator::intVal()->assert($maxItems);
             Validator::trueVal()->assert($maxItems >= 0);
-
-            if (count($data) > $maxItems) {
-                throw KeywordMismatch::fromKeyword(
-                    'maxItems',
-                    $data,
-                    sprintf('Size of an array must be less or equal to %d', $maxItems)
-                );
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (count($data) > $maxItems) {
+            throw KeywordMismatch::fromKeyword(
+                'maxItems',
+                $data,
+                sprintf('Size of an array must be less or equal to %d', $maxItems)
+            );
         }
     }
 }

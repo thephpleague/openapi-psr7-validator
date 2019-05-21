@@ -63,37 +63,37 @@ class Properties extends BaseKeyword
             Validator::arrayType()->assert($data);
             Validator::arrayVal()->assert($properties);
             Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
-
-            $schemaValidator = new SchemaValidator($this->validationDataType);
-
-            // Validate against "properties"
-            foreach ($properties as $propName => $propSchema) {
-                if (! array_key_exists($propName, $data)) {
-                    continue;
-                }
-
-                $schemaValidator->validate($data[$propName], $propSchema, $this->dataBreadCrumb->addCrumb($propName));
-            }
-
-            // Validate the rest against "additionalProperties"
-            if (! ($additionalProperties instanceof CebeSchema)) {
-                return;
-            }
-
-            foreach ($data as $propName => $propSchema) {
-                if (isset($properties[$propName])) {
-                    continue;
-                }
-
-                // if not covered by "properties"
-                $schemaValidator->validate(
-                    $data[$propName],
-                    $additionalProperties,
-                    $this->dataBreadCrumb->addCrumb($propName)
-                );
-            }
         } catch (ExceptionInterface $exception) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($exception);
+        }
+
+        $schemaValidator = new SchemaValidator($this->validationDataType);
+
+        // Validate against "properties"
+        foreach ($properties as $propName => $propSchema) {
+            if (! array_key_exists($propName, $data)) {
+                continue;
+            }
+
+            $schemaValidator->validate($data[$propName], $propSchema, $this->dataBreadCrumb->addCrumb($propName));
+        }
+
+        // Validate the rest against "additionalProperties"
+        if (! ($additionalProperties instanceof CebeSchema)) {
+            return;
+        }
+
+        foreach ($data as $propName => $propSchema) {
+            if (isset($properties[$propName])) {
+                continue;
+            }
+
+            // if not covered by "properties"
+            $schemaValidator->validate(
+                $data[$propName],
+                $additionalProperties,
+                $this->dataBreadCrumb->addCrumb($propName)
+            );
         }
     }
 }

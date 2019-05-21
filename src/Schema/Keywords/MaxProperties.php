@@ -29,16 +29,16 @@ class MaxProperties extends BaseKeyword
         try {
             Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($maxProperties >= 0);
-
-            if (count($data) > $maxProperties) {
-                throw KeywordMismatch::fromKeyword(
-                    'maxProperties',
-                    $data,
-                    sprintf("The number of object's properties must be less or equal to %d", $maxProperties)
-                );
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (count($data) > $maxProperties) {
+            throw KeywordMismatch::fromKeyword(
+                'maxProperties',
+                $data,
+                sprintf("The number of object's properties must be less or equal to %d", $maxProperties)
+            );
         }
     }
 }

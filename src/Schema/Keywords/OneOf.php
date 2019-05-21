@@ -48,24 +48,24 @@ class OneOf extends BaseKeyword
         try {
             Validator::arrayVal()->assert($oneOf);
             Validator::each(Validator::instance(CebeSchema::class))->assert($oneOf);
-
-            // Validate against all schemas
-            $matchedCount    = 0;
-            $schemaValidator = new SchemaValidator($this->validationDataType);
-            foreach ($oneOf as $schema) {
-                try {
-                    $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
-                    $matchedCount++;
-                } catch (SchemaMismatch $e) {
-                    // that did not match... its ok
-                }
-            }
-
-            if ($matchedCount !== 1) {
-                throw KeywordMismatch::fromKeyword('oneOf', $data, sprintf('Data must match exactly one schema, but matched %d', $matchedCount));
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        // Validate against all schemas
+        $matchedCount    = 0;
+        $schemaValidator = new SchemaValidator($this->validationDataType);
+        foreach ($oneOf as $schema) {
+            try {
+                $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
+                $matchedCount++;
+            } catch (SchemaMismatch $e) {
+                // that did not match... its ok
+            }
+        }
+
+        if ($matchedCount !== 1) {
+            throw KeywordMismatch::fromKeyword('oneOf', $data, sprintf('Data must match exactly one schema, but matched %d', $matchedCount));
         }
     }
 }

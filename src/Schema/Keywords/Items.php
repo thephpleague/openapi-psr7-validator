@@ -41,17 +41,17 @@ class Items extends BaseKeyword
         try {
             Validator::arrayVal()->assert($data);
             Validator::instance(CebeSchema::class)->assert($itemsSchema);
-
-            if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array')) {
-                throw new InvalidSchema(sprintf('items MUST be present if the type is array'));
-            }
-
-            $schemaValidator = new SchemaValidator($this->validationDataType);
-            foreach ($data as $dataIndex => $dataItem) {
-                $schemaValidator->validate($dataItem, $itemsSchema, $this->dataBreadCrumb->addCrumb($dataIndex));
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array')) {
+            throw new InvalidSchema(sprintf('items MUST be present if the type is array'));
+        }
+
+        $schemaValidator = new SchemaValidator($this->validationDataType);
+        foreach ($data as $dataIndex => $dataItem) {
+            $schemaValidator->validate($dataItem, $itemsSchema, $this->dataBreadCrumb->addCrumb($dataIndex));
         }
     }
 }

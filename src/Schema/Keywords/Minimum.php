@@ -40,24 +40,24 @@ class Minimum extends BaseKeyword
         try {
             Validator::numeric()->assert($data);
             Validator::numeric()->assert($minimum);
-
-            if ($exclusiveMinimum && $data <= $minimum) {
-                throw KeywordMismatch::fromKeyword(
-                    'minimum',
-                    $data,
-                    sprintf('Value %d must be greater or equal to %d', $data, $minimum)
-                );
-            }
-
-            if (! $exclusiveMinimum && $data < $minimum) {
-                throw KeywordMismatch::fromKeyword(
-                    'minimum',
-                    $data,
-                    sprintf('Value %d must be greater than %d', $data, $minimum)
-                );
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if ($exclusiveMinimum && $data <= $minimum) {
+            throw KeywordMismatch::fromKeyword(
+                'minimum',
+                $data,
+                sprintf('Value %d must be greater or equal to %d', $data, $minimum)
+            );
+        }
+
+        if (! $exclusiveMinimum && $data < $minimum) {
+            throw KeywordMismatch::fromKeyword(
+                'minimum',
+                $data,
+                sprintf('Value %d must be greater than %d', $data, $minimum)
+            );
         }
     }
 }

@@ -26,13 +26,13 @@ class MultipleOf extends BaseKeyword
         try {
             Validator::numeric()->assert($data);
             Validator::numeric()->positive()->assert($multipleOf);
-
-            $value = (float) ($data / $multipleOf);
-            if ($value - (int) $value !== 0.0) {
-                throw KeywordMismatch::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        $value = (float) ($data / $multipleOf);
+        if ($value - (int) $value !== 0.0) {
+            throw KeywordMismatch::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
         }
     }
 }

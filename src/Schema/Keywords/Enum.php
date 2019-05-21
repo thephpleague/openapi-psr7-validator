@@ -32,12 +32,12 @@ class Enum extends BaseKeyword
         try {
             Validator::arrayType()->assert($enum);
             Validator::trueVal()->assert(count($enum) >= 1);
-
-            if (! in_array($data, $enum, true)) {
-                throw KeywordMismatch::fromKeyword('enum', $data, 'Value must be present in the enum');
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (! in_array($data, $enum, true)) {
+            throw KeywordMismatch::fromKeyword('enum', $data, 'Value must be present in the enum');
         }
     }
 }

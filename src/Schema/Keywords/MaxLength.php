@@ -35,12 +35,12 @@ class MaxLength extends BaseKeyword
             Validator::stringType()->assert($data);
             Validator::intType()->assert($maxLength);
             Validator::trueVal()->assert($maxLength >= 0);
-
-            if (mb_strlen($data) > $maxLength) {
-                throw KeywordMismatch::fromKeyword('maxLength', $data, sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
-            }
         } catch (ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
+
+        if (mb_strlen($data) > $maxLength) {
+            throw KeywordMismatch::fromKeyword('maxLength', $data, sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
         }
     }
 }
