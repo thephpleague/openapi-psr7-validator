@@ -41,8 +41,7 @@ final class SchemaValidator implements Validator
 
     public function __construct(int $validationStrategy = self::VALIDATE_AS_RESPONSE)
     {
-        \Respect\Validation\Validator::in([self::VALIDATE_AS_REQUEST, self::VALIDATE_AS_RESPONSE])
-            ->assert($validationStrategy);
+        \Respect\Validation\Validator::in([self::VALIDATE_AS_REQUEST, self::VALIDATE_AS_RESPONSE])->assert($validationStrategy);
 
         $this->validationStrategy = $validationStrategy;
     }

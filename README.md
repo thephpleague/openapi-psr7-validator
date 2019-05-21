@@ -175,14 +175,12 @@ SPEC;
 $data = "c";
 
 $spec   = cebe\openapi\Reader::readFromYaml($spec);
-
-#optional reference resolving
+# (optional) reference resolving
 $spec->resolveReferences(new ReferenceContext($spec, "/"));
-
 $schema = new cebe\openapi\spec\Schema($spec->schema);
 
 try {
-    (new OpenAPIValidation\Schema\Validator($schema, $data))->validate();
+    (new \OpenAPIValidation\Schema\SchemaValidator())->validate($data, $schema);
 } catch(\OpenAPIValidation\Schema\Exception\KeywordMismatch $e) {
     // you can evaluate failure details
     // $e->keyword() == "enum"
