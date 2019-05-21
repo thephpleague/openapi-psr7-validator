@@ -183,7 +183,7 @@ $schema = new cebe\openapi\spec\Schema($spec->schema);
 
 try {
     (new OpenAPIValidation\Schema\Validator($schema, $data))->validate();
-} catch(\OpenAPIValidation\Schema\Exception\ValidationKeywordFailed $e) {
+} catch(\OpenAPIValidation\Schema\Exception\KeywordMismatch $e) {
     // you can evaluate failure details
     // $e->keyword() == "enum"
     // $e->data() == "c"
