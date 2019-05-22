@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators;
 
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -16,9 +16,9 @@ trait ValidationStrategy
     protected function detectValidationStrategy(MessageInterface $message) : int
     {
         if ($message instanceof ResponseInterface) {
-            return Validator::VALIDATE_AS_RESPONSE;
+            return SchemaValidator::VALIDATE_AS_RESPONSE;
         }
 
-        return Validator::VALIDATE_AS_REQUEST;
+        return SchemaValidator::VALIDATE_AS_REQUEST;
     }
 }

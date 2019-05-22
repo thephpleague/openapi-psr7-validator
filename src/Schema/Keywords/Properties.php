@@ -6,7 +6,10 @@ namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\BreadCrumb;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function array_key_exists;
 
@@ -51,12 +54,20 @@ class Properties extends BaseKeyword
      * @param mixed        $data
      * @param CebeSchema[] $properties
      * @param mixed        $additionalProperties
+     *
+     * @throws SchemaMismatch
      */
     public function validate($data, array $properties, $additionalProperties) : void
     {
-        Validator::arrayType()->assert($data);
-        Validator::arrayVal()->assert($properties);
-        Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
+        try {
+            Validator::arrayType()->assert($data);
+            Validator::arrayVal()->assert($properties);
+            Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
+        } catch (ExceptionInterface $exception) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($exception);
+        }
+
+        $schemaValidator = new SchemaValidator($this->validationDataType);
 
         // Validate against "properties"
         foreach ($properties as $propName => $propSchema) {
@@ -64,9 +75,7 @@ class Properties extends BaseKeyword
                 continue;
             }
 
-            $breadCrumb      = $this->dataBreadCrumb->addCrumb($propName);
-            $schemaValidator = new SchemaValidator($propSchema, $data[$propName], $this->validationDataType, $breadCrumb);
-            $schemaValidator->validate();
+            $schemaValidator->validate($data[$propName], $propSchema, $this->dataBreadCrumb->addCrumb($propName));
         }
 
         // Validate the rest against "additionalProperties"
@@ -78,9 +87,13 @@ class Properties extends BaseKeyword
             if (isset($properties[$propName])) {
                 continue;
             }
+
             // if not covered by "properties"
-            $schemaValidator = new SchemaValidator($additionalProperties, $data[$propName], $this->validationDataType);
-            $schemaValidator->validate();
+            $schemaValidator->validate(
+                $data[$propName],
+                $additionalProperties,
+                $this->dataBreadCrumb->addCrumb($propName)
+            );
         }
     }
 }

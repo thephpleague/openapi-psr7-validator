@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Header as HeaderSpec;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use RuntimeException;
 use function array_key_exists;
@@ -29,9 +29,9 @@ class Headers
                 continue;
             }
 
+            $validator = new SchemaValidator($this->detectValidationStrategy($message));
             foreach ($headerValues as $headerValue) {
-                $validator = new SchemaValidator($headerSpecs[$header]->schema, $headerValue, $this->detectValidationStrategy($message));
-                $validator->validate();
+                $validator->validate($headerValue, $headerSpecs[$header]->schema);
             }
         }
 

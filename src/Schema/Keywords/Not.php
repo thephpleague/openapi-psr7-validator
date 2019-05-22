@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use Exception;
 use OpenAPIValidation\Schema\BreadCrumb;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
-use function sprintf;
 
 class Not extends BaseKeyword
 {
@@ -35,23 +35,25 @@ class Not extends BaseKeyword
      * successfully against the schema defined by this keyword.
      *
      * @param mixed $data
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, CebeSchema $not) : void
     {
         try {
             Validator::instance(CebeSchema::class)->assert($not);
-
-            try {
-                $breadCrumb      = $this->dataBreadCrumb;
-                $schemaValidator = new SchemaValidator($not, $data, $this->validationDataType, $breadCrumb);
-                $schemaValidator->validate();
-
-                throw new Exception(sprintf('Data must not match the schema'));
-            } catch (ValidationKeywordFailed $e) {
-                // that did not match... its ok
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('not', $data, $e->getMessage());
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
+
+        $schemaValidator = new SchemaValidator($this->validationDataType);
+
+        try {
+            $schemaValidator->validate($data, $not, $this->dataBreadCrumb);
+        } catch (SchemaMismatch $e) {
+            return;
+        }
+
+        throw KeywordMismatch::fromKeyword('not', $data, 'Data must not match the schema');
     }
 }

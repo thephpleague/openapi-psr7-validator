@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function mb_strlen;
 use function sprintf;
 
@@ -26,6 +26,8 @@ class MaxLength extends BaseKeyword
      * characters as defined by RFC 7159 [RFC7159].
      *
      * @param mixed $data
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, int $maxLength) : void
     {
@@ -33,12 +35,12 @@ class MaxLength extends BaseKeyword
             Validator::stringType()->assert($data);
             Validator::intType()->assert($maxLength);
             Validator::trueVal()->assert($maxLength >= 0);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if (mb_strlen($data) > $maxLength) {
-                throw new Exception(sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('maxLength', $data, $e->getMessage(), $e);
+        if (mb_strlen($data) > $maxLength) {
+            throw KeywordMismatch::fromKeyword('maxLength', $data, sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
         }
     }
 }

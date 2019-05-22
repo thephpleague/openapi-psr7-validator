@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
-use Exception;
+use InvalidArgumentException;
 use function is_numeric;
 use function preg_match;
 use function preg_match_all;
@@ -46,8 +46,6 @@ class PathAddress
      * @param string $url      as seen in actual HTTP Request/ServerRequest
      *
      * @return mixed[] return array of ["paramName"=>"parsedValue", ...]
-     *
-     * @throws Exception
      */
     public static function parseParams(string $specPath, string $url) : array
     {
@@ -66,7 +64,7 @@ class PathAddress
         $pattern = '#' . str_replace(['{', '}'], ['(?<', '>[^/]+)'], $specPath) . '#';
 
         if (! preg_match($pattern, $url, $matches)) {
-            throw new Exception(sprintf("Unable to parse '%s' against the pattern '%s'", $url, $specPath));
+            throw new InvalidArgumentException(sprintf("Unable to parse '%s' against the pattern '%s'", $url, $specPath));
         }
 
         // 3. Combine keys and values

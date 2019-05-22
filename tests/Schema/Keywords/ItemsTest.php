@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\Exception\TypeMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class ItemsTest extends SchemaValidatorTest
@@ -22,7 +22,7 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = ['stringA', 'stringB'];
 
-        (new Validator($schema, $data))->validate();
+        (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -41,7 +41,7 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = [['stringA', 'stringB'], ['stringC', 'stringD', 'stringE']];
 
-        (new Validator($schema, $data))->validate();
+        (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -57,11 +57,8 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = [1, 2];
 
-        try {
-            (new Validator($schema, $data))->validate();
-        } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('type', $e->keyword());
-        }
+        $this->expectException(TypeMismatch::class);
+        (new SchemaValidator())->validate($data, $schema);
     }
 
     public function testItValidatesItemsNestedRed() : void
@@ -79,10 +76,8 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = [['stringA', 'stringB'], [12, 13]];
 
-        try {
-            (new Validator($schema, $data))->validate();
-        } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('type', $e->keyword());
-        }
+        $this->expectException(TypeMismatch::class);
+
+        (new SchemaValidator())->validate($data, $schema);
     }
 }

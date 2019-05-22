@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\FormatMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
-use OpenAPIValidation\Schema\Validator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class TypeFormatTest extends SchemaValidatorTest
@@ -20,7 +20,7 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        (new Validator($schema, 'valid@email.org'))->validate();
+        (new SchemaValidator())->validate('valid@email.org', $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -35,10 +35,10 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
 
         try {
-            (new Validator($schema, 'invalid email'))->validate();
+            (new SchemaValidator())->validate('invalid email', $schema);
             $this->fail('Exception expected');
-        } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('email', $e->getPrevious()->format());
+        } catch (FormatMismatch $e) {
+            $this->assertEquals('email', $e->format());
         }
     }
 
@@ -51,7 +51,7 @@ schema:
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        (new Validator($schema, 'valid@email.org'))->validate();
+        (new SchemaValidator())->validate('valid@email.org', $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -76,7 +76,7 @@ SPEC;
         FormatsContainer::registerFormat('string', 'unexpected', $unexpectedFormat);
 
         $schema = $this->loadRawSchema($spec);
-        (new Validator($schema, 'good value'))->validate();
+        (new SchemaValidator())->validate('good value', $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -95,9 +95,9 @@ SPEC;
 
         try {
             $schema = $this->loadRawSchema($spec);
-            (new Validator($schema, 'bad value'))->validate();
-        } catch (ValidationKeywordFailed $e) {
-            $this->assertEquals('unexpected', $e->getPrevious()->format());
+            (new SchemaValidator())->validate('bad value', $schema);
+        } catch (FormatMismatch $e) {
+            $this->assertEquals('unexpected', $e->format());
         }
     }
 }

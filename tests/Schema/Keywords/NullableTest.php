@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class NullableTest extends SchemaValidatorTest
@@ -21,7 +21,7 @@ SPEC;
         $schema = $this->loadRawSchema($spec);
         $data   = null;
 
-        (new Validator($schema, $data))->validate();
+        (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
     }
 
@@ -36,8 +36,8 @@ SPEC;
         $data   = null;
 
         try {
-            (new Validator($schema, $data))->validate();
-        } catch (ValidationKeywordFailed $e) {
+            (new SchemaValidator())->validate($data, $schema);
+        } catch (KeywordMismatch $e) {
             $this->assertEquals('nullable', $e->keyword());
         }
     }

@@ -7,7 +7,7 @@ namespace OpenAPIValidation\PSR7\Validators;
 use cebe\openapi\spec\MediaType as MediaTypeSpec;
 use Exception;
 use OpenAPIValidation\PSR7\Exception\NoContentType;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use RuntimeException;
 use function json_decode;
@@ -45,7 +45,7 @@ class Body
                 throw new RuntimeException('Unable to decode JSON body content: ' . json_last_error_msg());
             }
         }
-        $validator = new SchemaValidator($mediaTypeSpecs[$contentType]->schema, $body, $this->detectValidationStrategy($message));
-        $validator->validate();
+        $validator = new SchemaValidator($this->detectValidationStrategy($message));
+        $validator->validate($body, $mediaTypeSpecs[$contentType]->schema);
     }
 }

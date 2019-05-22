@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use Exception;
 use OpenAPIValidation\Schema\BreadCrumb;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator as SchemaValidator;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
-use function sprintf;
 
 class AnyOf extends BaseKeyword
 {
@@ -39,31 +39,29 @@ class AnyOf extends BaseKeyword
      *
      * @param mixed        $data
      * @param CebeSchema[] $anyOf
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, array $anyOf) : void
     {
         try {
             Validator::arrayVal()->assert($anyOf);
             Validator::each(Validator::instance(CebeSchema::class))->assert($anyOf);
-
-            // Validate against all schemas
-            $matchedCount = 0;
-            foreach ($anyOf as $schema) {
-                $breadCrumb      = $this->dataBreadCrumb;
-                $schemaValidator = new SchemaValidator($schema, $data, $this->validationDataType, $breadCrumb);
-                try {
-                    $schemaValidator->validate();
-                    $matchedCount++;
-                } catch (ValidationKeywordFailed $e) {
-                    // that did not match... its ok
-                }
-            }
-
-            if ($matchedCount === 0) {
-                throw new Exception(sprintf('Data must match at least one schema'));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('anyOf', $data, $e->getMessage(), $e);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
+
+        foreach ($anyOf as $schema) {
+            $schemaValidator = new SchemaValidator($this->validationDataType);
+            try {
+                $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
+
+                return;
+            } catch (SchemaMismatch $e) {
+                // that did not match... its ok
+            }
+        }
+
+        throw KeywordMismatch::fromKeyword('anyOf', $data, 'Data must match at least one schema');
     }
 }

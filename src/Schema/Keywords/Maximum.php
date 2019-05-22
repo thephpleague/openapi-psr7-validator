@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function sprintf;
 
 class Maximum extends BaseKeyword
@@ -32,22 +32,32 @@ class Maximum extends BaseKeyword
      *
      * @param mixed     $data
      * @param int|float $maximum
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, $maximum, bool $exclusiveMaximum = false) : void
     {
         try {
             Validator::numeric()->assert($data);
             Validator::numeric()->assert($maximum);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if ($exclusiveMaximum && $data >= $maximum) {
-                throw new Exception(sprintf('Value %d must be less or equal to %d', $data, $maximum));
-            }
+        if ($exclusiveMaximum && $data >= $maximum) {
+            throw KeywordMismatch::fromKeyword(
+                'maximum',
+                $data,
+                sprintf('Value %d must be less or equal to %d', $data, $maximum)
+            );
+        }
 
-            if (! $exclusiveMaximum && $data > $maximum) {
-                throw new Exception(sprintf('Value %d must be less than %d', $data, $maximum));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('maximum', $data, $e->getMessage(), $e);
+        if (! $exclusiveMaximum && $data > $maximum) {
+            throw KeywordMismatch::fromKeyword(
+                'maximum',
+                $data,
+                sprintf('Value %d must be less than %d', $data, $maximum)
+            );
         }
     }
 }

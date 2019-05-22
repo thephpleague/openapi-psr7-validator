@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function count;
 use function in_array;
-use function sprintf;
 
 class Enum extends BaseKeyword
 {
@@ -25,18 +24,20 @@ class Enum extends BaseKeyword
      *
      * @param mixed   $data
      * @param mixed[] $enum - can be strings or numbers
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, array $enum) : void
     {
         try {
             Validator::arrayType()->assert($enum);
             Validator::trueVal()->assert(count($enum) >= 1);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if (! in_array($data, $enum, true)) {
-                throw new Exception(sprintf('Value must be present in the enum'));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('enum', $data, $e->getMessage(), $e);
+        if (! in_array($data, $enum, true)) {
+            throw KeywordMismatch::fromKeyword('enum', $data, 'Value must be present in the enum');
         }
     }
 }

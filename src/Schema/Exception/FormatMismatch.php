@@ -17,10 +17,12 @@ class FormatMismatch extends TypeMismatch
      *
      * @return FormatMismatch
      */
-    public static function fromFormat(string $format, $value) : self
+    public static function fromFormat(string $format, $value, string $type) : self
     {
-        $i         = new self(sprintf("Value '%s' does not match format %s", $value, $format));
-        $i->format = $format;
+        $i          = new static(sprintf("Value '%s' does not match format %s of type %s", $value, $format, $type));
+        $i->format  = $format;
+        $i->data    = $value;
+        $i->keyword = 'type';
 
         return $i;
     }

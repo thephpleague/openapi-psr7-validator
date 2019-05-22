@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function count;
 use function sprintf;
 
@@ -21,18 +21,24 @@ class MaxProperties extends BaseKeyword
      * properties is less than, or equal to, the value of this keyword.
      *
      * @param mixed $data
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, int $maxProperties) : void
     {
         try {
             Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($maxProperties >= 0);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if (count($data) > $maxProperties) {
-                throw new Exception(sprintf("The number of object's properties must be less or equal to %d", $maxProperties));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('maxProperties', $data, $e->getMessage());
+        if (count($data) > $maxProperties) {
+            throw KeywordMismatch::fromKeyword(
+                'maxProperties',
+                $data,
+                sprintf("The number of object's properties must be less or equal to %d", $maxProperties)
+            );
         }
     }
 }

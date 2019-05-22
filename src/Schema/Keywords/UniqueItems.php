@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function array_unique;
 use function count;
-use function sprintf;
 
 class UniqueItems extends BaseKeyword
 {
@@ -25,17 +24,23 @@ class UniqueItems extends BaseKeyword
      * value false.
      *
      * @param mixed $data
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, bool $uniqueItems) : void
     {
+        if (! $uniqueItems) {
+            return;
+        }
+
         try {
             Validator::arrayType()->assert($data);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if (array_unique($data) !== count($data)) {
-                throw new Exception(sprintf('All array items must be unique'));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('uniqueItems', $data, $e->getMessage());
+        if (array_unique($data) !== count($data)) {
+            throw KeywordMismatch::fromKeyword('uniqueItems', $data, 'All array items must be unique');
         }
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function sprintf;
 
 class Minimum extends BaseKeyword
@@ -32,22 +32,32 @@ class Minimum extends BaseKeyword
      *
      * @param mixed     $data
      * @param int|float $minimum
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, $minimum, bool $exclusiveMinimum = false) : void
     {
         try {
             Validator::numeric()->assert($data);
             Validator::numeric()->assert($minimum);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if ($exclusiveMinimum && $data <= $minimum) {
-                throw new Exception(sprintf('Value %d must be greater or equal to %d', $data, $minimum));
-            }
+        if ($exclusiveMinimum && $data <= $minimum) {
+            throw KeywordMismatch::fromKeyword(
+                'minimum',
+                $data,
+                sprintf('Value %d must be greater or equal to %d', $data, $minimum)
+            );
+        }
 
-            if (! $exclusiveMinimum && $data < $minimum) {
-                throw new Exception(sprintf('Value %d must be greater than %d', $data, $minimum));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('minimum', $data, $e->getMessage(), $e);
+        if (! $exclusiveMinimum && $data < $minimum) {
+            throw KeywordMismatch::fromKeyword(
+                'minimum',
+                $data,
+                sprintf('Value %d must be greater than %d', $data, $minimum)
+            );
         }
     }
 }

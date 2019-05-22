@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema;
 
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
-use OpenAPIValidation\Schema\Validator;
+use OpenAPIValidation\Schema\Exception\TypeMismatch;
+use OpenAPIValidation\Schema\SchemaValidator;
 
 final class InvalidDataTrackingTest extends SchemaValidatorTest
 {
@@ -22,11 +22,10 @@ SPEC;
         $data   = ['valid1', 'valid2', .0];
 
         try {
-            (new Validator($schema, $data))->validate();
-        } catch (ValidationKeywordFailed $e) {
+            (new SchemaValidator())->validate($data, $schema);
+        } catch (TypeMismatch $e) {
             $this->assertEquals([2], $e->dataBreadCrumb()->buildChain());
             $this->assertEquals($data[2], $e->data());
-            $this->assertEquals('type', $e->keyword());
         }
     }
 
@@ -55,11 +54,10 @@ SPEC;
         ];
 
         try {
-            (new Validator($schema, $data))->validate();
-        } catch (ValidationKeywordFailed $e) {
+            (new SchemaValidator())->validate($data, $schema);
+        } catch (TypeMismatch $e) {
             $this->assertEquals([1, 0, 'name'], $e->dataBreadCrumb()->buildChain());
             $this->assertEquals($data[1][0]['name'], $e->data());
-            $this->assertEquals('type', $e->keyword());
         }
     }
 }

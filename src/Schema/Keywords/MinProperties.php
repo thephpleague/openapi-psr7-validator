@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function count;
 use function sprintf;
 
@@ -24,18 +24,24 @@ class MinProperties extends BaseKeyword
      * value of 0.
      *
      * @param mixed $data
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, int $minProperties) : void
     {
         try {
             Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($minProperties >= 0);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if (count($data) < $minProperties) {
-                throw new Exception(sprintf("The number of object's properties must be greater or equal to %d", $minProperties));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('minProperties', $data, $e->getMessage(), $e);
+        if (count($data) < $minProperties) {
+            throw KeywordMismatch::fromKeyword(
+                'minProperties',
+                $data,
+                sprintf("The number of object's properties must be greater or equal to %d", $minProperties)
+            );
         }
     }
 }

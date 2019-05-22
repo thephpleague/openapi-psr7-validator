@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\Schema\Keywords;
 
-use Exception;
-use OpenAPIValidation\Schema\Exception\ValidationKeywordFailed;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use Throwable;
 use function count;
 use function sprintf;
 
@@ -24,6 +24,8 @@ class MinItems extends BaseKeyword
      * value of 0.
      *
      * @param mixed $data
+     *
+     * @throws KeywordMismatch
      */
     public function validate($data, int $minItems) : void
     {
@@ -31,12 +33,12 @@ class MinItems extends BaseKeyword
             Validator::arrayType()->assert($data);
             Validator::intVal()->assert($minItems);
             Validator::trueVal()->assert($minItems >= 0);
+        } catch (ExceptionInterface $e) {
+            throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+        }
 
-            if (count($data) < $minItems) {
-                throw new Exception(sprintf('Size of an array must be greater or equal to %d', $minItems));
-            }
-        } catch (Throwable $e) {
-            throw ValidationKeywordFailed::fromKeyword('minItems', $data, $e->getMessage());
+        if (count($data) < $minItems) {
+            throw KeywordMismatch::fromKeyword('minItems', $data, sprintf('Size of an array must be greater or equal to %d', $minItems));
         }
     }
 }
