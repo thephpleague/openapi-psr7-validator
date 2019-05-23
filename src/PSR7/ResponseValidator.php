@@ -15,7 +15,7 @@ use OpenAPIValidation\PSR7\Validators\Headers;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
-class ResponseValidator
+class ResponseValidator implements ReusableSchema
 {
     /** @var OpenApi */
     protected $openApi;
@@ -26,6 +26,11 @@ class ResponseValidator
     {
         $this->openApi = $schema;
         $this->finder  = new SpecFinder($this->openApi);
+    }
+
+    public function getSchema() : OpenApi
+    {
+        return $this->openApi;
     }
 
     public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
