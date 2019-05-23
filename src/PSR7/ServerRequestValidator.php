@@ -37,7 +37,7 @@ use function json_encode;
 use function property_exists;
 use function strtolower;
 
-class ServerRequestValidator
+class ServerRequestValidator implements ReusableSchema
 {
     /** @var OpenApi */
     protected $openApi;
@@ -48,6 +48,11 @@ class ServerRequestValidator
     {
         $this->openApi = $schema;
         $this->finder  = new SpecFinder($this->openApi);
+    }
+
+    public function getSchema() : OpenApi
+    {
+        return $this->openApi;
     }
 
     /**
