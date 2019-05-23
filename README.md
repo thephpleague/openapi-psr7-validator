@@ -81,6 +81,19 @@ $operation = new \OpenAPIValidation\PSR7\OperationAddress('/password/gen', 'get'
 $validator->validate($operation, $request);
 ```
 
+### Reuse Schema After Validation
+
+`\OpenAPIValidation\PSR7\ValidatorBuilder` reads and compiles schema in memory as instance of `\cebe\openapi\spec\OpenApi`. Validators use this instance to perform validation logic. You can reuse this instance after the validation like this:
+
+```php
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile($yamlFile)->getServerRequestValidator();
+# or
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile($yamlFile)->getResponseValidator();
+
+/** @var \cebe\openapi\spec\OpenApi */
+$openApi = $validator->getSchema();
+```
+
 ### Request Message
 `\Psr\Http\Message\RequestInterface` validation is not implemented. 
 
