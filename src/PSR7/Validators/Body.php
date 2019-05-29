@@ -39,12 +39,14 @@ class Body
 
         // ok looks good, now apply validation
         $body = (string) $message->getBody();
-        if (preg_match('#^application/json#', $contentType)) {
+
+        if (preg_match('#^application/.*json$#', $contentType)) {
             $body = json_decode($body, true);
             if (json_last_error()) {
                 throw new RuntimeException('Unable to decode JSON body content: ' . json_last_error_msg());
             }
         }
+
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         $validator->validate($body, $mediaTypeSpecs[$contentType]->schema);
     }
