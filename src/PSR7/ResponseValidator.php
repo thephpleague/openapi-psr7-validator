@@ -58,6 +58,11 @@ class ResponseValidator implements ReusableSchema
         }
 
         // 2. Validate Body
+        if (! $spec->content) {
+            // edge case: if "content" keyword is not set (body can be anything as no expectations set)
+            return;
+        }
+
         try {
             $bodyValidator = new Body();
             $bodyValidator->validate($response, $spec->content);
