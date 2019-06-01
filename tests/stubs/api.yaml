@@ -119,3 +119,9 @@ paths:
               schema:
                 type: string
                 format: binary
+  /empty:
+    post:
+      description: Get empty response
+      responses:
+        204:
+          description: No content

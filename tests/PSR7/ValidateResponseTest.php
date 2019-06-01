@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7;
 
+use GuzzleHttp\Psr7\Response;
 use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\Response\ResponseBodyMismatch;
 use OpenAPIValidation\PSR7\Exception\Response\ResponseHeadersMismatch;
@@ -84,5 +85,15 @@ final class ValidateResponseTest extends BaseValidatorTest
             $this->assertEquals($addr->method(), $e->addr()->method());
             $this->assertEquals($response->getStatusCode(), $e->addr()->responseCode());
         }
+    }
+
+    public function testItValidatesEmptyBodyResponseGreen() : void
+    {
+        $addr     = new OperationAddress('/empty', 'post');
+        $response = new Response(204); // no body response
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
+        $validator->validate($addr, $response);
+        $this->addToAssertionCount(1);
     }
 }
