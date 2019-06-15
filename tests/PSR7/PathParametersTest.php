@@ -35,4 +35,16 @@ final class PathParametersTest extends TestCase
             $this->assertEquals('get', $e->method());
         }
     }
+
+    public function testItAllowsOptionalParametersGreen() : void
+    {
+        // Schema allows optional header,cookie, and query parameters
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        // Request does not have any of parameters (which should be valid)
+        $request = new ServerRequest('get', '/optional/params');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
 }

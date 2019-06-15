@@ -20,6 +20,7 @@ components:
     HeaderA:
       in: header
       name: Header-A
+      required: true
       schema:
         type: string
         enum:

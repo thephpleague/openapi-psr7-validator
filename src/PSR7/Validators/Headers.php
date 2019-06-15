@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Header as HeaderSpec;
+use GuzzleHttp\Psr7\Response;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use RuntimeException;
@@ -35,10 +36,18 @@ class Headers
             }
         }
 
-        // Check if message misses headers
+        // Check if message misses required headers
         foreach ($headerSpecs as $header => $spec) {
-            if (! $message->hasHeader($header)) {
-                throw new RuntimeException($header, 201);
+            if ($message instanceof Response) {
+                // Responses headers are mandatory (it supports no 'required' keyword)
+                if (! $message->hasHeader($header)) {
+                    throw new RuntimeException($header, 201);
+                }
+            } else {
+                // request parameters can be optional ('required' keyword is supported)
+                if (! $message->hasHeader($header) && $spec->required) {
+                    throw new RuntimeException($header, 201);
+                }
             }
         }
     }

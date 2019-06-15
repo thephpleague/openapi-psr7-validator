@@ -8,7 +8,26 @@ info:
     email: lezhnev.work@gmail.com
 
 paths:
-
+  /optional/params:
+    parameters:
+      - name: Request-Id
+        in: header
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: session-id
+        in: cookie
+        schema:
+          type: string
+    get:
+      summary: Read data
+      operationId: read
+      responses:
+        204:
+          description: no data
   /users/{group}:
     parameters:
       - name: group
