@@ -302,6 +302,7 @@ People:
 - [David Pauli](https://github.com/dpauli)
 - [Jason Judge](https://github.com/judgej)
 - [Yannick Chenot](https://github.com/osteel)
+- [TarasBK](https://github.com/TarasBK)
 - A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind of inspired me to work on this package. 
 
 Resources:
