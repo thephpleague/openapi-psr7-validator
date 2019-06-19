@@ -7,11 +7,16 @@ namespace OpenAPIValidation\Schema\Keywords;
 use cebe\openapi\spec\Schema as CebeSchema;
 use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+use function array_diff;
 use function array_key_exists;
+use function array_keys;
+use function implode;
+use function sprintf;
 
 class Properties extends BaseKeyword
 {
@@ -80,6 +85,17 @@ class Properties extends BaseKeyword
 
         // Validate the rest against "additionalProperties"
         if (! ($additionalProperties instanceof CebeSchema)) {
+            // are there unexpected properties?
+            $unexpectedProps = array_diff(array_keys($data), array_keys($properties));
+
+            if ($unexpectedProps && $additionalProperties === false) {
+                throw KeywordMismatch::fromKeyword(
+                    'additionalProperties',
+                    $data,
+                    sprintf('Data has additional properties (%s) which are not allowed', implode(',', $unexpectedProps))
+                );
+            }
+
             return;
         }
 

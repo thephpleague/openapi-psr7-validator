@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\Schema\Keywords;
 
+use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
@@ -81,6 +82,25 @@ SPEC;
         $data   = ['name' => 'Dima', 'age' => 'young'];
 
         $this->expectException(TypeMismatch::class);
+        (new SchemaValidator())->validate($data, $schema);
+    }
+
+    public function testItValidatesAdditionalPropertiesDisallowedRed() : void
+    {
+        $spec = <<<SPEC
+schema:
+  type: object
+  required:
+    - data
+  properties:
+    data: {}
+  additionalProperties: false
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = ['data' => [], 'excessProperty' => 'test'];
+
+        $this->expectException(KeywordMismatch::class);
         (new SchemaValidator())->validate($data, $schema);
     }
 }
