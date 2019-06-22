@@ -26,16 +26,6 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function setSchemaFactory(SchemaFactory $schemaFactory) : self
-    {
-        $this->factory = $schemaFactory;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
     public function setCache(CacheItemPoolInterface $cache, ?int $ttl = null) : self
     {
         $this->cache = $cache;
@@ -60,6 +50,16 @@ class ValidatorBuilder
     public function fromYaml(string $yaml) : self
     {
         $this->setSchemaFactory(new YamlFactory($yaml));
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setSchemaFactory(SchemaFactory $schemaFactory) : self
+    {
+        $this->factory = $schemaFactory;
 
         return $this;
     }
@@ -106,12 +106,9 @@ class ValidatorBuilder
 
     public function getServiceRequestValidator() : ServerRequestValidator
     {
-        return new ServerRequestValidator($this->getOrCreateSchema());
-    }
+        $schema = $this->getOrCreateSchema();
 
-    public function getResponseValidator() : ResponseValidator
-    {
-        return new ResponseValidator($this->getOrCreateSchema());
+        return new ServerRequestValidator($schema);
     }
 
     protected function getOrCreateSchema() : OpenApi
@@ -152,5 +149,10 @@ class ValidatorBuilder
         }
 
         return $this->factory->getCacheKey();
+    }
+
+    public function getResponseValidator() : ResponseValidator
+    {
+        return new ResponseValidator($this->getOrCreateSchema());
     }
 }

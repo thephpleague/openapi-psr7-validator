@@ -62,4 +62,31 @@ SPEC;
         $this->assertCount(1, $opAddrs);
         $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
+
+    public function testItFindsMatchingOperationForFullUrl() : void
+    {
+        $spec = <<<SPEC
+openapi: "3.0.0"
+info:
+  title: Uber API
+  description: Move your app forward with the Uber API
+  version: "1.0.0"
+servers:
+  - url: https://localhost/v1
+  - url: /v1.2
+paths:
+  /products/{id}:
+    get:
+      summary: Product Types
+  /products/{review}:
+    post:
+      summary: Product Types
+SPEC;
+
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri('https://localhost/v1/products/10'), 'get');
+        $opAddrs    = $pathFinder->search();
+
+        $this->assertCount(1, $opAddrs);
+        $this->assertEquals('/products/{id}', $opAddrs[0]->path());
+    }
 }
