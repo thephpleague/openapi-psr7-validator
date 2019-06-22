@@ -7,18 +7,23 @@ namespace OpenAPIValidation\PSR7;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Server;
 use Psr\Http\Message\UriInterface;
+use const PHP_URL_PATH;
 use function array_key_exists;
 use function ltrim;
+use function parse_url;
 use function preg_match;
 use function preg_replace;
 use function rtrim;
-use function strtok;
+use function sprintf;
 use function strtolower;
 
 // This class finds operations matching the given URI+method
 // That would be a very simple operation if there were no "Servers" keyword.
 // We need to take into account possible base-url case (and its templating feature)
 // @see https://swagger.io/docs/specification/api-host-and-base-path/
+//
+// More: as discussed here https://github.com/lezhnev74/openapi-psr7-validator/issues/32
+// "schema://hostname" should not be included in the validation process (assume any hostname matches)
 class PathFinder
 {
     /** @var OpenApi */
@@ -59,10 +64,15 @@ class PathFinder
         foreach ($opCandidates as $opCandidate) {
             /** @var Server $server */
             foreach ($opCandidate['servers'] as $server) {
-                $fullSpecPath = rtrim($server->url, '/') . '/' . ltrim($opCandidate['addr']->path(), '/');
+                $candidatePath = sprintf(
+                    '%s/%s',
+                    rtrim((string) parse_url($server->url, PHP_URL_PATH), '/'),
+                    ltrim($opCandidate['addr']->path(), '/')
+                );
+
                 // 3.1 Compare this path against the real/given path
-                $uriWithNoQUeryString = strtok((string) $this->uri, '?');
-                if (! PathAddress::isPathMatchesSpec($fullSpecPath, $uriWithNoQUeryString)) {
+                $searchPath = (string) parse_url((string) $this->uri, PHP_URL_PATH);
+                if (! PathAddress::isPathMatchesSpec($candidatePath, $searchPath)) {
                     continue;
                 }
 
