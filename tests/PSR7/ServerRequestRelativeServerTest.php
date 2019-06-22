@@ -24,7 +24,7 @@ class ServerRequestRelativeServerTest extends BaseValidatorTest
             [new ServerRequest('get', '/v2/products')],
             [new ServerRequest('get', 'http://anyhost/v2/products')],
 
-            // matches overridden server: /v3
+            // matches overridden server: https://special.host/v3
             [new ServerRequest('get', '/v3/products/overridden')],
             [new ServerRequest('get', 'http://anyhost/v3/products/overridden')],
 
