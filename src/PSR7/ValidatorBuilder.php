@@ -89,7 +89,7 @@ class ValidatorBuilder
      */
     public function fromJsonFile(string $jsonFile) : self
     {
-        $this->setSchemaFactory(new JsonFactory($jsonFile));
+        $this->setSchemaFactory(new JsonFileFactory($jsonFile));
 
         return $this;
     }
