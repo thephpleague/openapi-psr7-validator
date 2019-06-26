@@ -7,6 +7,7 @@ namespace OpenAPIValidation\PSR7;
 use cebe\openapi\spec\OpenApi;
 use InvalidArgumentException;
 use OpenAPIValidation\PSR7\SchemaFactory\JsonFactory;
+use OpenAPIValidation\PSR7\SchemaFactory\JsonFileFactory;
 use OpenAPIValidation\PSR7\SchemaFactory\PrecreatedSchemaFactory;
 use OpenAPIValidation\PSR7\SchemaFactory\YamlFactory;
 use OpenAPIValidation\PSR7\SchemaFactory\YamlFileFactory;
@@ -89,7 +90,7 @@ class ValidatorBuilder
      */
     public function fromJsonFile(string $jsonFile) : self
     {
-        $this->setSchemaFactory(new JsonFactory($jsonFile));
+        $this->setSchemaFactory(new JsonFileFactory($jsonFile));
 
         return $this;
     }
