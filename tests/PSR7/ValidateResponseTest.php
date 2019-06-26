@@ -96,4 +96,14 @@ final class ValidateResponseTest extends BaseValidatorTest
         $validator->validate($addr, $response);
         $this->addToAssertionCount(1);
     }
+
+    public function testItValidatesDefaultBodyResponseGreen() : void
+    {
+        $addr     = new OperationAddress('/empty', 'patch'); // "patch" contains "default" response definition
+        $response = new Response(404); // dummy any status code
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
+        $validator->validate($addr, $response);
+        $this->addToAssertionCount(1);
+    }
 }
