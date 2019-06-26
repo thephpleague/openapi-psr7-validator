@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\SchemaFactory;
 
 use OpenAPIValidation\PSR7\CacheableSchemaFactory;
+use Webmozart\Assert\Assert;
 use function crc32;
 use function realpath;
 
@@ -15,6 +16,8 @@ abstract class FileFactory implements CacheableSchemaFactory
 
     public function __construct(string $filename)
     {
+        Assert::file($filename);
+
         $this->filename = $filename;
     }
 
