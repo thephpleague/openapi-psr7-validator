@@ -125,3 +125,8 @@ paths:
       responses:
         204:
           description: No content
+    patch:
+      summary: Empty response body for all response statuses
+      responses:
+        default:
+          description: No content

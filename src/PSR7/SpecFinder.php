@@ -60,6 +60,11 @@ final class SpecFinder
         $operation = $this->findOperationSpec($addr->getOperationAddress());
 
         $response = $operation->responses->getResponse($addr->responseCode());
+
+        if (! $response) {
+            $response = $operation->responses->getResponse('default');
+        }
+
         if (! $response) {
             throw NoResponseCode::fromPathAndMethodAndResponseCode(
                 $addr->path(),
