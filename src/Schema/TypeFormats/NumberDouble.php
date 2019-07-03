@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema\TypeFormats;
 
 use function is_float;
+use function is_int;
 
 class NumberDouble
 {
@@ -13,6 +14,7 @@ class NumberDouble
      */
     public function __invoke($value) : bool
     {
-        return is_float($value + 0);
+        // treat integers as valid floats
+        return is_float($value + 0) || is_int($value + 0);
     }
 }

@@ -10,47 +10,54 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class TypeTest extends SchemaValidatorTest
 {
-    public function testItValidatesTypeGreen() : void
+    /**
+     * @return array<array<string, mixed>>
+     */
+    public function validDataProvider() : array
     {
-        $typedValues = [
-            'string' => 'string value',
-            'object' => ['a' => 1],
-            'array' => ['a', 'b'],
-            'boolean' => true,
-            'number' => 0.54,
-            'integer' => 1,
+        return [
+            ['string', 'string value'],
+            ['object', ['a' => 1]],
+            ['array', ['a', 'b']],
+            ['boolean', true],
+            ['boolean', false],
+            ['boolean', 'True'],
+            ['boolean', 'false'],
+            ['number', 12],
+            ['number', '12'],
+            ['number', 0.123],
+            ['number', '0.123'],
+            ['integer', 12],
+            ['integer', '12'],
         ];
+    }
 
-        foreach ($typedValues as $type => $validValue) {
-            if ($type === 'array') {
-                $spec = <<<SPEC
-schema:
-  type: array
-  items:
-    type: string
-SPEC;
-            } else {
-                $spec = <<<SPEC
+    /**
+     * @param mixed $validValue
+     *
+     * @dataProvider validDataProvider
+     */
+    public function testItValidatesTypeGreen(string $type, $validValue) : void
+    {
+        $spec = <<<SPEC
 schema:
   type: $type
 SPEC;
-            }
 
-            $schema = $this->loadRawSchema($spec);
+        $schema = $this->loadRawSchema($spec);
 
-            (new SchemaValidator())->validate($validValue, $schema);
-            $this->addToAssertionCount(1);
-        }
+        (new SchemaValidator())->validate($validValue, $schema);
+        $this->addToAssertionCount(1);
     }
 
     public function testItValidatesTypeRed() : void
     {
         $typedValues = [
-            'string' => 12,
-            'object' => 'not object',
-            'array' => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
+            'string'  => 12,
+            'object'  => 'not object',
+            'array'   => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
             'boolean' => [1, 2],
-            'number' => [],
+            'number'  => [],
             'integer' => 12.55,
         ];
 

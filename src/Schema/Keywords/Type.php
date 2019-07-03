@@ -18,6 +18,7 @@ use function is_int;
 use function is_numeric;
 use function is_object;
 use function is_string;
+use function preg_match;
 use function sprintf;
 
 class Type extends BaseKeyword
@@ -39,7 +40,7 @@ class Type extends BaseKeyword
     {
         switch ($type) {
             case CebeType::BOOLEAN:
-                if (! is_bool($data)) {
+                if (! is_bool($data) && ! preg_match('#^(true|false)$#i', (string) $data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                 }
                 break;
@@ -48,8 +49,7 @@ class Type extends BaseKeyword
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
                 }
                 break;
-            case 'array':
-                // no constant here yet https://github.com/cebe/php-openapi/pull/24
+            case CebeType::ARRAY:
                 if (! is_array($data) || ArrayHelper::isAssoc($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch('array', $data);
                 }
@@ -60,7 +60,7 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::INTEGER:
-                if (! is_int($data)) {
+                if (! is_int($data) && ! preg_match('#^\d+$#', (string) $data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;
