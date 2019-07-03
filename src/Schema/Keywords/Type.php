@@ -60,7 +60,7 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::INTEGER:
-                if (! is_int($data) && ! preg_match('#^\d+$#', (string) $data)) {
+                if (! is_int($data) && ! preg_match('#^[-+]?\d+$#', (string) $data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;

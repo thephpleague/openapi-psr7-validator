@@ -27,8 +27,10 @@ final class TypeTest extends SchemaValidatorTest
             ['number', '12'],
             ['number', 0.123],
             ['number', '0.123'],
+            ['number', '-0.123'],
             ['integer', 12],
             ['integer', '12'],
+            ['integer', '-12'],
         ];
     }
 
