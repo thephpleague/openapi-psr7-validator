@@ -16,21 +16,25 @@ final class TypeTest extends SchemaValidatorTest
     public function validDataProvider() : array
     {
         return [
-            ['string', 'string value'],
-            ['object', ['a' => 1]],
-            ['array', ['a', 'b']],
-            ['boolean', true],
-            ['boolean', false],
-            ['boolean', 'True'],
-            ['boolean', 'false'],
-            ['number', 12],
-            ['number', '12'],
-            ['number', 0.123],
-            ['number', '0.123'],
-            ['number', '-0.123'],
-            ['integer', 12],
-            ['integer', '12'],
-            ['integer', '-12'],
+            ['string', null, 'string value'],
+            ['object', null, ['a' => 1]],
+            ['array', null, ['a', 'b']],
+            ['boolean', null, true],
+            ['boolean', null, false],
+            ['boolean', null, 'True'],
+            ['boolean', null, 'false'],
+            ['number', null, 12],
+            ['number', null, '12'],
+            ['number', 'float', '12'],
+            ['number', 'double', '12'],
+            ['number', null, 0.123],
+            ['number', null, '0.123'],
+            ['number', null, '-0.123'],
+            ['number', 'float', '-0.123'],
+            ['number', 'double', '-0.123'],
+            ['integer', null, 12],
+            ['integer', null, '12'],
+            ['integer', null, '-12'],
         ];
     }
 
@@ -39,12 +43,17 @@ final class TypeTest extends SchemaValidatorTest
      *
      * @dataProvider validDataProvider
      */
-    public function testItValidatesTypeGreen(string $type, $validValue) : void
+    public function testItValidatesTypeGreen(string $type, ?string $format, $validValue) : void
     {
         $spec = <<<SPEC
 schema:
-  type: $type
+  type: $type\n
 SPEC;
+        if ($format) {
+            $spec .= <<<SPEC
+  format: $format\n
+SPEC;
+        }
 
         $schema = $this->loadRawSchema($spec);
 
