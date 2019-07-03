@@ -10,47 +10,65 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class TypeTest extends SchemaValidatorTest
 {
-    public function testItValidatesTypeGreen() : void
+    /**
+     * @return array<array<string, mixed>>
+     */
+    public function validDataProvider() : array
     {
-        $typedValues = [
-            'string' => 'string value',
-            'object' => ['a' => 1],
-            'array' => ['a', 'b'],
-            'boolean' => true,
-            'number' => 0.54,
-            'integer' => 1,
+        return [
+            ['string', null, 'string value'],
+            ['object', null, ['a' => 1]],
+            ['array', null, ['a', 'b']],
+            ['boolean', null, true],
+            ['boolean', null, false],
+            ['boolean', null, 'True'],
+            ['boolean', null, 'false'],
+            ['number', null, 12],
+            ['number', null, '12'],
+            ['number', 'float', '12'],
+            ['number', 'double', '12'],
+            ['number', null, 0.123],
+            ['number', null, '0.123'],
+            ['number', null, '-0.123'],
+            ['number', 'float', '-0.123'],
+            ['number', 'double', '-0.123'],
+            ['integer', null, 12],
+            ['integer', null, '12'],
+            ['integer', null, '-12'],
         ];
+    }
 
-        foreach ($typedValues as $type => $validValue) {
-            if ($type === 'array') {
-                $spec = <<<SPEC
+    /**
+     * @param mixed $validValue
+     *
+     * @dataProvider validDataProvider
+     */
+    public function testItValidatesTypeGreen(string $type, ?string $format, $validValue) : void
+    {
+        $spec = <<<SPEC
 schema:
-  type: array
-  items:
-    type: string
+  type: $type\n
 SPEC;
-            } else {
-                $spec = <<<SPEC
-schema:
-  type: $type
+        if ($format) {
+            $spec .= <<<SPEC
+  format: $format\n
 SPEC;
-            }
-
-            $schema = $this->loadRawSchema($spec);
-
-            (new SchemaValidator())->validate($validValue, $schema);
-            $this->addToAssertionCount(1);
         }
+
+        $schema = $this->loadRawSchema($spec);
+
+        (new SchemaValidator())->validate($validValue, $schema);
+        $this->addToAssertionCount(1);
     }
 
     public function testItValidatesTypeRed() : void
     {
         $typedValues = [
-            'string' => 12,
-            'object' => 'not object',
-            'array' => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
+            'string'  => 12,
+            'object'  => 'not object',
+            'array'   => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
             'boolean' => [1, 2],
-            'number' => [],
+            'number'  => [],
             'integer' => 12.55,
         ];
 

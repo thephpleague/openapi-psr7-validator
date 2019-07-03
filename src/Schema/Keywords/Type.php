@@ -17,7 +17,9 @@ use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_object;
+use function is_scalar;
 use function is_string;
+use function preg_match;
 use function sprintf;
 
 class Type extends BaseKeyword
@@ -38,20 +40,19 @@ class Type extends BaseKeyword
     public function validate($data, string $type, ?string $format = null) : void
     {
         switch ($type) {
-            case CebeType::BOOLEAN:
-                if (! is_bool($data)) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
-                }
-                break;
             case CebeType::OBJECT:
                 if (! is_object($data) && ! is_array($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
                 }
                 break;
-            case 'array':
-                // no constant here yet https://github.com/cebe/php-openapi/pull/24
+            case CebeType::ARRAY:
                 if (! is_array($data) || ArrayHelper::isAssoc($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch('array', $data);
+                }
+                break;
+            case CebeType::BOOLEAN:
+                if (is_scalar($data) && ! is_bool($data) && ! preg_match('#^(true|false)$#i', (string) $data)) {
+                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                 }
                 break;
             case CebeType::NUMBER:
@@ -60,7 +61,7 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::INTEGER:
-                if (! is_int($data)) {
+                if (is_scalar($data) && ! is_int($data) && ! preg_match('#^[-+]?\d+$#', (string) $data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;

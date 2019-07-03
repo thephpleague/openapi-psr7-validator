@@ -31,7 +31,7 @@
     "require": {
         "php": ">=7.1",
         "ext-json": "*",
-        "cebe/php-openapi": "^1.0",
+        "cebe/php-openapi": "^1.2",
         "psr/cache": "^1.0",
         "psr/http-message": "^1.0",
         "psr/http-server-middleware": "^1.0",
