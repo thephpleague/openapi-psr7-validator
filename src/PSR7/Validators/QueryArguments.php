@@ -12,7 +12,7 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use function array_key_exists;
-use function GuzzleHttp\Psr7\parse_query;
+use function parse_str;
 
 class QueryArguments
 {
@@ -48,7 +48,7 @@ class QueryArguments
         }
 
         // Check if query arguments are invalid
-        $parsedQueryArguments = parse_query($message->getUri()->getQuery());
+        parse_str($message->getUri()->getQuery(), $parsedQueryArguments);
         foreach ($parsedQueryArguments as $name => $argumentValue) {
             // skip if there are no schema for this argument
             if (! array_key_exists($name, $specs)) {
