@@ -17,6 +17,7 @@ use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_object;
+use function is_scalar;
 use function is_string;
 use function preg_match;
 use function sprintf;
@@ -39,11 +40,6 @@ class Type extends BaseKeyword
     public function validate($data, string $type, ?string $format = null) : void
     {
         switch ($type) {
-            case CebeType::BOOLEAN:
-                if (! is_bool($data) && ! preg_match('#^(true|false)$#i', (string) $data)) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
-                }
-                break;
             case CebeType::OBJECT:
                 if (! is_object($data) && ! is_array($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
@@ -54,13 +50,18 @@ class Type extends BaseKeyword
                     throw TypeMismatch::becauseTypeDoesNotMatch('array', $data);
                 }
                 break;
+            case CebeType::BOOLEAN:
+                if (is_scalar($data) && ! is_bool($data) && ! preg_match('#^(true|false)$#i', (string) $data)) {
+                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
+                }
+                break;
             case CebeType::NUMBER:
                 if (! is_numeric($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::NUMBER, $data);
                 }
                 break;
             case CebeType::INTEGER:
-                if (! is_int($data) && ! preg_match('#^[-+]?\d+$#', (string) $data)) {
+                if (is_scalar($data) && ! is_int($data) && ! preg_match('#^[-+]?\d+$#', (string) $data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;
