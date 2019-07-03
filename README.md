@@ -305,6 +305,7 @@ People:
 - [TarasBK](https://github.com/TarasBK)
 - [Jason B. Standing](https://github.com/jasonbstanding)
 - [Dmytro Demchyna](https://github.com/dmytro-demchyna)
+- [Will Chambers](https://github.com/willchambers99)
 - A big thank you to [Henrik Karlström](https://github.com/hkarlstrom) who kind of inspired me to work on this package. 
 
 Resources:
