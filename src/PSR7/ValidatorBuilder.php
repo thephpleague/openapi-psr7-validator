@@ -105,7 +105,7 @@ class ValidatorBuilder
         return $this;
     }
 
-    public function getServiceRequestValidator() : ServerRequestValidator
+    public function getServerRequestValidator() : ServerRequestValidator
     {
         $schema = $this->getOrCreateSchema();
 

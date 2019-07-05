@@ -58,7 +58,7 @@ BASIC;
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Bearer ABCDEFG');
 
-        $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -68,7 +68,7 @@ BASIC;
         $request = new ServerRequest('get', '/products');
 
         try {
-            $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
@@ -82,7 +82,7 @@ BASIC;
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Basic ABCDEFG');
 
-        $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -92,7 +92,7 @@ BASIC;
         $request = new ServerRequest('get', '/products');
 
         try {
-            $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {

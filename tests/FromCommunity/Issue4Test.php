@@ -16,7 +16,7 @@ final class Issue4Test extends TestCase
     public function testItResolvesSchemaRefsFromYamlStringGreen() : void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
-        $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServerRequestValidator();
 
         $validator->validate($this->makeRequest());
         $this->addToAssertionCount(1);
@@ -25,7 +25,7 @@ final class Issue4Test extends TestCase
     public function testItResolvesSchemaRefsFromYamlFileGreen() : void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
-        $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServerRequestValidator();
 
         $validator->validate($this->makeRequest());
         $this->addToAssertionCount(1);

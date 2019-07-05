@@ -28,8 +28,8 @@ final class ValidatorBuilderTest extends TestCase
         $factory->expects($this->exactly(2))->method('getCacheKey')
             ->willReturn($cacheKey);
 
-        $v1 = (new ValidatorBuilder())->setSchemaFactory($factory)->setCache($cache)->getServiceRequestValidator();
-        $v2 = (new ValidatorBuilder())->setSchemaFactory($factory)->setCache($cache)->getServiceRequestValidator();
+        $v1 = (new ValidatorBuilder())->setSchemaFactory($factory)->setCache($cache)->getServerRequestValidator();
+        $v2 = (new ValidatorBuilder())->setSchemaFactory($factory)->setCache($cache)->getServerRequestValidator();
 
         self::assertEquals($v1, $v2);
         self::assertTrue($cache->getItem($cacheKey)->isHit());
@@ -51,7 +51,7 @@ final class ValidatorBuilderTest extends TestCase
         (new ValidatorBuilder())->setSchemaFactory($factory)
             ->setCache($cache)
             ->overrideCacheKey($cacheKey)
-            ->getServiceRequestValidator();
+            ->getServerRequestValidator();
 
         self::assertTrue($cache->getItem($cacheKey)->isHit());
     }

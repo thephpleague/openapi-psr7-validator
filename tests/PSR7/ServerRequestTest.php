@@ -19,7 +19,7 @@ final class ServerRequestTest extends BaseValidatorTest
     {
         $request = $this->makeGoodServerRequest('/path1', 'get');
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -30,7 +30,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest('/request-body', 'post')
             ->withBody(stream_for(json_encode($body)));
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -43,7 +43,7 @@ final class ServerRequestTest extends BaseValidatorTest
             ->withBody(stream_for(json_encode($body)));
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
         } catch (RequestBodyMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
@@ -59,7 +59,7 @@ final class ServerRequestTest extends BaseValidatorTest
             ->withHeader('Content-Type', 'unexpected/content');
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
         } catch (UnexpectedRequestContentType $e) {
             $this->assertEquals('unexpected/content', $e->contentType());
@@ -74,7 +74,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (RequestHeadersMismatch $e) {
@@ -89,7 +89,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (MissedRequestHeader $e) {

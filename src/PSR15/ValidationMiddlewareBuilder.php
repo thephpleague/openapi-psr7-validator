@@ -12,7 +12,7 @@ class ValidationMiddlewareBuilder extends ValidatorBuilder
     public function getValidationMiddleware() : MiddlewareInterface
     {
         return new ValidationMiddleware(
-            $this->getServiceRequestValidator(),
+            $this->getServerRequestValidator(),
             $this->getResponseValidator()
         );
     }

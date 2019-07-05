@@ -17,7 +17,7 @@ final class MessageCookiesTest extends BaseValidatorTest
     {
         $request = $this->makeGoodServerRequest('/cookies', 'post');
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -52,7 +52,7 @@ final class MessageCookiesTest extends BaseValidatorTest
             ->withCookieParams([]);
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (MissedRequestCookie $e) {
@@ -69,7 +69,7 @@ final class MessageCookiesTest extends BaseValidatorTest
             ->withCookieParams(['session_id' => 'goodvalue', 'debug' => 'bad value']);
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (RequestCookiesMismatch $e) {

@@ -118,7 +118,7 @@ AND;
     {
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['server_token1' => 'key value']);
 
-        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityORUnion)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityORUnion)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -128,7 +128,7 @@ AND;
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['wrongToken' => 'key value']);
 
         try {
-            $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityORUnion)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityORUnion)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
@@ -143,7 +143,7 @@ AND;
             ->withQueryParams(['server_token1' => 'key value'])
             ->withHeader('server_token2', 'key value');
 
-        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityORUnion)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityORUnion)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -155,7 +155,7 @@ AND;
             ->withQueryParams(['server_token1' => 'key value']);
 
         try {
-            $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityANDUnion)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityANDUnion)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {
@@ -170,7 +170,7 @@ AND;
         $request = (new ServerRequest('get', '/products'))
             ->withCookieParams(['server_token3' => 'key value']);
 
-        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityAND_OR_COMBINED)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityAND_OR_COMBINED)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -182,7 +182,7 @@ AND;
             ->withQueryParams(['server_token1' => 'key value']);
 
         try {
-            $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityAND_OR_COMBINED)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityAND_OR_COMBINED)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Expected exception');
         } catch (RequestSecurityMismatch $e) {

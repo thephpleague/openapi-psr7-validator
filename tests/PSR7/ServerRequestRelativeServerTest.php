@@ -61,7 +61,7 @@ paths:
       summary: Overrides servers
 SPEC;
 
-        $validator = (new ValidatorBuilder())->fromYaml($spec)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($spec)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }

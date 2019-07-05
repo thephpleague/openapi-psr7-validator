@@ -32,7 +32,7 @@ final class CompleteTest extends TestCase
     {
         $request = $this->buildGoodRequest();
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }

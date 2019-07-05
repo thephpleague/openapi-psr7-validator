@@ -16,7 +16,7 @@ final class PathParametersTest extends TestCase
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/admin');
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -27,7 +27,7 @@ final class PathParametersTest extends TestCase
         $request  = new ServerRequest('get', '/users/wrong');
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
             $validator->validate($request);
         } catch (RequestPathParameterMismatch $e) {
             $this->assertEquals('/users/wrong', $e->actualPath());
@@ -43,7 +43,7 @@ final class PathParametersTest extends TestCase
         // Request does not have any of parameters (which should be valid)
         $request = new ServerRequest('get', '/optional/params');
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }

@@ -17,7 +17,7 @@ final class ServerRequestMultipleMatchesTest extends TestCase
         $specFile = __DIR__ . '/../stubs/multipleMatches.yaml';
         $request  = new ServerRequest('get', '/users/goodstring');
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -29,7 +29,7 @@ final class ServerRequestMultipleMatchesTest extends TestCase
         $request  = new ServerRequest('get', '/users/12.33');
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
             $validator->validate($request);
             $this->fail('Exception expected');
         } catch (MultipleOperationsMismatchForRequest $e) {

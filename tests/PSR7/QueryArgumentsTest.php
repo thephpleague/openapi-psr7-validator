@@ -16,7 +16,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
     {
         $request = $this->makeGoodServerRequest('/read', 'get');
 
-        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -29,7 +29,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
             ->withQueryParams([]);
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
         } catch (MissedRequestQueryArgument $e) {
             $this->assertEquals($addr->path(), $e->addr()->path());
@@ -46,7 +46,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
             ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
 
         try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServiceRequestValidator();
+            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
             $validator->validate($request);
         } catch (RequestQueryArgumentMismatch $e) {
             $this->assertEquals($addr->path(), $e->path());
