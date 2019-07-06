@@ -5,23 +5,24 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\Schema\BreadCrumb;
-use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 use function array_key_exists;
 use function parse_str;
 
-class QueryArguments
+class QueryArgumentsValidator
 {
     use ValidationStrategy;
 
     /**
      * @param Parameter[] $specs [queryArgumentName=>schema]
      *
-     * @throws KeywordMismatch
+     * @throws SchemaMismatch
+     * @throws ValidationFailed
      */
     public function validate(MessageInterface $message, array $specs) : void
     {
@@ -36,14 +37,15 @@ class QueryArguments
     /**
      * @param Parameter[] $specs
      *
-     * @throws KeywordMismatch
+     * @throws SchemaMismatch
+     * @throws ValidationFailed
      */
     private function validateServerRequest(ServerRequestInterface $message, array $specs) : void
     {
         // Check if message misses query argument
         foreach ($specs as $name => $spec) {
             if ($spec->required && ! array_key_exists($name, $message->getQueryParams())) {
-                throw new RuntimeException($name, 401);
+                throw new ValidationFailed($name, 401);
             }
         }
 

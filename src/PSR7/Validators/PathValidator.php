@@ -6,12 +6,12 @@ namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
 use OpenAPIValidation\PSR7\PathAddress;
-use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Path
+class PathValidator
 {
     use ValidationStrategy;
 
@@ -19,7 +19,7 @@ class Path
      * @param Parameter[] $specs       [paramName=>Parameter]
      * @param string      $pathPattern like "/users/{id}"
      *
-     * @throws KeywordMismatch
+     * @throws SchemaMismatch
      */
     public function validate(MessageInterface $message, array $specs, string $pathPattern) : void
     {
@@ -35,7 +35,7 @@ class Path
     /**
      * @param Parameter[] $specs
      *
-     * @throws KeywordMismatch
+     * @throws SchemaMismatch
      */
     private function validateServerRequest(ServerRequestInterface $message, array $specs, string $pathPattern) : void
     {

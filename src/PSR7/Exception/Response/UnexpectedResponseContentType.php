@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Response;
 
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\ResponseAddress;
-use RuntimeException;
 use Throwable;
 use function sprintf;
 
-class UnexpectedResponseContentType extends RuntimeException
+class UnexpectedResponseContentType extends ValidationFailed
 {
     /** @var string */
     protected $contentType;

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Request\Security;
 
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\OperationAddress;
-use RuntimeException;
 use Throwable;
 use function sprintf;
 
-class MalformattedRequestAuthorizationHeader extends RuntimeException
+class MalformattedRequestAuthorizationHeader extends ValidationFailed
 {
     /** @var OperationAddress */
     protected $addr;

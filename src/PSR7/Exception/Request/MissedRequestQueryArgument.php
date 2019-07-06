@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Request;
 
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\OperationAddress;
-use RuntimeException;
 use function sprintf;
 
-class MissedRequestQueryArgument extends RuntimeException
+class MissedRequestQueryArgument extends ValidationFailed
 {
     /** @var string */
     protected $queryArgumentName;

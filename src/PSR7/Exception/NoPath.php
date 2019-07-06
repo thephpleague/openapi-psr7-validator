@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception;
 
-use RuntimeException;
 use function sprintf;
 
-class NoPath extends RuntimeException
+class NoPath extends ValidationFailed
 {
     /** @var string */
     protected $path;

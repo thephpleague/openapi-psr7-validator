@@ -7,18 +7,15 @@ namespace OpenAPIValidation\PSR7\Validators;
 use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
-use Exception;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
 use function count;
 use function preg_match;
 use function sprintf;
 
-class Security
+class SecurityValidator
 {
-    use ValidationStrategy;
-
     /** @var SecurityScheme[] */
     protected $securitySchemes;
 
@@ -26,7 +23,7 @@ class Security
      * @param SecurityRequirement[] $securitySpecs
      * @param SecurityScheme[]      $securitySchemesSpec
      *
-     * @throws Exception
+     * @throws ValidationFailed
      */
     public function validate(MessageInterface $message, array $securitySpecs, array $securitySchemesSpec) : void
     {
@@ -47,6 +44,8 @@ class Security
 
     /**
      * @param Parameter[] $securitySpecs
+     *
+     * @throws ValidationFailed
      */
     private function validateServerRequest(ServerRequestInterface $request, array $securitySpecs) : void
     {
@@ -61,15 +60,18 @@ class Security
                 $this->validateSecurityScheme($request, $spec);
 
                 return; // this sucurity schema matched, request is valid, stop here
-            } catch (Throwable $e) {
+            } catch (ValidationFailed $e) {
                 // that security schema did not match
             }
         }
 
         // no schema matched, that is bad
-        throw new Exception('No security schema matched', 600);
+        throw new ValidationFailed('No security schema matched', 600);
     }
 
+    /**
+     * @throws ValidationFailed
+     */
     private function validateSecurityScheme(ServerRequestInterface $request, SecurityRequirement $spec) : void
     {
         // Here I implement AND-union
@@ -80,7 +82,7 @@ class Security
 
         foreach ($spec->getSerializableData() as $securityScheme => $scopes) {
             if (! isset($this->securitySchemes[$securityScheme])) {
-                throw new Exception(sprintf("Mentioned security scheme '%s' not found in OAS spec", $securityScheme));
+                throw new ValidationFailed(sprintf("Mentioned security scheme '%s' not found in OAS spec", $securityScheme));
             }
             $securityScheme = $this->securitySchemes[$securityScheme];
 
@@ -99,53 +101,60 @@ class Security
 
         // Check that all AND-united security schemes matched
         if ($shouldMatchSchemesCount) {
-            throw new Exception('Request did not match all of given security schemes');
+            throw new ValidationFailed('Request did not match all of given security schemes');
         }
     }
 
+
+    /**
+     * @throws ValidationFailed
+     */
     private function validateHTTPSecurityScheme(ServerRequestInterface $request, SecurityScheme $securityScheme) : void
     {
         // Supported schemas: https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
 
         // Token should be passed in TLS session, in header: `Authorization:....`
         if (! $request->hasHeader('Authorization')) {
-            throw new Exception('', 611);
+            throw new ValidationFailed('', 611);
         }
 
         switch ($securityScheme->scheme) {
             case 'basic':
                 // Described in https://tools.ietf.org/html/rfc7617
                 if (! preg_match('#^Basic #', $request->getHeader('Authorization')[0])) {
-                    throw new Exception('', 612);
+                    throw new ValidationFailed('', 612);
                 }
 
                 break;
             case 'bearer':
                 // Described in https://tools.ietf.org/html/rfc6750
                 if (! preg_match('#^Bearer #', $request->getHeader('Authorization')[0])) {
-                    throw new Exception('', 612);
+                    throw new ValidationFailed('', 612);
                 }
 
                 break;
         }
     }
 
+    /**
+     * @throws ValidationFailed
+     */
     private function validateApiKeySecurityScheme(ServerRequestInterface $request, SecurityScheme $securityScheme) : void
     {
         switch ($securityScheme->in) {
             case 'query':
                 if (! isset($request->getQueryParams()[$securityScheme->name])) {
-                    throw new Exception(sprintf("Absent query argument '%s'", $securityScheme->name), 601);
+                    throw new ValidationFailed(sprintf("Absent query argument '%s'", $securityScheme->name), 601);
                 }
                 break;
             case 'header':
                 if (! $request->hasHeader($securityScheme->name)) {
-                    throw new Exception(sprintf("Absent header '%s'", $securityScheme->name), 601);
+                    throw new ValidationFailed(sprintf("Absent header '%s'", $securityScheme->name), 601);
                 }
                 break;
             case 'cookie':
                 if (! isset($request->getCookieParams()[$securityScheme->name])) {
-                    throw new Exception(sprintf("Absent cookie '%s'", $securityScheme->name), 601);
+                    throw new ValidationFailed(sprintf("Absent cookie '%s'", $securityScheme->name), 601);
                 }
                 break;
         }

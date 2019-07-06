@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Response;
 
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\ResponseAddress;
-use RuntimeException;
 use function sprintf;
 
-class MissedResponseHeader extends RuntimeException
+class MissedResponseHeader extends ValidationFailed
 {
     /** @var string */
     protected $headerName;

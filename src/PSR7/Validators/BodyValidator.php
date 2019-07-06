@@ -5,25 +5,26 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\MediaType as MediaTypeSpec;
-use Exception;
 use OpenAPIValidation\PSR7\Exception\NoContentType;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
-use RuntimeException;
 use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
 use function preg_match;
 use function strtok;
 
-class Body
+class BodyValidator
 {
     use ValidationStrategy;
 
     /**
      * @param MediaTypeSpec[] $mediaTypeSpecs
      *
-     * @throws Exception
+     * @throws ValidationFailed
+     * @throws SchemaMismatch
      */
     public function validate(MessageInterface $message, array $mediaTypeSpecs) : void
     {
@@ -41,7 +42,7 @@ class Body
 
         // does the response contain one of described media types?
         if (! isset($mediaTypeSpecs[$contentType])) {
-            throw new RuntimeException($contentType, 100);
+            throw new ValidationFailed($contentType, 100);
         }
 
         // ok looks good, now apply validation
@@ -50,7 +51,7 @@ class Body
         if (preg_match('#^application/.*json$#', $contentType)) {
             $body = json_decode($body, true);
             if (json_last_error()) {
-                throw new RuntimeException('Unable to decode JSON body content: ' . json_last_error_msg());
+                throw new ValidationFailed('Unable to decode JSON body content: ' . json_last_error_msg());
             }
         }
 

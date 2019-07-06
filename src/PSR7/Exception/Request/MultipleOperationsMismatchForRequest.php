@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Request;
 
-use Exception;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\OperationAddress;
 use function array_map;
 use function implode;
 use function sprintf;
 
-class MultipleOperationsMismatchForRequest extends Exception
+class MultipleOperationsMismatchForRequest extends ValidationFailed
 {
     /** @var OperationAddress[] */
     protected $matchedAddrs;

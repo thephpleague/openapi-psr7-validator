@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Exception\Request;
 
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\OperationAddress;
-use RuntimeException;
 use function sprintf;
 
-class MissedRequestCookie extends RuntimeException
+class MissedRequestCookie extends ValidationFailed
 {
     /** @var string */
     protected $cookieName;

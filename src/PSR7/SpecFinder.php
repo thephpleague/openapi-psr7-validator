@@ -8,7 +8,6 @@ use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response as ResponseSpec;
-use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
@@ -26,6 +25,8 @@ final class SpecFinder
 
     /**
      * Find a particular operation (path + method) in the spec
+     *
+     * @throws NoPath
      */
     public function findOperationSpec(OperationAddress $addr) : Operation
     {
@@ -40,6 +41,8 @@ final class SpecFinder
 
     /**
      * Find a particular path in the spec
+     *
+     * @throws NoPath
      */
     public function findPathSpec(PathAddress $addr) : PathItem
     {
@@ -54,6 +57,8 @@ final class SpecFinder
 
     /**
      * Find the schema which describes a given response
+     *
+     * @throws NoPath
      */
     public function findResponseSpec(ResponseAddress $addr) : ResponseSpec
     {
@@ -80,8 +85,6 @@ final class SpecFinder
      * Check the openapi spec and find matching operations(path+method)
      * This should consider path parameters as well
      * "/users/12" should match both ["/users/{id}", "/users/{group}"]
-     *
-     * @param ServerRequest $request
      *
      * @return OperationAddress[]
      */

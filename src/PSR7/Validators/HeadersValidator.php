@@ -6,16 +6,20 @@ namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Header as HeaderSpec;
 use GuzzleHttp\Psr7\Response;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
-use RuntimeException;
 
-class Headers
+class HeadersValidator
 {
     use ValidationStrategy;
 
     /**
      * @param HeaderSpec[] $headerSpecs
+     *
+     * @throws ValidationFailed
+     * @throws SchemaMismatch
      */
     public function validate(MessageInterface $message, array $headerSpecs) : void
     {
@@ -26,14 +30,15 @@ class Headers
             if ($message instanceof Response) {
                 // Responses headers are mandatory (it supports no 'required' keyword)
                 if (! $message->hasHeader($header)) {
-                    throw new RuntimeException($header, 201);
+                    throw new ValidationFailed($header, 201);
                 }
             } else {
                 // request parameters can be optional ('required' keyword is supported)
                 if (! $message->hasHeader($header) && $spec->required) {
-                    throw new RuntimeException($header, 201);
+                    throw new ValidationFailed($header, 201);
                 }
             }
+
             foreach ($message->getHeader($header) as $headerValue) {
                 $validator->validate($headerValue, $spec->schema);
             }

@@ -23,12 +23,15 @@ use OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey;
 use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
 use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestContentType;
 use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestHeader;
-use OpenAPIValidation\PSR7\Validators\Body;
-use OpenAPIValidation\PSR7\Validators\Cookies;
-use OpenAPIValidation\PSR7\Validators\Headers;
-use OpenAPIValidation\PSR7\Validators\Path;
-use OpenAPIValidation\PSR7\Validators\QueryArguments;
-use OpenAPIValidation\PSR7\Validators\Security;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\PSR7\Validators\BodyValidator;
+use OpenAPIValidation\PSR7\Validators\CookiesValidator;
+use OpenAPIValidation\PSR7\Validators\HeadersValidator;
+use OpenAPIValidation\PSR7\Validators\PathValidator;
+use OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;
+use OpenAPIValidation\PSR7\Validators\SecurityValidator;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use function count;
@@ -57,6 +60,8 @@ class ServerRequestValidator implements ReusableSchema
 
     /**
      * @return OperationAddress which matched the Request
+     *
+     * @throws ValidationFailed
      */
     public function validate(ServerRequestInterface $serverRequest) : OperationAddress
     {
@@ -96,6 +101,9 @@ class ServerRequestValidator implements ReusableSchema
         throw MultipleOperationsMismatchForRequest::fromMatchedAddrs($matchingOperationsAddrs);
     }
 
+    /**
+     * @throws ValidationFailed
+     */
     protected function validateAddress(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
         // 1. Headers
@@ -118,7 +126,7 @@ class ServerRequestValidator implements ReusableSchema
     }
 
     /**
-     * @throws TypeErrorException
+     * @throws ValidationFailed
      */
     protected function validateHeaders(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
@@ -133,9 +141,12 @@ class ServerRequestValidator implements ReusableSchema
             }
 
             $headerData = json_decode(json_encode($p->getSerializableData()), true);
-            unset($headerData['in']);
-            unset($headerData['name']);
-            $headerSpecs[$p->name] = new HeaderSpec($headerData);
+            unset($headerData['in'], $headerData['name']);
+            try {
+                $headerSpecs[$p->name] = new HeaderSpec($headerData);
+            } catch (TypeErrorException $e) {
+                throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
+            }
         }
 
         // 2. Collect path-level params
@@ -149,9 +160,9 @@ class ServerRequestValidator implements ReusableSchema
         }
 
         try {
-            $headersValidator = new Headers();
+            $headersValidator = new HeadersValidator();
             $headersValidator->validate($serverRequest, $headerSpecs);
-        } catch (Throwable $e) {
+        } catch (ValidationFailed|SchemaMismatch $e) {
             switch ($e->getCode()) {
                 case 200:
                     throw UnexpectedRequestHeader::fromOperationAddr($e->getMessage(), $addr, $e);
@@ -165,6 +176,9 @@ class ServerRequestValidator implements ReusableSchema
         }
     }
 
+    /**
+     * @throws ValidationFailed
+     */
     private function validateCookies(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
         $spec = $this->finder->findOperationSpec($addr);
@@ -191,9 +205,9 @@ class ServerRequestValidator implements ReusableSchema
         }
 
         try {
-            $cookieValidator = new Cookies();
+            $cookieValidator = new CookiesValidator();
             $cookieValidator->validate($serverRequest, $cookieSpecs);
-        } catch (Throwable $e) {
+        } catch (ValidationFailed|SchemaMismatch $e) {
             switch ($e->getCode()) {
                 case 301:
                     throw MissedRequestCookie::fromOperationAddr($e->getMessage(), $addr);
@@ -204,6 +218,9 @@ class ServerRequestValidator implements ReusableSchema
         }
     }
 
+    /**
+     * @throws ValidationFailed
+     */
     private function validateBody(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
         $spec = $this->finder->findOperationSpec($addr);
@@ -213,9 +230,9 @@ class ServerRequestValidator implements ReusableSchema
         }
 
         try {
-            $bodyValidator = new Body();
+            $bodyValidator = new BodyValidator();
             $bodyValidator->validate($serverRequest, $spec->requestBody->content);
-        } catch (Throwable $e) {
+        } catch (ValidationFailed|SchemaMismatch $e) {
             switch ($e->getCode()) {
                 case 100:
                     throw UnexpectedRequestContentType::fromAddr($e->getMessage(), $addr);
@@ -225,6 +242,9 @@ class ServerRequestValidator implements ReusableSchema
         }
     }
 
+    /**
+     * @throws ValidationFailed
+     */
     private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
         $spec = $this->finder->findOperationSpec($addr);
@@ -252,9 +272,9 @@ class ServerRequestValidator implements ReusableSchema
 
         // 3. Validate collected params
         try {
-            $queryArgumentsValidator = new QueryArguments();
+            $queryArgumentsValidator = new QueryArgumentsValidator();
             $queryArgumentsValidator->validate($serverRequest, $querySpecs);
-        } catch (Throwable $e) {
+        } catch (ValidationFailed|SchemaMismatch $e) {
             switch ($e->getCode()) {
                 case 401:
                     throw MissedRequestQueryArgument::fromOperationAddr($e->getMessage(), $addr);
@@ -266,7 +286,7 @@ class ServerRequestValidator implements ReusableSchema
     }
 
     /**
-     * @throws Throwable
+     * @throws ValidationFailed
      */
     private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
@@ -295,9 +315,9 @@ class ServerRequestValidator implements ReusableSchema
 
         // 3. Validate collected params
         try {
-            $pathValidator = new Path();
+            $pathValidator = new PathValidator();
             $pathValidator->validate($serverRequest, $pathSpecs, $addr->path());
-        } catch (Throwable $e) {
+        } catch (SchemaMismatch $e) {
             switch ($e->getCode()) {
                 default:
                     throw RequestPathParameterMismatch::fromAddrAndCauseException(
@@ -309,6 +329,9 @@ class ServerRequestValidator implements ReusableSchema
         }
     }
 
+    /**
+     * @throws ValidationFailed
+     */
     private function validateSecurity(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
         $opSpec = $this->finder->findOperationSpec($addr);
@@ -324,13 +347,13 @@ class ServerRequestValidator implements ReusableSchema
 
         // 2. Validate collected params
         try {
-            $pathValidator = new Security();
+            $pathValidator = new SecurityValidator();
             $pathValidator->validate(
                 $serverRequest,
                 $securitySpecs,
                 $this->openApi->components ? $this->openApi->components->securitySchemes : []
             );
-        } catch (Throwable $e) {
+        } catch (ValidationFailed $e) {
             switch ($e->getCode()) {
                 case 601:
                     throw NoRequestSecurityApiKey::fromOperationAddr($addr, $e);

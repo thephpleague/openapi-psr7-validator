@@ -7,7 +7,6 @@ namespace OpenAPIValidation\PSR7;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Server;
 use Psr\Http\Message\UriInterface;
-use const PHP_URL_PATH;
 use function array_key_exists;
 use function ltrim;
 use function parse_url;
@@ -16,6 +15,7 @@ use function preg_replace;
 use function rtrim;
 use function sprintf;
 use function strtolower;
+use const PHP_URL_PATH;
 
 // This class finds operations matching the given URI+method
 // That would be a very simple operation if there were no "Servers" keyword.
