@@ -8,7 +8,6 @@ use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use OpenAPIValidation\PSR7\MessageValidator;
 use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\PathAddress;
 use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
@@ -45,7 +44,7 @@ final class PathValidator implements MessageValidator
         $specs = $this->finder->findPathSpecs($addr);
 
         $path             = $message->getUri()->getPath();
-        $pathParsedParams = PathAddress::parseParams($addr, $path); // ['id'=>12]
+        $pathParsedParams = $addr->parseParams($path); // ['id'=>12]
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
 

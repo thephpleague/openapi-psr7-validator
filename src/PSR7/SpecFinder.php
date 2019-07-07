@@ -55,7 +55,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findPathSpec(PathAddress $addr) : PathItem
+    public function findPathSpec(OperationAddress $addr) : PathItem
     {
         $pathSpec = $this->openApi->paths->getPath($addr->path());
 
@@ -87,7 +87,7 @@ final class SpecFinder
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->findPathSpec($addr);
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'path') {
                 continue;
@@ -120,7 +120,7 @@ final class SpecFinder
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->findPathSpec($addr);
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'query') {
                 continue;
@@ -238,7 +238,7 @@ final class SpecFinder
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->findPathSpec($addr);
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'header') {
                 continue;
@@ -271,7 +271,7 @@ final class SpecFinder
         }
 
         // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr->getPathAddress());
+        $pathSpec = $this->findPathSpec($addr);
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'cookie') {
                 continue;

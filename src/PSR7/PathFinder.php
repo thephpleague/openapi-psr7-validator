@@ -72,7 +72,7 @@ class PathFinder
 
                 // 3.1 Compare this path against the real/given path
                 $searchPath = (string) parse_url((string) $this->uri, PHP_URL_PATH);
-                if (! PathAddress::isPathMatchesSpec($candidatePath, $searchPath)) {
+                if (! OperationAddress::isPathMatchesSpec($candidatePath, $searchPath)) {
                     continue;
                 }
 
