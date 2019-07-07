@@ -20,7 +20,6 @@ use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use Psr\Http\Message\ServerRequestInterface;
 use function json_decode;
 use function json_encode;
 use function property_exists;
@@ -206,20 +205,6 @@ final class SpecFinder
         }
 
         return $response;
-    }
-
-    /**
-     * Check the openapi spec and find matching operations(path+method)
-     * This should consider path parameters as well
-     * "/users/12" should match both ["/users/{id}", "/users/{group}"]
-     *
-     * @return OperationAddress[]
-     */
-    public function findMatchingOperations(ServerRequestInterface $request) : array
-    {
-        $pathFinder = new PathFinder($this->openApi, $request->getUri(), $request->getMethod());
-
-        return $pathFinder->search();
     }
 
     /**

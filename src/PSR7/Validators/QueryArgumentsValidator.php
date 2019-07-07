@@ -68,7 +68,7 @@ final class QueryArgumentsValidator implements MessageValidator
             try {
                 $validator->validate($argumentValue, $specs[$name]->schema, new BreadCrumb($name));
             } catch (SchemaMismatch $e) {
-                throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($name, $argumentValue, $addr);
+                throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($name, $argumentValue, $addr, $e);
             }
         }
     }

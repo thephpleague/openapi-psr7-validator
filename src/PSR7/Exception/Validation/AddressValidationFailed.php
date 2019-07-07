@@ -14,10 +14,26 @@ class AddressValidationFailed extends ValidationFailed
     /** @var OperationAddress */
     private $address;
 
-    public function __construct(OperationAddress $address, ?Throwable $prev = null)
+    /**
+     * @return static
+     */
+    public static function fromAddrAndPrev(OperationAddress $address, Throwable $prev) : self
     {
-        parent::__construct(sprintf('Validation failed for %s', $address), $prev ? $prev->getCode() : null, $prev);
-        $this->address = $address;
+        $ex          = new static(sprintf('Validation failed for %s', $address), $prev->getCode(), $prev);
+        $ex->address = $address;
+
+        return $ex;
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromAddr(OperationAddress $address) : self
+    {
+        $ex          = new static(sprintf('Validation failed for %s', $address));
+        $ex->address = $address;
+
+        return $ex;
     }
 
     public function getAddress() : OperationAddress

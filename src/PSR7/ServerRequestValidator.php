@@ -14,6 +14,7 @@ use OpenAPIValidation\PSR7\Validators\HeadersValidator;
 use OpenAPIValidation\PSR7\Validators\PathValidator;
 use OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;
 use OpenAPIValidation\PSR7\Validators\SecurityValidator;
+use OpenAPIValidation\PSR7\Validators\ValidatorChain;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use function count;
@@ -23,13 +24,21 @@ class ServerRequestValidator implements ReusableSchema
 {
     /** @var OpenApi */
     protected $openApi;
-    /** @var SpecFinder */
-    protected $finder;
+    /** @var MessageValidator */
+    protected $validator;
 
     public function __construct(OpenApi $schema)
     {
-        $this->openApi = $schema;
-        $this->finder  = new SpecFinder($this->openApi);
+        $this->openApi   = $schema;
+        $finder          = new SpecFinder($this->openApi);
+        $this->validator = new ValidatorChain(
+            new HeadersValidator($finder),
+            new CookiesValidator($finder),
+            new BodyValidator($finder),
+            new QueryArgumentsValidator($finder),
+            new PathValidator($finder),
+            new SecurityValidator($finder)
+        );
     }
 
     public function getSchema() : OpenApi
@@ -51,7 +60,7 @@ class ServerRequestValidator implements ReusableSchema
         // If there is only one - then proceed with checking
         // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
         // "This request matched operations A,B and C, but mismatched its schemas."
-        $matchingOperationsAddrs = $this->finder->findMatchingOperations($serverRequest);
+        $matchingOperationsAddrs = $this->findMatchingOperations($serverRequest);
 
         if (! $matchingOperationsAddrs) {
             throw NoOperation::fromPathAndMethod($path, $method);
@@ -59,7 +68,7 @@ class ServerRequestValidator implements ReusableSchema
 
         // Single match is the most desirable variant, because we reduce ambiguity down to zero
         if (count($matchingOperationsAddrs) === 1) {
-            $this->validateAddress($matchingOperationsAddrs[0], $serverRequest);
+            $this->validator->validate($matchingOperationsAddrs[0], $serverRequest);
 
             return $matchingOperationsAddrs[0];
         }
@@ -68,7 +77,7 @@ class ServerRequestValidator implements ReusableSchema
         // then we cannot say reliably which one intended to match
         foreach ($matchingOperationsAddrs as $matchedAddr) {
             try {
-                $this->validateAddress($matchedAddr, $serverRequest);
+                $this->validator->validate($matchedAddr, $serverRequest);
 
                 return $matchedAddr; // Good, operation matched and request is valid against it, stop here
             } catch (Throwable $e) {
@@ -81,74 +90,16 @@ class ServerRequestValidator implements ReusableSchema
     }
 
     /**
-     * @throws ValidationFailed
+     * Check the openapi spec and find matching operations(path+method)
+     * This should consider path parameters as well
+     * "/users/12" should match both ["/users/{id}", "/users/{group}"]
+     *
+     * @return OperationAddress[]
      */
-    protected function validateAddress(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
+    private function findMatchingOperations(ServerRequestInterface $request) : array
     {
-        $this->validateHeaders($addr, $serverRequest);
+        $pathFinder = new PathFinder($this->openApi, $request->getUri(), $request->getMethod());
 
-        $this->validateCookies($addr, $serverRequest);
-
-        $this->validateBody($addr, $serverRequest);
-
-        $this->validateQueryArgs($addr, $serverRequest);
-
-        $this->validatePath($addr, $serverRequest);
-
-        $this->validateSecurity($addr, $serverRequest);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    protected function validateHeaders(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
-    {
-        $headersValidator = new HeadersValidator($this->finder);
-        $headersValidator->validate($addr, $serverRequest);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    private function validateCookies(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
-    {
-        $cookieValidator = new CookiesValidator($this->finder);
-        $cookieValidator->validate($addr, $serverRequest);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    private function validateBody(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
-    {
-        $bodyValidator = new BodyValidator($this->finder);
-        $bodyValidator->validate($addr, $serverRequest);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
-    {
-        $queryArgumentsValidator = new QueryArgumentsValidator($this->finder);
-        $queryArgumentsValidator->validate($addr, $serverRequest);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
-    {
-        $pathValidator = new PathValidator($this->finder);
-        $pathValidator->validate($addr, $serverRequest);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    private function validateSecurity(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
-    {
-        $pathValidator = new SecurityValidator($this->finder);
-        $pathValidator->validate($addr, $serverRequest);
+        return $pathFinder->search();
     }
 }

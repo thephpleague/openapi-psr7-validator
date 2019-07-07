@@ -54,7 +54,7 @@ final class PathValidator implements MessageValidator
             try {
                 $validator->validate($value, $specs[$name]->schema);
             } catch (SchemaMismatch $e) {
-                throw InvalidPath::becauseValueDoesNotMatchSchema($name, $value, $addr);
+                throw InvalidPath::becauseValueDoesNotMatchSchema($name, $value, $addr, $e);
             }
         }
     }

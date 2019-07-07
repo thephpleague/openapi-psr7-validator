@@ -8,19 +8,24 @@ use cebe\openapi\spec\OpenApi;
 use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\Validators\BodyValidator;
 use OpenAPIValidation\PSR7\Validators\HeadersValidator;
+use OpenAPIValidation\PSR7\Validators\ValidatorChain;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseValidator implements ReusableSchema
 {
     /** @var OpenApi */
     protected $openApi;
-    /** @var SpecFinder */
-    protected $finder;
+    /** @var MessageValidator */
+    protected $validator;
 
     public function __construct(OpenApi $schema)
     {
-        $this->openApi = $schema;
-        $this->finder  = new SpecFinder($this->openApi);
+        $this->openApi   = $schema;
+        $finder          = new SpecFinder($this->openApi);
+        $this->validator = new ValidatorChain(
+            new HeadersValidator($finder),
+            new BodyValidator($finder)
+        );
     }
 
     public function getSchema() : OpenApi
@@ -33,34 +38,9 @@ class ResponseValidator implements ReusableSchema
      */
     public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
     {
-        $addr = new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode());
-        $this->validateAddress($addr, $response);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    protected function validateAddress(ResponseAddress $addr, ResponseInterface $response) : void
-    {
-        $this->validateHeaders($response, $addr);
-        $this->validateBody($response, $addr);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    protected function validateHeaders(ResponseInterface $response, ResponseAddress $addr) : void
-    {
-        $headersValidator = new HeadersValidator($this->finder);
-        $headersValidator->validate($addr, $response);
-    }
-
-    /**
-     * @throws ValidationFailed
-     */
-    protected function validateBody(ResponseInterface $response, ResponseAddress $addr) : void
-    {
-        $bodyValidator = new BodyValidator($this->finder);
-        $bodyValidator->validate($addr, $response);
+        $this->validator->validate(
+            new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode()),
+            $response
+        );
     }
 }

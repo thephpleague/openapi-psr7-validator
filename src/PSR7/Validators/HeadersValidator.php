@@ -42,7 +42,7 @@ final class HeadersValidator implements MessageValidator
                 try {
                     $validator->validate($headerValue, $spec->schema);
                 } catch (SchemaMismatch $exception) {
-                    throw InvalidHeaders::becauseValueDoesNotMatchSchema($header, $headerValue, $addr);
+                    throw InvalidHeaders::becauseValueDoesNotMatchSchema($header, $headerValue, $addr, $exception);
                 }
             }
         }

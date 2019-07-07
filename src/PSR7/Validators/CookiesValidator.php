@@ -63,7 +63,7 @@ final class CookiesValidator implements MessageValidator
             try {
                 $validator->validate($cookieValue, $specs[$cookieName]->schema);
             } catch (SchemaMismatch $e) {
-                throw InvalidCookies::becauseValueDoesNotMatchSchema($cookieName, $cookieValue, $addr);
+                throw InvalidCookies::becauseValueDoesNotMatchSchema($cookieName, $cookieValue, $addr, $e);
             }
         }
     }
