@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidSecurity;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -67,14 +67,11 @@ BASIC;
     {
         $request = new ServerRequest('get', '/products');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServerRequestValidator();
-            $validator->validate($request);
-            $this->fail('Expected exception');
-        } catch (RequestSecurityMismatch $e) {
-            $this->assertEquals('/products', $e->addr()->path());
-            $this->assertEquals('get', $e->addr()->method());
-        }
+        $this->expectException(InvalidSecurity::class);
+        $this->expectExceptionMessage('None of security schemas did match for Request [get /products]');
+
+        $validator = (new ValidatorBuilder())->fromYaml($this->specBearer)->getServerRequestValidator();
+        $validator->validate($request);
     }
 
     public function testItChecksBasicHeaderGreen() : void
@@ -91,13 +88,10 @@ BASIC;
     {
         $request = new ServerRequest('get', '/products');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServerRequestValidator();
-            $validator->validate($request);
-            $this->fail('Expected exception');
-        } catch (RequestSecurityMismatch $e) {
-            $this->assertEquals('/products', $e->addr()->path());
-            $this->assertEquals('get', $e->addr()->method());
-        }
+        $this->expectException(InvalidSecurity::class);
+        $this->expectExceptionMessage('None of security schemas did match for Request [get /products]');
+
+        $validator = (new ValidatorBuilder())->fromYaml($this->specBasic)->getServerRequestValidator();
+        $validator->validate($request);
     }
 }

@@ -4,25 +4,9 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
-use cebe\openapi\exceptions\TypeErrorException;
-use cebe\openapi\spec\Header as HeaderSpec;
 use cebe\openapi\spec\OpenApi;
+use OpenAPIValidation\PSR7\Exception\MultipleOperationsMismatchForRequest;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
-use OpenAPIValidation\PSR7\Exception\Request\MissedRequestCookie;
-use OpenAPIValidation\PSR7\Exception\Request\MissedRequestHeader;
-use OpenAPIValidation\PSR7\Exception\Request\MissedRequestQueryArgument;
-use OpenAPIValidation\PSR7\Exception\Request\MultipleOperationsMismatchForRequest;
-use OpenAPIValidation\PSR7\Exception\Request\RequestBodyMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\RequestCookiesMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\RequestHeadersMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\RequestPathParameterMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\Security\MalformattedRequestAuthorizationHeader;
-use OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestAuthorizationHeader;
-use OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey;
-use OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestContentType;
-use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestHeader;
 use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\Validators\BodyValidator;
 use OpenAPIValidation\PSR7\Validators\CookiesValidator;
@@ -30,14 +14,9 @@ use OpenAPIValidation\PSR7\Validators\HeadersValidator;
 use OpenAPIValidation\PSR7\Validators\PathValidator;
 use OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;
 use OpenAPIValidation\PSR7\Validators\SecurityValidator;
-use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use function count;
-use function json_decode;
-use function json_encode;
-use function property_exists;
 use function strtolower;
 
 class ServerRequestValidator implements ReusableSchema
@@ -106,22 +85,16 @@ class ServerRequestValidator implements ReusableSchema
      */
     protected function validateAddress(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        // 1. Headers
         $this->validateHeaders($addr, $serverRequest);
 
-        // 2. Cookies
         $this->validateCookies($addr, $serverRequest);
 
-        // 3. Body
         $this->validateBody($addr, $serverRequest);
 
-        // 4. Validate Query arguments
         $this->validateQueryArgs($addr, $serverRequest);
 
-        // 5. Validate path
         $this->validatePath($addr, $serverRequest);
 
-        // 6. Validate security
         $this->validateSecurity($addr, $serverRequest);
     }
 
@@ -130,50 +103,8 @@ class ServerRequestValidator implements ReusableSchema
      */
     protected function validateHeaders(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->finder->findOperationSpec($addr);
-
-        // 1. Validate Headers
-        // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
-        $headerSpecs = [];
-        foreach ($spec->parameters as $p) {
-            if ($p->in !== 'header') {
-                continue;
-            }
-
-            $headerData = json_decode(json_encode($p->getSerializableData()), true);
-            unset($headerData['in'], $headerData['name']);
-            try {
-                $headerSpecs[$p->name] = new HeaderSpec($headerData);
-            } catch (TypeErrorException $e) {
-                throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
-            }
-        }
-
-        // 2. Collect path-level params
-        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
-        foreach ($pathSpec->parameters as $p) {
-            if ($p->in !== 'header') {
-                continue;
-            }
-
-            $headerSpecs += [$p->name => $p]; // union won't override
-        }
-
-        try {
-            $headersValidator = new HeadersValidator();
-            $headersValidator->validate($serverRequest, $headerSpecs);
-        } catch (ValidationFailed|SchemaMismatch $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    throw UnexpectedRequestHeader::fromOperationAddr($e->getMessage(), $addr, $e);
-                    break;
-                case 201:
-                    throw MissedRequestHeader::fromOperationAddr($e->getMessage(), $addr, $e);
-                    break;
-                default:
-                    throw RequestHeadersMismatch::fromAddrAndCauseException($addr, $e);
-            }
-        }
+        $headersValidator = new HeadersValidator($this->finder);
+        $headersValidator->validate($addr, $serverRequest);
     }
 
     /**
@@ -181,41 +112,8 @@ class ServerRequestValidator implements ReusableSchema
      */
     private function validateCookies(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->finder->findOperationSpec($addr);
-
-        $cookieSpecs = [];
-
-        // 1. Find operation level params
-        foreach ($spec->parameters as $p) {
-            if ($p->in !== 'cookie') {
-                continue;
-            }
-
-            $cookieSpecs[$p->name] = $p;
-        }
-
-        // 2. Collect path-level params
-        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
-        foreach ($pathSpec->parameters as $p) {
-            if ($p->in !== 'cookie') {
-                continue;
-            }
-
-            $cookieSpecs += [$p->name => $p]; // union won't override
-        }
-
-        try {
-            $cookieValidator = new CookiesValidator();
-            $cookieValidator->validate($serverRequest, $cookieSpecs);
-        } catch (ValidationFailed|SchemaMismatch $e) {
-            switch ($e->getCode()) {
-                case 301:
-                    throw MissedRequestCookie::fromOperationAddr($e->getMessage(), $addr);
-                    break;
-                default:
-                    throw RequestCookiesMismatch::fromAddrAndCauseException($addr, $e);
-            }
-        }
+        $cookieValidator = new CookiesValidator($this->finder);
+        $cookieValidator->validate($addr, $serverRequest);
     }
 
     /**
@@ -223,23 +121,8 @@ class ServerRequestValidator implements ReusableSchema
      */
     private function validateBody(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->finder->findOperationSpec($addr);
-
-        if (! $spec->requestBody) {
-            return;
-        }
-
-        try {
-            $bodyValidator = new BodyValidator();
-            $bodyValidator->validate($serverRequest, $spec->requestBody->content);
-        } catch (ValidationFailed|SchemaMismatch $e) {
-            switch ($e->getCode()) {
-                case 100:
-                    throw UnexpectedRequestContentType::fromAddr($e->getMessage(), $addr);
-                default:
-                    throw RequestBodyMismatch::fromAddrAndCauseException($addr, $e);
-            }
-        }
+        $bodyValidator = new BodyValidator($this->finder);
+        $bodyValidator->validate($addr, $serverRequest);
     }
 
     /**
@@ -247,42 +130,8 @@ class ServerRequestValidator implements ReusableSchema
      */
     private function validateQueryArgs(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->finder->findOperationSpec($addr);
-
-        // 1. Collect operation-level params
-        $querySpecs = [];
-
-        foreach ($spec->parameters as $p) {
-            if ($p->in !== 'query') {
-                continue;
-            }
-
-            $querySpecs[$p->name] = $p;
-        }
-
-        // 2. Collect path-level params
-        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
-        foreach ($pathSpec->parameters as $p) {
-            if ($p->in !== 'query') {
-                continue;
-            }
-
-            $querySpecs += [$p->name => $p]; // union won't override
-        }
-
-        // 3. Validate collected params
-        try {
-            $queryArgumentsValidator = new QueryArgumentsValidator();
-            $queryArgumentsValidator->validate($serverRequest, $querySpecs);
-        } catch (ValidationFailed|SchemaMismatch $e) {
-            switch ($e->getCode()) {
-                case 401:
-                    throw MissedRequestQueryArgument::fromOperationAddr($e->getMessage(), $addr);
-                    break;
-                default:
-                    throw RequestQueryArgumentMismatch::fromAddrAndCauseException($addr, $e);
-            }
-        }
+        $queryArgumentsValidator = new QueryArgumentsValidator($this->finder);
+        $queryArgumentsValidator->validate($addr, $serverRequest);
     }
 
     /**
@@ -290,43 +139,8 @@ class ServerRequestValidator implements ReusableSchema
      */
     private function validatePath(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $spec = $this->finder->findOperationSpec($addr);
-
-        // 1. Collect operation-level params
-        $pathSpecs = [];
-
-        foreach ($spec->parameters as $p) {
-            if ($p->in !== 'path') {
-                continue;
-            }
-
-            $pathSpecs[$p->name] = $p;
-        }
-
-        // 2. Collect path-level params
-        $pathSpec = $this->finder->findPathSpec($addr->getPathAddress());
-        foreach ($pathSpec->parameters as $p) {
-            if ($p->in !== 'path') {
-                continue;
-            }
-
-            $pathSpecs += [$p->name => $p]; // union won't override
-        }
-
-        // 3. Validate collected params
-        try {
-            $pathValidator = new PathValidator();
-            $pathValidator->validate($serverRequest, $pathSpecs, $addr->path());
-        } catch (SchemaMismatch $e) {
-            switch ($e->getCode()) {
-                default:
-                    throw RequestPathParameterMismatch::fromAddrAndCauseException(
-                        $addr,
-                        $serverRequest->getUri()->getPath(),
-                        $e
-                    );
-            }
-        }
+        $pathValidator = new PathValidator($this->finder);
+        $pathValidator->validate($addr, $serverRequest);
     }
 
     /**
@@ -334,36 +148,7 @@ class ServerRequestValidator implements ReusableSchema
      */
     private function validateSecurity(OperationAddress $addr, ServerRequestInterface $serverRequest) : void
     {
-        $opSpec = $this->finder->findOperationSpec($addr);
-
-        // 1. Collect security params
-        if (property_exists($opSpec->getSerializableData(), 'security')) {
-            // security is set on operation level
-            $securitySpecs = $opSpec->security;
-        } else {
-            // security is set on root level (fallback option)
-            $securitySpecs = $this->openApi->security;
-        }
-
-        // 2. Validate collected params
-        try {
-            $pathValidator = new SecurityValidator();
-            $pathValidator->validate(
-                $serverRequest,
-                $securitySpecs,
-                $this->openApi->components ? $this->openApi->components->securitySchemes : []
-            );
-        } catch (ValidationFailed $e) {
-            switch ($e->getCode()) {
-                case 601:
-                    throw NoRequestSecurityApiKey::fromOperationAddr($addr, $e);
-                case 611:
-                    throw NoRequestAuthorizationHeader::fromOperationAddr($addr, $e);
-                case 612:
-                    throw MalformattedRequestAuthorizationHeader::fromOperationAddr($addr, $e);
-                default:
-                    throw RequestSecurityMismatch::fromOperationAddr($addr, $e);
-            }
-        }
+        $pathValidator = new SecurityValidator($this->finder);
+        $pathValidator->validate($addr, $serverRequest);
     }
 }

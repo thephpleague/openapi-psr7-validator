@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
-use InvalidArgumentException;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use function is_numeric;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
-use function sprintf;
 use function str_replace;
 use function strtok;
 
@@ -42,12 +41,13 @@ class PathAddress
      * $url = "/users/12";
      * returns ["id"=>12]
      *
-     * @param string $specPath as seen in OpenAPI spec
-     * @param string $url      as seen in actual HTTP Request/ServerRequest
+     * @param string $url as seen in actual HTTP Request/ServerRequest
      *
      * @return mixed[] return array of ["paramName"=>"parsedValue", ...]
+     *
+     * @throws InvalidPath
      */
-    public static function parseParams(string $specPath, string $url) : array
+    public static function parseParams(OperationAddress $addr, string $url) : array
     {
         // pattern: /a/{b}/c/{d}
         // actual:  /a/12/c/some
@@ -57,14 +57,14 @@ class PathAddress
         $url = strtok($url, '?');
 
         // 1. Find param names
-        preg_match_all('#{([^}]+)}#', $specPath, $m);
+        preg_match_all('#{([^}]+)}#', $addr->path(), $m);
         $parameterNames = $m[1];
 
         // 2. Parse param values
-        $pattern = '#' . str_replace(['{', '}'], ['(?<', '>[^/]+)'], $specPath) . '#';
+        $pattern = '#' . str_replace(['{', '}'], ['(?<', '>[^/]+)'], $addr->path()) . '#';
 
         if (! preg_match($pattern, $url, $matches)) {
-            throw new InvalidArgumentException(sprintf("Unable to parse '%s' against the pattern '%s'", $url, $specPath));
+            throw InvalidPath::becausePathDoesNotMatchPattern($url, $addr);
         }
 
         // 3. Combine keys and values

@@ -5,15 +5,9 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
-use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
-use OpenAPIValidation\PSR7\Exception\Response\ResponseBodyMismatch;
-use OpenAPIValidation\PSR7\Exception\Response\ResponseHeadersMismatch;
-use OpenAPIValidation\PSR7\Exception\Response\UnexpectedResponseContentType;
-use OpenAPIValidation\PSR7\Exception\Response\UnexpectedResponseHeader;
 use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\Validators\BodyValidator;
 use OpenAPIValidation\PSR7\Validators\HeadersValidator;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseValidator implements ReusableSchema
@@ -40,43 +34,33 @@ class ResponseValidator implements ReusableSchema
     public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
     {
         $addr = new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode());
+        $this->validateAddress($addr, $response);
+    }
 
-        // 0. Find appropriate schema to validate against
-        $spec = $this->finder->findResponseSpec($addr);
+    /**
+     * @throws ValidationFailed
+     */
+    protected function validateAddress(ResponseAddress $addr, ResponseInterface $response) : void
+    {
+        $this->validateHeaders($response, $addr);
+        $this->validateBody($response, $addr);
+    }
 
-        // 1. Validate Headers
-        try {
-            $headersValidator = new HeadersValidator();
-            $headersValidator->validate($response, $spec->headers);
-        } catch (ValidationFailed|SchemaMismatch $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    throw UnexpectedResponseHeader::fromResponseAddr($e->getMessage(), $addr);
-                    break;
-                case 201:
-                    throw MissedResponseHeader::fromResponseAddr($e->getMessage(), $addr);
-                    break;
-                default:
-                    throw ResponseHeadersMismatch::fromAddrAndCauseException($addr, $e);
-            }
-        }
+    /**
+     * @throws ValidationFailed
+     */
+    protected function validateHeaders(ResponseInterface $response, ResponseAddress $addr) : void
+    {
+        $headersValidator = new HeadersValidator($this->finder);
+        $headersValidator->validate($addr, $response);
+    }
 
-        // 2. Validate Body
-        if (! $spec->content) {
-            // edge case: if "content" keyword is not set (body can be anything as no expectations set)
-            return;
-        }
-
-        try {
-            $bodyValidator = new BodyValidator();
-            $bodyValidator->validate($response, $spec->content);
-        } catch (ValidationFailed|SchemaMismatch $e) {
-            switch ($e->getCode()) {
-                case 100:
-                    throw UnexpectedResponseContentType::fromResponseAddr($e->getMessage(), $addr, $e);
-                default:
-                    throw ResponseBodyMismatch::fromAddrAndCauseException($addr, $e);
-            }
-        }
+    /**
+     * @throws ValidationFailed
+     */
+    protected function validateBody(ResponseInterface $response, ResponseAddress $addr) : void
+    {
+        $bodyValidator = new BodyValidator($this->finder);
+        $bodyValidator->validate($addr, $response);
     }
 }

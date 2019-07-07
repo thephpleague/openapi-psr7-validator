@@ -5,44 +5,50 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
-use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
+use OpenAPIValidation\PSR7\MessageValidator;
+use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use function array_key_exists;
 
-class CookiesValidator
+final class CookiesValidator implements MessageValidator
 {
     use ValidationStrategy;
 
-    /**
-     * @param Parameter[] $specs [cookie_name=>schema]
-     *
-     * @throws ValidationFailed
-     * @throws SchemaMismatch
-     */
-    public function validate(MessageInterface $message, array $specs) : void
-    {
-        if ($message instanceof ServerRequestInterface) {
-            $this->validateServerRequest($message, $specs);
-        }
+    /** @var SpecFinder */
+    private $finder;
 
+    public function __construct(SpecFinder $finder)
+    {
+        $this->finder = $finder;
+    }
+
+    /** {@inheritdoc} */
+    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    {
+        $specs = $this->finder->findCookieSpecs($addr);
+
+        if ($message instanceof ServerRequestInterface) {
+            $this->validateServerRequest($addr, $message, $specs);
+        }
         // TODO should implement validation for Response/Request classes
     }
 
     /**
      * @param Parameter[] $specs
      *
-     * @throws ValidationFailed
-     * @throws SchemaMismatch
+     * @throws InvalidCookies
      */
-    private function validateServerRequest(ServerRequestInterface $message, array $specs) : void
+    private function validateServerRequest(OperationAddress $addr, ServerRequestInterface $message, array $specs) : void
     {
         // Check if message misses cookies
         foreach ($specs as $cookieName => $spec) {
-            if (! array_key_exists($cookieName, $message->getCookieParams()) && $spec->required) {
-                throw new ValidationFailed($cookieName, 301);
+            if ($spec->required && ! array_key_exists($cookieName, $message->getCookieParams())) {
+                throw InvalidCookies::becauseOfMissingRequiredCookie($cookieName, $addr);
             }
         }
 
@@ -54,7 +60,11 @@ class CookiesValidator
             }
 
             $validator = new SchemaValidator($this->detectValidationStrategy($message));
-            $validator->validate($cookieValue, $specs[$cookieName]->schema);
+            try {
+                $validator->validate($cookieValue, $specs[$cookieName]->schema);
+            } catch (SchemaMismatch $e) {
+                throw InvalidCookies::becauseValueDoesNotMatchSchema($cookieName, $cookieValue, $addr);
+            }
         }
     }
 }

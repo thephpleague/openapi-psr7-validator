@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Exception\Request;
+namespace OpenAPIValidation\PSR7\Exception;
 
-use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\OperationAddress;
 use function array_map;
 use function implode;
@@ -17,8 +16,6 @@ class MultipleOperationsMismatchForRequest extends ValidationFailed
 
     /**
      * @param OperationAddress[] $addrs
-     *
-     * @return MultipleOperationsMismatchForRequest
      */
     public static function fromMatchedAddrs(array $addrs) : self
     {

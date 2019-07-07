@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7;
 
 use GuzzleHttp\Psr7\Uri;
-use OpenAPIValidation\PSR7\Exception\Request\MissedRequestQueryArgument;
-use OpenAPIValidation\PSR7\Exception\Request\RequestQueryArgumentMismatch;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 
@@ -28,14 +27,11 @@ final class QueryArgumentsTest extends BaseValidatorTest
             ->withUri(new Uri('/read'))
             ->withQueryParams([]);
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
-            $validator->validate($request);
-        } catch (MissedRequestQueryArgument $e) {
-            $this->assertEquals($addr->path(), $e->addr()->path());
-            $this->assertEquals($addr->method(), $e->addr()->method());
-            $this->assertEquals('limit', $e->queryArgumentName());
-        }
+        $this->expectException(InvalidQueryArgs::class);
+        $this->expectExceptionMessage('Missing required argument "limit" for Request [get /read]');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
+        $validator->validate($request);
     }
 
     public function testItValidatesRequestInvalidQueryArgumentsGreen() : void
@@ -45,12 +41,10 @@ final class QueryArgumentsTest extends BaseValidatorTest
             ->withUri(new Uri('/read?limit=wrong'))
             ->withQueryParams(['limit' => 'wronng', 'offset' => 0]);
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
-            $validator->validate($request);
-        } catch (RequestQueryArgumentMismatch $e) {
-            $this->assertEquals($addr->path(), $e->path());
-            $this->assertEquals($addr->method(), $e->method());
-        }
+        $this->expectException(InvalidQueryArgs::class);
+        $this->expectExceptionMessage('Value "wrong" for argument "limit" is invalid for Request [get /read]');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
+        $validator->validate($request);
     }
 }

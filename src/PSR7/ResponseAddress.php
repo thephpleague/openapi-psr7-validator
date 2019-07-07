@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7;
 
+use function sprintf;
+
 class ResponseAddress extends OperationAddress
 {
     /** @var int */
@@ -18,5 +20,10 @@ class ResponseAddress extends OperationAddress
     public function responseCode() : int
     {
         return $this->responseCode;
+    }
+
+    public function __toString() : string
+    {
+        return sprintf('Response [%s %s %d]', $this->method, $this->path, $this->responseCode);
     }
 }

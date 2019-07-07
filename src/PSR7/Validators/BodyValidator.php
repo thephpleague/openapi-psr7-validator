@@ -4,33 +4,47 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators;
 
-use cebe\openapi\spec\MediaType as MediaTypeSpec;
-use OpenAPIValidation\PSR7\Exception\NoContentType;
-use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
+use OpenAPIValidation\PSR7\MessageValidator;
+use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
+use const JSON_ERROR_NONE;
 use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
 use function preg_match;
 use function strtok;
 
-class BodyValidator
+final class BodyValidator implements MessageValidator
 {
+    private const HEADER_CONTENT_TYPE = 'Content-Type';
     use ValidationStrategy;
 
-    /**
-     * @param MediaTypeSpec[] $mediaTypeSpecs
-     *
-     * @throws ValidationFailed
-     * @throws SchemaMismatch
-     */
-    public function validate(MessageInterface $message, array $mediaTypeSpecs) : void
+    /** @var SpecFinder */
+    private $finder;
+
+    public function __construct(SpecFinder $finder)
     {
-        $contentTypes = $message->getHeader('Content-Type');
+        $this->finder = $finder;
+    }
+
+    /** {@inheritdoc} */
+    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    {
+        $mediaTypeSpecs = $this->finder->findBodySpec($addr);
+
+        if (empty($mediaTypeSpecs)) {
+            // edge case: if "content" keyword is not set (body can be anything as no expectations set)
+            return;
+        }
+
+        $contentTypes = $message->getHeader(self::HEADER_CONTENT_TYPE);
         if (! $contentTypes) {
-            throw new NoContentType();
+            throw InvalidHeaders::becauseOfMissingRequiredHeader(self::HEADER_CONTENT_TYPE, $addr);
         }
         $contentType = $contentTypes[0]; // use the first value
 
@@ -42,7 +56,7 @@ class BodyValidator
 
         // does the response contain one of described media types?
         if (! isset($mediaTypeSpecs[$contentType])) {
-            throw new ValidationFailed($contentType, 100);
+            throw InvalidBody::becauseContentTypeIsNotExpected($contentType, $addr);
         }
 
         // ok looks good, now apply validation
@@ -50,12 +64,16 @@ class BodyValidator
 
         if (preg_match('#^application/.*json$#', $contentType)) {
             $body = json_decode($body, true);
-            if (json_last_error()) {
-                throw new ValidationFailed('Unable to decode JSON body content: ' . json_last_error_msg());
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw InvalidBody::becauseBodyIsNotValidJson(json_last_error_msg(), $addr);
             }
         }
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
-        $validator->validate($body, $mediaTypeSpecs[$contentType]->schema);
+        try {
+            $validator->validate($body, $mediaTypeSpecs[$contentType]->schema);
+        } catch (SchemaMismatch $e) {
+            throw InvalidBody::becauseBodyDoesNotMatchSchema($contentType, $addr, $e);
+        }
     }
 }

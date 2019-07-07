@@ -4,51 +4,59 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators;
 
-use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidSecurity;
 use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\PSR7\MessageValidator;
+use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\PSR7\SpecFinder;
+use OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use function count;
 use function preg_match;
 use function sprintf;
 
-class SecurityValidator
+final class SecurityValidator implements MessageValidator
 {
-    /** @var SecurityScheme[] */
-    protected $securitySchemes;
+    private const HEADER_AUTHORIZATION = 'Authorization';
+    private const AUTH_PATTERN_BASIC   = '#^Basic #';
+    private const AUTH_PATTERN_BEARER  = '#^Bearer #';
 
-    /**
-     * @param SecurityRequirement[] $securitySpecs
-     * @param SecurityScheme[]      $securitySchemesSpec
-     *
-     * @throws ValidationFailed
-     */
-    public function validate(MessageInterface $message, array $securitySpecs, array $securitySchemesSpec) : void
+    /** @var SpecFinder */
+    private $finder;
+
+    public function __construct(SpecFinder $finder)
+    {
+        $this->finder = $finder;
+    }
+
+    /** {@inheritdoc} */
+    public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
         // Note: Security schemes support OR/AND union
         // That is, security is an array of hashmaps, where each hashmap contains one or more named security schemes.
         // Items in a hashmap are combined using logical AND, and array items are combined using logical OR.
         // Security schemes combined via OR are alternatives – any one can be used in the given context.
         // Security schemes combined via AND must be used simultaneously in the same request.
-
-        $this->securitySchemes = $securitySchemesSpec;
-
-        if ($message instanceof ServerRequestInterface) {
-            $this->validateServerRequest($message, $securitySpecs);
+        if (! ($message instanceof ServerRequestInterface)) {
+            return;
         }
 
-        // TODO should implement validation for Request classes
+        $this->validateServerRequest($addr, $message);
     }
 
     /**
-     * @param Parameter[] $securitySpecs
-     *
      * @throws ValidationFailed
      */
-    private function validateServerRequest(ServerRequestInterface $request, array $securitySpecs) : void
+    private function validateServerRequest(OperationAddress $addr, ServerRequestInterface $request) : void
     {
+        $securitySpecs = $this->finder->findSecuritySpecs($addr);
+
         if (! count($securitySpecs)) {
             // no auth needed
             return;
@@ -57,79 +65,89 @@ class SecurityValidator
         // OR-union: any of security schemes can match
         foreach ($securitySpecs as $spec) {
             try {
-                $this->validateSecurityScheme($request, $spec);
+                $this->validateSecurityScheme($addr, $request, $spec);
 
-                return; // this sucurity schema matched, request is valid, stop here
+                return; // this security schema matched, request is valid, stop here
             } catch (ValidationFailed $e) {
                 // that security schema did not match
             }
         }
 
         // no schema matched, that is bad
-        throw new ValidationFailed('No security schema matched', 600);
+        throw InvalidSecurity::becauseRequestDidNotMatchAnySchema($addr);
     }
 
     /**
-     * @throws ValidationFailed
+     * @throws InvalidSecurity
      */
-    private function validateSecurityScheme(ServerRequestInterface $request, SecurityRequirement $spec) : void
-    {
+    private function validateSecurityScheme(
+        OperationAddress $addr,
+        ServerRequestInterface $request,
+        SecurityRequirement $spec
+    ) : void {
         // Here I implement AND-union
         // Each SecurityRequirement contains 1+ security [schema_name=>scopes]
         // Scopes are not used for the purpose of validation
 
-        $shouldMatchSchemesCount = count((array) $spec->getSerializableData());
-
-        foreach ($spec->getSerializableData() as $securityScheme => $scopes) {
-            if (! isset($this->securitySchemes[$securityScheme])) {
-                throw new ValidationFailed(sprintf("Mentioned security scheme '%s' not found in OAS spec", $securityScheme));
+        $securitySchemesSpecs = $this->finder->findSecuritySchemesSpecs();
+        foreach ($spec->getSerializableData() as $securitySchemeName => $scopes) {
+            if (! isset($securitySchemesSpecs[$securitySchemeName])) {
+                throw new InvalidSchema(
+                    sprintf("Mentioned security scheme '%s' not found in OAS spec", $securitySchemeName)
+                );
             }
-            $securityScheme = $this->securitySchemes[$securityScheme];
+            $securityScheme = $securitySchemesSpecs[$securitySchemeName];
 
-            switch ($securityScheme->type) {
-                case 'http':
-                    $this->validateHTTPSecurityScheme($request, $securityScheme);
-                    break;
-                case 'apiKey':
-                    $this->validateApiKeySecurityScheme($request, $securityScheme);
-                    break;
+            try {
+                switch ($securityScheme->type) {
+                    case 'http':
+                        $this->validateHTTPSecurityScheme($addr, $request, $securityScheme);
+                        break;
+                    case 'apiKey':
+                        $this->validateApiKeySecurityScheme($addr, $request, $securityScheme);
+                        break;
+                }
+            } catch (ValidationFailed $exception) {
+                throw InvalidSecurity::becauseRequestDidNotMatchSchema($securitySchemeName, $addr, $exception);
             }
-
-            // security query argument exists, good
-            $shouldMatchSchemesCount--;
-        }
-
-        // Check that all AND-united security schemes matched
-        if ($shouldMatchSchemesCount) {
-            throw new ValidationFailed('Request did not match all of given security schemes');
         }
     }
-
 
     /**
      * @throws ValidationFailed
      */
-    private function validateHTTPSecurityScheme(ServerRequestInterface $request, SecurityScheme $securityScheme) : void
-    {
+    private function validateHTTPSecurityScheme(
+        OperationAddress $addr,
+        ServerRequestInterface $request,
+        SecurityScheme $securityScheme
+    ) : void {
         // Supported schemas: https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
 
         // Token should be passed in TLS session, in header: `Authorization:....`
-        if (! $request->hasHeader('Authorization')) {
-            throw new ValidationFailed('', 611);
+        if (! $request->hasHeader(self::HEADER_AUTHORIZATION)) {
+            throw InvalidHeaders::becauseOfMissingRequiredHeader(self::HEADER_AUTHORIZATION, $addr);
         }
 
         switch ($securityScheme->scheme) {
             case 'basic':
                 // Described in https://tools.ietf.org/html/rfc7617
-                if (! preg_match('#^Basic #', $request->getHeader('Authorization')[0])) {
-                    throw new ValidationFailed('', 612);
+                if (! preg_match(self::AUTH_PATTERN_BASIC, $request->getHeader(self::HEADER_AUTHORIZATION)[0])) {
+                    throw InvalidSecurity::becauseAuthHeaderValueDoesNotMatchExpectedPattern(
+                        self::HEADER_AUTHORIZATION,
+                        self::AUTH_PATTERN_BASIC,
+                        $addr
+                    );
                 }
 
                 break;
             case 'bearer':
                 // Described in https://tools.ietf.org/html/rfc6750
-                if (! preg_match('#^Bearer #', $request->getHeader('Authorization')[0])) {
-                    throw new ValidationFailed('', 612);
+                if (! preg_match(self::AUTH_PATTERN_BEARER, $request->getHeader(self::HEADER_AUTHORIZATION)[0])) {
+                    throw InvalidSecurity::becauseAuthHeaderValueDoesNotMatchExpectedPattern(
+                        self::HEADER_AUTHORIZATION,
+                        self::AUTH_PATTERN_BEARER,
+                        $addr
+                    );
                 }
 
                 break;
@@ -139,22 +157,25 @@ class SecurityValidator
     /**
      * @throws ValidationFailed
      */
-    private function validateApiKeySecurityScheme(ServerRequestInterface $request, SecurityScheme $securityScheme) : void
-    {
+    private function validateApiKeySecurityScheme(
+        OperationAddress $addr,
+        ServerRequestInterface $request,
+        SecurityScheme $securityScheme
+    ) : void {
         switch ($securityScheme->in) {
             case 'query':
                 if (! isset($request->getQueryParams()[$securityScheme->name])) {
-                    throw new ValidationFailed(sprintf("Absent query argument '%s'", $securityScheme->name), 601);
+                    throw InvalidQueryArgs::becauseOfMissingRequiredArgument($securityScheme->name, $addr);
                 }
                 break;
             case 'header':
                 if (! $request->hasHeader($securityScheme->name)) {
-                    throw new ValidationFailed(sprintf("Absent header '%s'", $securityScheme->name), 601);
+                    throw InvalidHeaders::becauseOfMissingRequiredHeader($securityScheme->name, $addr);
                 }
                 break;
             case 'cookie':
                 if (! isset($request->getCookieParams()[$securityScheme->name])) {
-                    throw new ValidationFailed(sprintf("Absent cookie '%s'", $securityScheme->name), 601);
+                    throw InvalidCookies::becauseOfMissingRequiredCookie($securityScheme->name, $addr);
                 }
                 break;
         }

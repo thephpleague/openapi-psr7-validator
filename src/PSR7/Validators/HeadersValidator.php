@@ -4,43 +4,46 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators;
 
-use cebe\openapi\spec\Header as HeaderSpec;
 use GuzzleHttp\Psr7\Response;
-use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
+use OpenAPIValidation\PSR7\MessageValidator;
+use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 
-class HeadersValidator
+final class HeadersValidator implements MessageValidator
 {
     use ValidationStrategy;
 
-    /**
-     * @param HeaderSpec[] $headerSpecs
-     *
-     * @throws ValidationFailed
-     * @throws SchemaMismatch
-     */
-    public function validate(MessageInterface $message, array $headerSpecs) : void
+    /** @var SpecFinder */
+    private $finder;
+
+    public function __construct(SpecFinder $finder)
     {
+        $this->finder = $finder;
+    }
+
+    /** {@inheritdoc} */
+    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    {
+        $headerSpecs = $this->finder->findHeaderSpecs($addr);
+
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
 
         // Check if message misses required headers
         foreach ($headerSpecs as $header => $spec) {
-            if ($message instanceof Response) {
-                // Responses headers are mandatory (it supports no 'required' keyword)
-                if (! $message->hasHeader($header)) {
-                    throw new ValidationFailed($header, 201);
-                }
-            } else {
-                // request parameters can be optional ('required' keyword is supported)
-                if (! $message->hasHeader($header) && $spec->required) {
-                    throw new ValidationFailed($header, 201);
-                }
+            if (($message instanceof Response || $spec->required) && ! $message->hasHeader($header)) {
+                throw InvalidHeaders::becauseOfMissingRequiredHeader($header, $addr);
             }
 
             foreach ($message->getHeader($header) as $headerValue) {
-                $validator->validate($headerValue, $spec->schema);
+                try {
+                    $validator->validate($headerValue, $spec->schema);
+                } catch (SchemaMismatch $exception) {
+                    throw InvalidHeaders::becauseValueDoesNotMatchSchema($header, $headerValue, $addr);
+                }
             }
         }
     }
