@@ -22,11 +22,6 @@ class OperationAddress extends PathAddress
         return $this->method;
     }
 
-    public function getOperationAddress() : self
-    {
-        return new self($this->path, $this->method);
-    }
-
     public function __toString() : string
     {
         return sprintf('Request [%s %s]', $this->method, $this->path);

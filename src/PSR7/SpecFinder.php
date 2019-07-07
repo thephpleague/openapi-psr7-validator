@@ -188,7 +188,7 @@ final class SpecFinder
      */
     public function findResponseSpec(ResponseAddress $addr) : ResponseSpec
     {
-        $operation = $this->findOperationSpec($addr->getOperationAddress());
+        $operation = $this->findOperationSpec($addr);
 
         $response = $operation->responses->getResponse($addr->responseCode());
 
