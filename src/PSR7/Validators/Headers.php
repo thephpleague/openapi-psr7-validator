@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use RuntimeException;
+use function count;
 
 class Headers
 {
@@ -23,7 +24,7 @@ class Headers
         // TODO, maybe this can be enabled later and controlled by custom options
         // in such case throw new \RuntimeException($header, 200);
 
-        if (count($headerSpecs) == 0) {
+        if (count($headerSpecs) === 0) {
             return;
         }
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
