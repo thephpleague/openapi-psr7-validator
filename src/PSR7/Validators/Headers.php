@@ -9,7 +9,6 @@ use GuzzleHttp\Psr7\Response;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use RuntimeException;
-use function count;
 
 class Headers
 {
@@ -20,14 +19,8 @@ class Headers
      */
     public function validate(MessageInterface $message, array $headerSpecs) : void
     {
-        // By default this will not report unexpected headers (soft validation)
-        // TODO, maybe this can be enabled later and controlled by custom options
-        // in such case throw new \RuntimeException($header, 200);
-
-        if (count($headerSpecs) === 0) {
-            return;
-        }
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
+
         // Check if message misses required headers
         foreach ($headerSpecs as $header => $spec) {
             if ($message instanceof Response) {
