@@ -139,7 +139,7 @@ class Security
                 }
                 break;
             case 'header':
-                if (! count($request->getHeaders()[$securityScheme->name])) {
+                if (! $request->hasHeader($securityScheme->name)) {
                     throw new Exception(sprintf("Absent header '%s'", $securityScheme->name), 601);
                 }
                 break;
