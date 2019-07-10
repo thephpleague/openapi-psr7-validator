@@ -78,6 +78,7 @@ class PathFinder
 
                 // path matched!
                 $paths[] = $opCandidate['addr'];
+                break;
             }
         }
 
