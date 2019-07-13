@@ -214,13 +214,14 @@ final class SpecFinder
      */
     public function findHeaderSpecs(OperationAddress $addr) : array
     {
+        // Response headers are specified differently from request headers
         if ($addr instanceof ResponseAddress) {
             return $this->findResponseSpec($addr)->headers;
         }
 
         $spec = $this->findOperationSpec($addr);
 
-        // 1. Validate Headers
+        // 1. Collect operation level headers from "parameters" keyword
         // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
         $headerSpecs = [];
         foreach ($spec->parameters as $p) {
@@ -237,7 +238,8 @@ final class SpecFinder
             }
         }
 
-        // 2. Collect path-level params
+        // 2. Collect path-level headers from "parameters" keyword
+        // Path level params are fall-backs
         $pathSpec = $this->findPathSpec($addr);
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'header') {

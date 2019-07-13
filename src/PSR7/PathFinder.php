@@ -137,10 +137,12 @@ class PathFinder
             return $operation->servers;
         }
 
+        // 2. Check servers on path level
         if (array_key_exists('servers', (array) $path->getSerializableData())) {
             return $path->servers;
         }
 
+        // 3. Check servers on root level
         if (array_key_exists('servers', (array) $this->openApiSpec->getSerializableData())) {
             return $this->openApiSpec->servers;
         }
