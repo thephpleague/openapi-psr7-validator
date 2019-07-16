@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7;
 
 use GuzzleHttp\Psr7\Response;
-use OpenAPIValidation\PSR7\Exception\Response\MissedResponseHeader;
-use OpenAPIValidation\PSR7\Exception\Response\ResponseBodyMismatch;
-use OpenAPIValidation\PSR7\Exception\Response\ResponseHeadersMismatch;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use function GuzzleHttp\Psr7\stream_for;
@@ -41,15 +40,13 @@ final class ValidateResponseTest extends BaseValidatorTest
         $body     = [];
         $response = $this->makeGoodResponse('/path1', 'get')->withBody(stream_for(json_encode($body)));
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
-            $validator->validate($addr, $response);
-            $this->fail('Exception expected');
-        } catch (ResponseBodyMismatch $e) {
-            $this->assertEquals($addr->path(), $e->path());
-            $this->assertEquals($addr->method(), $e->method());
-            $this->assertEquals($response->getStatusCode(), $e->responseCode());
-        }
+        $this->expectException(InvalidBody::class);
+        $this->expectExceptionMessage(
+            'Body does not match schema for content-type "application/json" for Response [get /path1 200]'
+        );
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
+        $validator->validate($addr, $response);
     }
 
     public function testItValidatesMessageWrongHeaderValueRed() : void
@@ -58,15 +55,13 @@ final class ValidateResponseTest extends BaseValidatorTest
 
         $response = $this->makeGoodResponse('/path1', 'get')->withHeader('Header-B', 'wrong value');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
-            $validator->validate($addr, $response);
-            $this->fail('Exception expected');
-        } catch (ResponseHeadersMismatch $e) {
-            $this->assertEquals($addr->path(), $e->path());
-            $this->assertEquals($addr->method(), $e->method());
-            $this->assertEquals($response->getStatusCode(), $e->responseCode());
-        }
+        $this->expectException(InvalidHeaders::class);
+        $this->expectExceptionMessage(
+            'Value "wrong value" for header "Header-B" is invalid for Response [get /path1 200]'
+        );
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
+        $validator->validate($addr, $response);
     }
 
     public function testItValidatesMessageMissesHeaderRed() : void
@@ -75,16 +70,11 @@ final class ValidateResponseTest extends BaseValidatorTest
 
         $response = $this->makeGoodResponse('/path1', 'get')->withoutHeader('Header-B');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
-            $validator->validate($addr, $response);
-            $this->fail('Exception expected');
-        } catch (MissedResponseHeader $e) {
-            $this->assertEquals('Header-B', $e->headerName());
-            $this->assertEquals($addr->path(), $e->addr()->path());
-            $this->assertEquals($addr->method(), $e->addr()->method());
-            $this->assertEquals($response->getStatusCode(), $e->addr()->responseCode());
-        }
+        $this->expectException(InvalidHeaders::class);
+        $this->expectExceptionMessage('Missing required header "Header-B" for Response [get /path1 200]');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
+        $validator->validate($addr, $response);
     }
 
     public function testItValidatesEmptyBodyResponseGreen() : void

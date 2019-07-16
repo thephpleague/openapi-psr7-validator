@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7;
 
-use OpenAPIValidation\PSR7\Exception\Request\MissedRequestHeader;
-use OpenAPIValidation\PSR7\Exception\Request\RequestBodyMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\RequestHeadersMismatch;
-use OpenAPIValidation\PSR7\Exception\Request\UnexpectedRequestContentType;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use function GuzzleHttp\Psr7\stream_for;
@@ -42,13 +40,13 @@ final class ServerRequestTest extends BaseValidatorTest
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
             ->withBody(stream_for(json_encode($body)));
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
-            $validator->validate($request);
-        } catch (RequestBodyMismatch $e) {
-            $this->assertEquals($addr->path(), $e->path());
-            $this->assertEquals($addr->method(), $e->method());
-        }
+        $this->expectException(InvalidBody::class);
+        $this->expectExceptionMessage(
+            'Body does not match schema for content-type "application/json" for Request [post /request-body]'
+        );
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
+        $validator->validate($request);
     }
 
     public function testItValidatesBodyHasUnexpectedTypeRed() : void
@@ -58,14 +56,13 @@ final class ServerRequestTest extends BaseValidatorTest
             ->withoutHeader('Content-Type')
             ->withHeader('Content-Type', 'unexpected/content');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
-            $validator->validate($request);
-        } catch (UnexpectedRequestContentType $e) {
-            $this->assertEquals('unexpected/content', $e->contentType());
-            $this->assertEquals($addr->path(), $e->addr()->path());
-            $this->assertEquals($addr->method(), $e->addr()->method());
-        }
+        $this->expectException(InvalidHeaders::class);
+        $this->expectExceptionMessage(
+            'Content-Type "unexpected/content" is not expected for Request [post /request-body]'
+        );
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
+        $validator->validate($request);
     }
 
     public function testItValidatesMessageWrongHeaderValueRed() : void
@@ -73,14 +70,11 @@ final class ServerRequestTest extends BaseValidatorTest
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
-            $validator->validate($request);
-            $this->fail('Exception expected');
-        } catch (RequestHeadersMismatch $e) {
-            $this->assertEquals($addr->path(), $e->path());
-            $this->assertEquals($addr->method(), $e->method());
-        }
+        $this->expectException(InvalidHeaders::class);
+        $this->expectExceptionMessage('Value "wrong value" for header "Header-A" is invalid for Request [get /path1]');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
+        $validator->validate($request);
     }
 
     public function testItValidatesMessageMissedHeaderRed() : void
@@ -88,14 +82,10 @@ final class ServerRequestTest extends BaseValidatorTest
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
-            $validator->validate($request);
-            $this->fail('Exception expected');
-        } catch (MissedRequestHeader $e) {
-            $this->assertEquals('Header-A', $e->headerName());
-            $this->assertEquals($addr->path(), $e->addr()->path());
-            $this->assertEquals($addr->method(), $e->addr()->method());
-        }
+        $this->expectException(InvalidHeaders::class);
+        $this->expectExceptionMessage('Missing required header "Header-A" for Request [get /path1]');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
+        $validator->validate($request);
     }
 }

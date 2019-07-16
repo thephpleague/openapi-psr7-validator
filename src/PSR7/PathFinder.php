@@ -72,7 +72,7 @@ class PathFinder
 
                 // 3.1 Compare this path against the real/given path
                 $searchPath = (string) parse_url((string) $this->uri, PHP_URL_PATH);
-                if (! PathAddress::isPathMatchesSpec($candidatePath, $searchPath)) {
+                if (! OperationAddress::isPathMatchesSpec($candidatePath, $searchPath)) {
                     continue;
                 }
 
@@ -137,10 +137,12 @@ class PathFinder
             return $operation->servers;
         }
 
+        // 2. Check servers on path level
         if (array_key_exists('servers', (array) $path->getSerializableData())) {
             return $path->servers;
         }
 
+        // 3. Check servers on root level
         if (array_key_exists('servers', (array) $this->openApiSpec->getSerializableData())) {
             return $this->openApiSpec->servers;
         }

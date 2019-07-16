@@ -250,27 +250,17 @@ The package throws a list of various exceptions which you can catch and handle. 
     - `\OpenAPIValidation\PSR7\Exception\NoPath` - path is not found in the spec
     - `\OpenAPIValidation\PSR7\Exception\NoOperation` - operation os not found in the path
     - `\OpenAPIValidation\PSR7\Exception\NoResponseCode` - response code not found under the operation in the spec
+    - Validation exceptions (check parent exception for possible root causes):
+        - `\OpenAPIValidation\PSR7\Exception\ValidationFailed` - generic exception for failed PSR-7 message
+        - `\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody` - body does not match schema
+        - `\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies` - cookies does not match schema or missing required cookie
+        - `\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders` - header does not match schema or missing required header
+        - `\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath` - path does not match pattern or pattern values does not match schema
+        - `\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs` - query args does not match schema or missing required argument
+        - `\OpenAPIValidation\PSR7\Exception\Validation\InvalidSecurity` - request does not match security schema or invalid security headers
     - Request related:
-        - `\OpenAPIValidation\PSR7\Exception
-        \MultipleOperationsMismatchForRequest` - request matched multiple operations in the spec, but validation failed for all of them.
-        - `\OpenAPIValidation\PSR7\Exception\MissedRequestCookie` - Request does not contain expected cookie
-        - `\OpenAPIValidation\PSR7\Exception\MissedRequestHeader` - Request does not contain expected header
-        - `\OpenAPIValidation\PSR7\Exception\MissedRequestQueryArgument` - Request does not have expected query argument
-        - `\OpenAPIValidation\PSR7\Exception\RequestBodyMismatch` - request's body does not match the specification schema
-        - `\OpenAPIValidation\PSR7\Exception\RequestCookiesMismatch` - request's cookie does not match the specification schema
-        - `\OpenAPIValidation\PSR7\Exception\RequestHeadersMismatch` - request's headers do not match spec schema
-        - `\OpenAPIValidation\PSR7\Exception\RequestPathParameterMismatch` - request's path does not match spec's path template
-        - `\OpenAPIValidation\PSR7\Exception\RequestQueryArgumentMismatch` -  request's query arguments does not match the spec schema
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestContentType` -  request's body content type is unexpected
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedRequestHeader` -  request carries unexpected header
-        - `\OpenAPIValidation\PSR7\Exception\Request\Security\NoRequestSecurityApiKey` - described security apiKey not found in the request
-        - `\OpenAPIValidation\PSR7\Exception\Request\Security\RequestSecurityMismatch` - request does not match with the described security requirements  
-    - Response related:
-        - `\OpenAPIValidation\PSR7\Exception\MissedResponseHeader` - response does not have a header
-        - `\OpenAPIValidation\PSR7\Exception\ResponseBodyMismatch` - response body does not match a schema
-        - `\OpenAPIValidation\PSR7\Exception\ResponseHeadersMismatch` - response headers do not match the spec
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseHeader` - response contains header not mentioned in the spec
-        - `\OpenAPIValidation\PSR7\Exception\UnexpectedResponseContentType` - response contains unexpected content-type
+        - `\OpenAPIValidation\PSR7\Exception\MultipleOperationsMismatchForRequest` - request matched multiple operations in the spec, 
+        but validation failed for all of them.
 
 ## Testing
 You can run the tests with:

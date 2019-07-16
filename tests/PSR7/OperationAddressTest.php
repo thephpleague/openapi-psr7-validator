@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7;
 
-use OpenAPIValidation\PSR7\PathAddress;
+use OpenAPIValidation\PSR7\OperationAddress;
 use PHPUnit\Framework\TestCase;
 
-final class PathAddressTest extends TestCase
+final class OperationAddressTest extends TestCase
 {
     /**
      * @return mixed[][]
@@ -30,9 +30,11 @@ final class PathAddressTest extends TestCase
      */
     public function testItParsesParams(string $spec, string $url, array $result) : void
     {
-        $parsed = PathAddress::parseParams($spec, $url);
+        $addr = new OperationAddress($spec, 'post');
 
-        $this->assertTrue($result === $parsed);
+        $parsed = $addr->parseParams($url);
+
+        $this->assertSame($result, $parsed);
     }
 
     /**
@@ -59,6 +61,6 @@ final class PathAddressTest extends TestCase
      */
     public function testItMatchesPathAgainstSpec(string $spec, string $path, bool $result) : void
     {
-        $this->assertEquals($result, PathAddress::isPathMatchesSpec($spec, $path));
+        $this->assertEquals($result, OperationAddress::isPathMatchesSpec($spec, $path));
     }
 }

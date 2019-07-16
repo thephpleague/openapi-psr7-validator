@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use OpenAPIValidation\PSR7\Exception\Request\RequestPathParameterMismatch;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -26,14 +26,11 @@ final class PathParametersTest extends TestCase
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/wrong');
 
-        try {
-            $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
-            $validator->validate($request);
-        } catch (RequestPathParameterMismatch $e) {
-            $this->assertEquals('/users/wrong', $e->actualPath());
-            $this->assertEquals('/users/{group}', $e->path());
-            $this->assertEquals('get', $e->method());
-        }
+        $this->expectException(InvalidPath::class);
+        $this->expectExceptionMessage('Value "wrong" for parameter "group" is invalid for Request [get /users/{group}]');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
     }
 
     public function testItAllowsOptionalParametersGreen() : void
