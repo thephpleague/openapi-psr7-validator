@@ -18,7 +18,7 @@ class UnexpectedRequestContentType extends RuntimeException
     public static function fromAddr(string $contentType, OperationAddress $address) : self
     {
         $i = new self(
-            sprintf('Response body at [%s,%s] has Content-Type %s, which is not found in the spec', $address->path(), $address->method(), $contentType)
+            sprintf('Request body at [%s,%s] has Content-Type %s, which is not found in the spec', $address->path(), $address->method(), $contentType)
         );
 
         $i->contentType = $contentType;

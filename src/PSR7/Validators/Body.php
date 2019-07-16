@@ -14,6 +14,7 @@ use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
 use function preg_match;
+use function strtok;
 
 class Body
 {
@@ -31,6 +32,12 @@ class Body
             throw new NoContentType();
         }
         $contentType = $contentTypes[0]; // use the first value
+
+        // As per https://tools.ietf.org/html/rfc7231#section-3.1.1.5 and https://tools.ietf.org/html/rfc7231#section-3.1.1.1
+        // ContentType can contain multiple statements (type/subtype + parameters), ie: 'multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__'
+        // OpenAPI Spec only defines the first part of the header value (type/subtype)
+        // Other parameters SHOULD be skipped
+        $contentType = strtok($contentType, ';');
 
         // does the response contain one of described media types?
         if (! isset($mediaTypeSpecs[$contentType])) {
