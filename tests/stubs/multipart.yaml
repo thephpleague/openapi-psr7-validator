@@ -1,0 +1,98 @@
+openapi: 3.0.2
+info:
+  title: Multipart API
+  version: 0.0.1
+  contact:
+    name: Dmitry Lezhnev
+    url: https://github.com/lezhnev74/openapi-psr7-validator
+    email: lezhnev.work@gmail.com
+paths:
+  /multipart:
+    post:
+      summary: Post multipart body
+      operationId: post-multipart-body
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:            # Part 1 (string value)
+                  type: string
+                  format: uuid
+                address:       # Part2 (object)
+                  type: object
+                  properties:
+                    street:
+                      type: string
+                    city:
+                      type: string
+                profileImage:  # Part 3 (an image)
+                  type: string
+                  format: binary
+
+      responses:
+        204:
+          description: good post
+  /multipart/files:
+    post:
+      summary: Post multipart body with extra properties not defined by schema
+      operationId: post-multipart-body
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+
+      responses:
+        204:
+          description: good post
+  /multipart/encoding:
+    post:
+      summary: Post multipart body with extra properties not defined by schema
+      operationId: post-multipart-body
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+            encoding:
+              image:
+                contentType: specific/type
+      responses:
+        204:
+          description: good post
+  /multipart/headers:
+    post:
+      summary: Post multipart body with extra properties not defined by schema
+      operationId: post-multipart-body
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+            encoding:
+              image:
+                contentType: specific/type
+                headers:
+                  X-Custom-Header:
+                    description: This is a custom header
+                    schema:
+                      type: string
+      responses:
+        204:
+          description: good post

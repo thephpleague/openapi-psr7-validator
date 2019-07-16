@@ -21,6 +21,23 @@ class InvalidBody extends AddressValidationFailed
         return $exception;
     }
 
+    public static function becauseBodyPartDoesNotMatchSchema(
+        string $partName,
+        string $contentType,
+        OperationAddress $addr,
+        ?SchemaMismatch $prev = null
+    ) : self {
+        $exception          = static::fromAddrAndPrev($addr, $prev);
+        $exception->message = sprintf(
+            'Multipart body does not match schema for part %s with content-type "%s" for %s',
+            $partName,
+            $contentType,
+            $addr
+        );
+
+        return $exception;
+    }
+
     public static function becauseBodyIsNotValidJson(string $error, OperationAddress $addr) : self
     {
         $exception          = static::fromAddr($addr);

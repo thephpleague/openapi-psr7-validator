@@ -126,7 +126,7 @@ final class SchemaValidator implements Validator
             }
 
             if (isset($schema->properties) && count($schema->properties)) {
-                $additionalProperties = $schema->additionalProperties ?? null;
+                $additionalProperties = $schema->additionalProperties ?? null; // defaults to true
                 (new Properties($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->properties, $additionalProperties);
             }
 
