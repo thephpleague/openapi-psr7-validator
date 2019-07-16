@@ -9,7 +9,7 @@ use OpenAPIValidation\PSR7\OperationAddress;
 use Throwable;
 use function sprintf;
 
-class AddressValidationFailed extends ValidationFailed
+abstract class AddressValidationFailed extends ValidationFailed
 {
     /** @var OperationAddress */
     private $address;

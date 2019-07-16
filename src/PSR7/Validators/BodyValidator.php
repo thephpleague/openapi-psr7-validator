@@ -56,7 +56,7 @@ final class BodyValidator implements MessageValidator
 
         // does the response contain one of described media types?
         if (! isset($mediaTypeSpecs[$contentType])) {
-            throw InvalidBody::becauseContentTypeIsNotExpected($contentType, $addr);
+            throw InvalidHeaders::becauseContentTypeIsNotExpected($contentType, $addr);
         }
 
         // ok looks good, now apply validation

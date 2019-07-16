@@ -28,12 +28,4 @@ class InvalidBody extends AddressValidationFailed
 
         return $exception;
     }
-
-    public static function becauseContentTypeIsNotExpected(string $contentType, OperationAddress $addr) : self
-    {
-        $exception          = static::fromAddr($addr);
-        $exception->message = sprintf('Content-Type "%s" is not expected for %s', $contentType, $addr);
-
-        return $exception;
-    }
 }

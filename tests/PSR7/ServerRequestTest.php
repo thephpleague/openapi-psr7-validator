@@ -56,7 +56,7 @@ final class ServerRequestTest extends BaseValidatorTest
             ->withoutHeader('Content-Type')
             ->withHeader('Content-Type', 'unexpected/content');
 
-        $this->expectException(InvalidBody::class);
+        $this->expectException(InvalidHeaders::class);
         $this->expectExceptionMessage(
             'Content-Type "unexpected/content" is not expected for Request [post /request-body]'
         );
