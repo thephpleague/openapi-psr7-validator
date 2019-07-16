@@ -112,6 +112,16 @@ class ValidatorBuilder
         return new ServerRequestValidator($schema);
     }
 
+    public function getResponseValidator() : ResponseValidator
+    {
+        return new ResponseValidator($this->getOrCreateSchema());
+    }
+
+    public function getRoutedRequestValidator() : RoutedServerRequestValidator
+    {
+        return new RoutedServerRequestValidator($this->getOrCreateSchema());
+    }
+
     protected function getOrCreateSchema() : OpenApi
     {
         // Make cache dependency optional for end user
@@ -150,10 +160,5 @@ class ValidatorBuilder
         }
 
         return $this->factory->getCacheKey();
-    }
-
-    public function getResponseValidator() : ResponseValidator
-    {
-        return new ResponseValidator($this->getOrCreateSchema());
     }
 }

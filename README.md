@@ -51,8 +51,22 @@ $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonF
 $schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
 $validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($schema)->getServerRequestValidator();
 
-$validator->validate($request);
+$match = $validator->validate($request);
 ```
+
+As a result you would get and `OperationAddress $match` which has matched the given request. If you already know
+the operation which should match your request (i.e you have routing in your project), you can use 
+`RouterRequestValidator`
+
+```php
+$address = new \OpenAPIValidation\PSR7\OperationAddress('/some/operation', 'post');
+
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($schema)->getRoutedRequestValidator();
+
+$validator->validate($address, $request);
+```
+
+This would simplify validation a lot and give you more performance.
 
 ### Response Message
 Validation of `\Psr\Http\Message\ResponseInterface` is a bit more complicated
