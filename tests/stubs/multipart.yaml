@@ -36,8 +36,8 @@ paths:
           description: good post
   /multipart/files:
     post:
-      summary: Post multipart body with extra properties not defined by schema
-      operationId: post-multipart-body
+      summary: ---
+      operationId: post-multipart-files
       requestBody:
         content:
           multipart/form-data:
@@ -55,8 +55,8 @@ paths:
           description: good post
   /multipart/encoding:
     post:
-      summary: Post multipart body with extra properties not defined by schema
-      operationId: post-multipart-body
+      summary: ---
+      operationId: post-multipart-encoding
       requestBody:
         content:
           multipart/form-data:
@@ -72,10 +72,29 @@ paths:
       responses:
         204:
           description: good post
+  /multipart/encoding/wildcard:
+    post:
+      summary: Post multipart body with wildcard encoding of one part
+      operationId: post-multipart-encoding-wildcard
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+            encoding:
+              image:
+                contentType: image/*
+      responses:
+        204:
+          description: good post
   /multipart/headers:
     post:
-      summary: Post multipart body with extra properties not defined by schema
-      operationId: post-multipart-body
+      summary: ---
+      operationId: post-multipart-headers
       requestBody:
         content:
           multipart/form-data:

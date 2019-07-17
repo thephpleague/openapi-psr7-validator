@@ -6,8 +6,8 @@ namespace OpenAPIValidationTests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
-use OpenAPIValidation\Schema\Exception\FormatMismatch;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\parse_request;
 
@@ -107,6 +107,22 @@ X-Custom-Header: string value goes here
 HTTP
 ,
             ],
+            // specified headers for one part (wildcard)
+            [
+                <<<HTTP
+POST /multipart/encoding/wildcard HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="image"; filename="file1.txt"
+Content-Type: image/whatever
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
         ];
     }
 
@@ -166,7 +182,7 @@ HTTP
             // wrong header for one part
             [
                 <<<HTTP
-POST /multipart/encoding HTTP/1.1
+POST /multipart/headers HTTP/1.1
 Content-Length: 2740
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
 
@@ -179,7 +195,7 @@ X-Custom-Header-WRONG: string value goes here
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
 HTTP
 ,
-                FormatMismatch::class,
+                InvalidHeaders::class,
             ],
         ];
     }

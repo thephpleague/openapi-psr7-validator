@@ -21,7 +21,7 @@ class InvalidBody extends AddressValidationFailed
         return $exception;
     }
 
-    public static function becauseBodyPartDoesNotMatchSchema(
+    public static function becauseBodyDoesNotMatchSchemaMultipart(
         string $partName,
         string $contentType,
         OperationAddress $addr,
@@ -29,7 +29,7 @@ class InvalidBody extends AddressValidationFailed
     ) : self {
         $exception          = static::fromAddrAndPrev($addr, $prev);
         $exception->message = sprintf(
-            'Multipart body does not match schema for part %s with content-type "%s" for %s',
+            'Multipart body does not match schema for part "%s" with content-type "%s" for %s',
             $partName,
             $contentType,
             $addr

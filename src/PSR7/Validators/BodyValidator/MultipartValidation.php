@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators\BodyValidator;
 
+use cebe\openapi\spec\Encoding;
 use cebe\openapi\spec\Header;
 use cebe\openapi\spec\MediaType;
+use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Type as CebeType;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
@@ -17,11 +20,14 @@ use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
 use const JSON_ERROR_NONE;
+use function in_array;
 use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
 use function preg_match;
 use function sprintf;
+use function str_replace;
+use function strpos;
 
 /**
  * Should validate multipart/* body types
@@ -32,12 +38,11 @@ trait MultipartValidation
      * @see https://swagger.io/docs/specification/describing-request-body/multipart-requests/
      * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#requestBodyObject
      *
-     * The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded.
-     *
      * @param MediaType[] $mediaTypeSpecs
      */
     private function validateMultipart(OperationAddress $addr, MessageInterface $message, array $mediaTypeSpecs, string $contentType) : void
     {
+        /** @var Schema $schema */
         $schema = $mediaTypeSpecs[$contentType]->schema;
 
         // 0. Multipart body message MUST be described with a set of object properties
@@ -60,40 +65,60 @@ trait MultipartValidation
 
         // 3. Validate specified part encodings and headers
         // @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#encoding-object
+        // The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded.
         // An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies.
         // This attribute is only applicable to "multipart" and "application/x-www-form-urlencoded" request bodies.
         $encodings = $mediaTypeSpecs[$contentType]->encoding;
 
-        foreach ($encodings as $name => $encoding) {
-            $parts = $document->getPartsByName($name);
+        foreach ($encodings as $partName => $encoding) {
+            $parts = $document->getPartsByName($partName); // multiple parts share a name?
             if (! $parts) {
                 throw new RuntimeException(sprintf(
                     'Specified body part %s is not found',
-                    $name
+                    $partName
                 ));
             }
 
             foreach ($parts as $part) {
                 // 3.1 parts encoding
-                $partContentType = $part->getHeader(self::HEADER_CONTENT_TYPE);
-                if ($encoding->contentType !== $partContentType) {
-                    throw InvalidBody::becauseBodyPartDoesNotMatchSchema(
-                        $name,
-                        $partContentType,
-                        $addr
-                    );
+                $partContentType     = $part->getHeader(self::HEADER_CONTENT_TYPE);
+                $encodingContentType = $this->detectEncondingContentType($encoding, $part, $schema->properties[$partName]);
+                if (strpos($encodingContentType, '*') === false) {
+                    // strict comparison (ie "image/jpeg")
+                    if ($encodingContentType !== $partContentType) {
+                        throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
+                            $partName,
+                            $partContentType,
+                            $addr
+                        );
+                    }
+                } else {
+                    // loose comparison (ie "image/*")
+                    $encodingContentType = str_replace('*', '.*', $encodingContentType);
+                    if (! preg_match('#' . $encodingContentType . '#', $partContentType)) {
+                        throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
+                            $partName,
+                            $partContentType,
+                            $addr
+                        );
+                    }
                 }
 
                 // 3.2. parts headers
                 foreach ($encoding->headers as $headerName => $headerSpec) {
                     /** @var Header $headerSpec */
                     $headerSchema = $headerSpec->schema;
+                    $headerValue  = $part->getHeader($headerName);
+
+                    if ($headerValue === null) {
+                        throw InvalidHeaders::becauseOfMissingRequiredHeaderMupripart($partName, $headerName, $addr);
+                    }
 
                     $validator = new SchemaValidator($this->detectValidationStrategy($message));
                     try {
-                        $validator->validate($body, $schema);
+                        $validator->validate($headerValue, $headerSchema);
                     } catch (SchemaMismatch $e) {
-                        throw InvalidBody::becauseBodyDoesNotMatchSchema($contentType, $addr, $e);
+                        throw InvalidHeaders::becauseValueDoesNotMatchSchemaMultipart($partName, $headerName, $headerValue, $addr, $e);
                     }
                 }
             }
@@ -131,5 +156,32 @@ trait MultipartValidation
         }
 
         return $multipartData;
+    }
+
+    private function detectEncondingContentType(Encoding $encoding, StreamedPart $part, Schema $partSchema) : ?string
+    {
+        $contentType = $encoding->contentType;
+
+        if (! $contentType) {
+            // fallback strategy:
+            // @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#encoding-object
+            // @see https://swagger.io/docs/specification/describing-request-body/multipart-requests/
+            //
+            // Default value depends on the property type: for string with format being binary – application/octet-stream;
+            // for other primitive types – text/plain; for object - application/json; for array – the default is defined based on the inner type.
+            // The value can be a specific media type (e.g. application/json), a wildcard media type (e.g. image/*),
+            // or a comma-separated list of the two types.
+            if ($partSchema->type === 'string') {
+                if (in_array($partSchema->format, ['binary', 'base64'])) {
+                    $contentType = 'application/octet-stream';
+                } else {
+                    $contentType = 'text/plain';
+                }
+            } elseif (in_array($partSchema->type, ['object', 'array'])) {
+                $contentType = 'application/json';
+            }
+        }
+
+        return $contentType;
     }
 }
