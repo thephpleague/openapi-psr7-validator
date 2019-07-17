@@ -2,17 +2,13 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Validators;
+namespace OpenAPIValidation\PSR7\Validators\BodyValidator;
 
 use cebe\openapi\spec\Header;
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\Type as CebeType;
-use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
-use OpenAPIValidation\PSR7\MessageValidator;
 use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
@@ -26,77 +22,17 @@ use function json_last_error;
 use function json_last_error_msg;
 use function preg_match;
 use function sprintf;
-use function strtok;
 
 /**
- * Supports validation for different media types of bodies,
- * including JSON and multipart types
+ * Should validate multipart/* body types
  */
-final class BodyValidator implements MessageValidator
+trait MultipartValidation
 {
-    private const HEADER_CONTENT_TYPE = 'Content-Type';
-    use ValidationStrategy;
-
-    /** @var SpecFinder */
-    private $finder;
-
-    public function __construct(SpecFinder $finder)
-    {
-        $this->finder = $finder;
-    }
-
-    /**
-     * @throws InvalidBody
-     * @throws InvalidHeaders
-     * @throws NoPath
-     */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
-    {
-        $mediaTypeSpecs = $this->finder->findBodySpec($addr);
-
-        if (empty($mediaTypeSpecs)) {
-            // edge case: if "content" keyword is not set (body can be anything as no expectations set)
-            return;
-        }
-
-        $contentType = $this->readContentType($addr, $message);
-
-        // does the response contain one of described media types?
-        if (! isset($mediaTypeSpecs[$contentType])) {
-            throw InvalidHeaders::becauseContentTypeIsNotExpected($contentType, $addr);
-        }
-        $schema = $mediaTypeSpecs[$contentType]->schema;
-        if (! $schema) {
-            return;
-        }
-
-        // Prepare data for validation
-        if (preg_match('#^multipart/.*#', $contentType)) {
-            $this->validateMultipart($addr, $message, $mediaTypeSpecs, $contentType);
-        } else {
-            $this->validateUnipart($addr, $message, $schema, $contentType);
-        }
-    }
-
-    private function readContentType(OperationAddress $addr, MessageInterface $message) : string
-    {
-        $contentTypes = $message->getHeader(self::HEADER_CONTENT_TYPE);
-        if (! $contentTypes) {
-            throw InvalidHeaders::becauseOfMissingRequiredHeader(self::HEADER_CONTENT_TYPE, $addr);
-        }
-        $contentType = $contentTypes[0]; // use the first value
-
-        // As per https://tools.ietf.org/html/rfc7231#section-3.1.1.5 and https://tools.ietf.org/html/rfc7231#section-3.1.1.1
-        // ContentType can contain multiple statements (type/subtype + parameters), ie: 'multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__'
-        // OpenAPI Spec only defines the first part of the header value (type/subtype)
-        // Other parameters SHOULD be skipped
-        $contentType = strtok($contentType, ';');
-
-        return $contentType;
-    }
-
     /**
      * @see https://swagger.io/docs/specification/describing-request-body/multipart-requests/
+     * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#requestBodyObject
+     *
+     * The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded.
      *
      * @param MediaType[] $mediaTypeSpecs
      */
@@ -123,13 +59,16 @@ final class BodyValidator implements MessageValidator
         }
 
         // 3. Validate specified part encodings and headers
+        // @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#encoding-object
+        // An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies.
+        // This attribute is only applicable to "multipart" and "application/x-www-form-urlencoded" request bodies.
         $encodings = $mediaTypeSpecs[$contentType]->encoding;
 
         foreach ($encodings as $name => $encoding) {
             $parts = $document->getPartsByName($name);
             if (! $parts) {
                 throw new RuntimeException(sprintf(
-                    'SPecified body part %s is not found',
+                    'Specified body part %s is not found',
                     $name
                 ));
             }
@@ -146,9 +85,9 @@ final class BodyValidator implements MessageValidator
                 }
 
                 // 3.2. parts headers
-                foreach ($encoding->headers as $headerName => $header) {
-                    /** @var Header $header */
-                    $headerSchema = $header->schema;
+                foreach ($encoding->headers as $headerName => $headerSpec) {
+                    /** @var Header $headerSpec */
+                    $headerSchema = $headerSpec->schema;
 
                     $validator = new SchemaValidator($this->detectValidationStrategy($message));
                     try {
@@ -192,30 +131,5 @@ final class BodyValidator implements MessageValidator
         }
 
         return $multipartData;
-    }
-
-    /**
-     * @param MediaType[] $mediaTypeSpecs
-     *
-     * @throws InvalidBody
-     */
-    private function validateUnipart(OperationAddress $addr, MessageInterface $message, array $mediaTypeSpecs, string $contentType) : void
-    {
-        if (preg_match('#^application/.*json$#', $contentType)) {
-            $body = json_decode((string) $message->getBody(), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw InvalidBody::becauseBodyIsNotValidJson(json_last_error_msg(), $addr);
-            }
-        } else {
-            $body = (string) $message->getBody();
-        }
-
-        $validator = new SchemaValidator($this->detectValidationStrategy($message));
-        $schema    = $mediaTypeSpecs[$contentType]->schema;
-        try {
-            $validator->validate($body, $schema);
-        } catch (SchemaMismatch $e) {
-            throw InvalidBody::becauseBodyDoesNotMatchSchema($contentType, $addr, $e);
-        }
     }
 }
