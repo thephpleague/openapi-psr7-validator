@@ -9,9 +9,13 @@ use cebe\openapi\spec\Header;
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Type as CebeType;
+use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use OpenAPIValidation\PSR7\MessageValidator;
 use OpenAPIValidation\PSR7\OperationAddress;
+use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
@@ -34,18 +38,31 @@ use function strpos;
 /**
  * Should validate multipart/* body types
  */
-trait MultipartValidation
+class MultipartValidator implements MessageValidator
 {
+    use ValidationStrategy;
+
+    private const HEADER_CONTENT_TYPE = 'Content-Type';
+
+    /** @var MediaType */
+    protected $mediaTypeSpec;
+    /** @var string */
+    protected $contentType;
+
+    public function __construct(MediaType $mediaTypeSpec, string $contentType)
+    {
+        $this->mediaTypeSpec = $mediaTypeSpec;
+        $this->contentType   = $contentType;
+    }
+
     /**
-     * @see https://swagger.io/docs/specification/describing-request-body/multipart-requests/
-     * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#requestBodyObject
-     *
-     * @param MediaType[] $mediaTypeSpecs
+     * @throws NoPath
+     * @throws ValidationFailed
      */
-    private function validateMultipart(OperationAddress $addr, MessageInterface $message, array $mediaTypeSpecs, string $contentType) : void
+    public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
         /** @var Schema $schema */
-        $schema = $mediaTypeSpecs[$contentType]->schema;
+        $schema = $this->mediaTypeSpec->schema;
 
         // 0. Multipart body message MUST be described with a set of object properties
         if ($schema->type !== CebeType::OBJECT) {
@@ -53,9 +70,9 @@ trait MultipartValidation
         }
 
         if (($message instanceof ResponseInterface) || $message->getBody()->getSize()) {
-            $this->validatePlainBodyMultipart($addr, $message, $mediaTypeSpecs, $contentType, $schema);
+            $this->validatePlainBodyMultipart($addr, $message, $schema);
         } elseif ($message instanceof ServerRequestInterface) {
-            $this->validateServerRequestMultipart($addr, $message, $mediaTypeSpecs, $contentType, $schema);
+            $this->validateServerRequestMultipart($addr, $message, $schema);
         }
     }
 
@@ -65,8 +82,6 @@ trait MultipartValidation
     private function validatePlainBodyMultipart(
         OperationAddress $addr,
         MessageInterface $message,
-        array $mediaTypeSpecs,
-        string $contentType,
         Schema $schema
     ) : void {
         // 1. Parse message body
@@ -78,7 +93,7 @@ trait MultipartValidation
         try {
             $validator->validate($body, $schema);
         } catch (SchemaMismatch $e) {
-            throw InvalidBody::becauseBodyDoesNotMatchSchema($contentType, $addr, $e);
+            throw InvalidBody::becauseBodyDoesNotMatchSchema($this->contentType, $addr, $e);
         }
 
         // 2. Validate specified part encodings and headers
@@ -86,7 +101,7 @@ trait MultipartValidation
         // The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded.
         // An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies.
         // This attribute is only applicable to "multipart" and "application/x-www-form-urlencoded" request bodies.
-        $encodings = $mediaTypeSpecs[$contentType]->encoding;
+        $encodings = $this->mediaTypeSpec->encoding;
 
         foreach ($encodings as $partName => $encoding) {
             $parts = $document->getPartsByName($partName); // multiple parts share a name?
@@ -212,8 +227,6 @@ trait MultipartValidation
     private function validateServerRequestMultipart(
         OperationAddress $addr,
         ServerRequestInterface $message,
-        array $mediaTypeSpecs,
-        string $contentType,
         Schema $schema
     ) : void {
         // add parsed simple values
@@ -228,7 +241,7 @@ trait MultipartValidation
         try {
             $validator->validate($body, $schema);
         } catch (SchemaMismatch $e) {
-            throw InvalidBody::becauseBodyDoesNotMatchSchema($contentType, $addr, $e);
+            throw InvalidBody::becauseBodyDoesNotMatchSchema($this->contentType, $addr, $e);
         }
 
         // 2. Validate specified part encodings and headers
@@ -236,7 +249,7 @@ trait MultipartValidation
         // The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded.
         // An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies.
         // This attribute is only applicable to "multipart" and "application/x-www-form-urlencoded" request bodies.
-        $encodings = $mediaTypeSpecs[$contentType]->encoding;
+        $encodings = $this->mediaTypeSpec->encoding;
 
         foreach ($encodings as $partName => $encoding) {
             if (! isset($body[$partName])) {
