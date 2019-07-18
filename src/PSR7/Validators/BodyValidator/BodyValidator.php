@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators\BodyValidator;
 
-use OpenAPIValidation\PSR7\Exception\NoPath;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\MessageValidator;
 use OpenAPIValidation\PSR7\OperationAddress;
@@ -35,11 +33,7 @@ final class BodyValidator implements MessageValidator
         $this->finder = $finder;
     }
 
-    /**
-     * @throws InvalidBody
-     * @throws InvalidHeaders
-     * @throws NoPath
-     */
+    /** {@inheritdoc} */
     public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
         $mediaTypeSpecs = $this->finder->findBodySpec($addr);
