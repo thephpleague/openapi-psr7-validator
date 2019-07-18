@@ -16,6 +16,10 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - id
+                - address
+                - profileImage
               properties:
                 id:            # Part 1 (string value)
                   type: string

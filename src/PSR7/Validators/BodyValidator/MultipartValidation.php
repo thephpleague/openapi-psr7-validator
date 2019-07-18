@@ -16,6 +16,8 @@ use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
@@ -50,10 +52,26 @@ trait MultipartValidation
             throw TypeMismatch::becauseTypeDoesNotMatch('object', $schema->type);
         }
 
+        if (($message instanceof ResponseInterface) || $message->getBody()->getSize()) {
+            $this->validatePlainBodyMultipart($addr, $message, $mediaTypeSpecs, $contentType, $schema);
+        } elseif ($message instanceof ServerRequestInterface) {
+            $this->validateServerRequestMultipart($addr, $message, $mediaTypeSpecs, $contentType, $schema);
+        }
+    }
+
+    /**
+     * @param MediaType[] $mediaTypeSpecs
+     */
+    private function validatePlainBodyMultipart(
+        OperationAddress $addr,
+        MessageInterface $message,
+        array $mediaTypeSpecs,
+        string $contentType,
+        Schema $schema
+    ) : void {
         // 1. Parse message body
         $document = PSR7::convert($message);
 
-        // 2. Validate bodies of each part
         $body = $this->parseMultipartData($addr, $document);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
@@ -63,7 +81,7 @@ trait MultipartValidation
             throw InvalidBody::becauseBodyDoesNotMatchSchema($contentType, $addr, $e);
         }
 
-        // 3. Validate specified part encodings and headers
+        // 2. Validate specified part encodings and headers
         // @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#encoding-object
         // The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded.
         // An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies.
@@ -80,7 +98,7 @@ trait MultipartValidation
             }
 
             foreach ($parts as $part) {
-                // 3.1 parts encoding
+                // 2.1 parts encoding
                 $partContentType     = $part->getHeader(self::HEADER_CONTENT_TYPE);
                 $encodingContentType = $this->detectEncondingContentType($encoding, $part, $schema->properties[$partName]);
                 if (strpos($encodingContentType, '*') === false) {
@@ -104,7 +122,7 @@ trait MultipartValidation
                     }
                 }
 
-                // 3.2. parts headers
+                // 2.2. parts headers
                 foreach ($encoding->headers as $headerName => $headerSpec) {
                     /** @var Header $headerSpec */
                     $headerSchema = $headerSpec->schema;
@@ -183,5 +201,54 @@ trait MultipartValidation
         }
 
         return $contentType;
+    }
+
+    /**
+     * ServerRequest does not have a plain HTTP body which we can parse. Instead, it has a parsed values in
+     * getParsedBody() (POST data) and getUploadedFiles (FILES data)
+     *
+     * @param MediaType[] $mediaTypeSpecs
+     */
+    private function validateServerRequestMultipart(
+        OperationAddress $addr,
+        ServerRequestInterface $message,
+        array $mediaTypeSpecs,
+        string $contentType,
+        Schema $schema
+    ) : void {
+        // add parsed simple values
+        $body = $message->getParsedBody();
+
+        // add files as binary strings
+        foreach ($message->getUploadedFiles() as $name => $file) {
+            $body[$name] = '~~~binary~~~';
+        }
+
+        $validator = new SchemaValidator($this->detectValidationStrategy($message));
+        try {
+            $validator->validate($body, $schema);
+        } catch (SchemaMismatch $e) {
+            throw InvalidBody::becauseBodyDoesNotMatchSchema($contentType, $addr, $e);
+        }
+
+        // 2. Validate specified part encodings and headers
+        // @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#encoding-object
+        // The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded.
+        // An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies.
+        // This attribute is only applicable to "multipart" and "application/x-www-form-urlencoded" request bodies.
+        $encodings = $mediaTypeSpecs[$contentType]->encoding;
+
+        foreach ($encodings as $partName => $encoding) {
+            if (! isset($body[$partName])) {
+                throw new RuntimeException(sprintf('Specified body part %s is not found', $partName));
+            }
+            $part = $body[$partName];
+
+            // 2.1 parts encoding
+            // todo values are parsed already by php core...
+
+            // 2.2. parts headers
+            // todo headers are parsed already by webserver...
+        }
     }
 }
