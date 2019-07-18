@@ -16,7 +16,7 @@ class BodyValidatorTest extends TestCase
     /**
      * @return array<array<string>> of arguments
      */
-    public function dataProviderGreen() : array
+    public function dataProviderMultipartGreen() : array
     {
         return [
             // Normal multipart message
@@ -127,9 +127,29 @@ HTTP
     }
 
     /**
+     * @return array<array<string>> of arguments
+     */
+    public function dataProviderFormUrlencodedGreen() : array
+    {
+        return [
+            // Normal message
+            [
+                <<<HTTP
+POST /urlencoded/scalar-types HTTP/1.1
+Content-Length: 428
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+
+address=Moscow%2C+ulitsa+Rusakova%2C+d.15&id=59731930-a95a-11e9-a2a3-2a2ae2dbcce4
+HTTP
+,
+            ],
+        ];
+    }
+
+    /**
      * @return array<array<string,string>> of arguments
      */
-    public function dataProviderRed() : array
+    public function dataProviderMultipartRed() : array
     {
         return [
             // wrong data in one of the parts
@@ -201,7 +221,7 @@ HTTP
     }
 
     /**
-     * @dataProvider dataProviderGreen
+     * @dataProvider dataProviderMultipartGreen
      */
     public function testValidateMultipartGreen(string $message) : void
     {
@@ -221,7 +241,7 @@ HTTP
     }
 
     /**
-     * @dataProvider dataProviderRed
+     * @dataProvider dataProviderMultipartRed
      */
     public function testValidateMultipartRed(string $message, string $expectedExceptionClass) : void
     {
@@ -239,5 +259,25 @@ HTTP
 
         $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
         $validator->validate($serverRequest);
+    }
+
+    /**
+     * @dataProvider dataProviderFormUrlencodedGreen
+     */
+    public function testValidateFormUrlencodedGreen(string $message) : void
+    {
+        $specFile = __DIR__ . '/../../stubs/form-url-encoded.yaml';
+
+        $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
+        $serverRequest = new ServerRequest(
+            $request->getMethod(),
+            $request->getUri(),
+            $request->getHeaders(),
+            $request->getBody()
+        );
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($serverRequest);
+        $this->addToAssertionCount(1);
     }
 }

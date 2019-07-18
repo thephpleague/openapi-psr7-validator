@@ -25,6 +25,7 @@ final class BodyValidator implements MessageValidator
     use ValidationStrategy;
     use MultipartValidation;
     use UnipartValidation;
+    use FormUrlencodedValidation;
 
     /** @var SpecFinder */
     private $finder;
@@ -70,6 +71,8 @@ final class BodyValidator implements MessageValidator
         // Validate message body
         if (preg_match('#^multipart/.*#', $contentType)) {
             $this->validateMultipart($addr, $message, $mediaTypeSpecs, $contentType);
+        } elseif (preg_match('#^application/x-www-form-urlencoded$#', $contentType)) {
+            $this->validateFormUrlencoded($addr, $message, $mediaTypeSpecs, $contentType);
         } else {
             $this->validateUnipart($addr, $message, $mediaTypeSpecs, $contentType);
         }

@@ -54,7 +54,7 @@ trait MultipartValidation
         $document = PSR7::convert($message);
 
         // 2. Validate bodies of each part
-        $body = $this->prepareMultipartData($addr, $document);
+        $body = $this->parseMultipartData($addr, $document);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
@@ -136,7 +136,7 @@ trait MultipartValidation
      * @throws InvalidBody
      * @throws TypeMismatch
      */
-    private function prepareMultipartData(OperationAddress $addr, StreamedPart $document) : array
+    private function parseMultipartData(OperationAddress $addr, StreamedPart $document) : array
     {
         $multipartData = []; // a buffer to fill up with message parts
         foreach ($document->getParts() as $i => $part) {

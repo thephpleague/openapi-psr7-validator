@@ -1,0 +1,28 @@
+openapi: 3.0.2
+info:
+  title: Multipart API
+  version: 0.0.1
+  contact:
+    name: Dmitry Lezhnev
+    url: https://github.com/lezhnev74/openapi-psr7-validator
+    email: lezhnev.work@gmail.com
+paths:
+  /urlencoded/scalar-types:
+    post:
+      summary: Post form-url-encoded body
+      operationId: post-form-url-encoded-body
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                address:
+                  type: string
+
+      responses:
+        204:
+          description: good post
