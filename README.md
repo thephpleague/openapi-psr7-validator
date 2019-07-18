@@ -322,8 +322,6 @@ The MIT License (MIT). Please see `License.md` file for more information.
 
 ## TODO
 - [ ] Support Discriminator Object (note: apparently, this is not so straightforward, as discriminator can point to any external scheme)
-- [ ] parameters serialization
-    - Does anyone use this serialization? It looks very... unpractical.
 - [ ] add validation for Request class.
     - Usually for serverside testing purposes ServerRequest is what we need. 
     But, Request should be quite easy to add.
