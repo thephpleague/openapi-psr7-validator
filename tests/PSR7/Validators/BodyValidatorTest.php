@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\UploadedFile;
+use GuzzleHttp\Psr7\Uri;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+use function filesize;
 use function GuzzleHttp\Psr7\parse_request;
 
 class BodyValidatorTest extends TestCase
@@ -275,6 +278,31 @@ HTTP
             $request->getHeaders(),
             $request->getBody()
         );
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($serverRequest);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testValidateMultipartServerRequestGreen() : void
+    {
+        $specFile = __DIR__ . '/../../stubs/multipart.yaml';
+
+        $imagePath = __DIR__ . '/../../stubs/image.jpg';
+        $imageSize = filesize($imagePath);
+
+        $serverRequest = (new ServerRequest('post', new Uri('/multipart')))
+            ->withHeader('Content-Type', 'multipart/form-data')
+            ->withParsedBody([
+                'id'      => 'bc8e1430-a963-11e9-a2a3-2a2ae2dbcce4',
+                'address' => [
+                    'street' => 'Some street',
+                    'city'   => 'some city',
+                ],
+            ])
+            ->withUploadedFiles([
+                'profileImage' => new UploadedFile($imagePath, $imageSize, 0),
+            ]);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
         $validator->validate($serverRequest);

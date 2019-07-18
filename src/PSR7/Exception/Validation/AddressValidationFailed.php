@@ -17,9 +17,9 @@ abstract class AddressValidationFailed extends ValidationFailed
     /**
      * @return static
      */
-    public static function fromAddrAndPrev(OperationAddress $address, ?Throwable $prev) : self
+    public static function fromAddrAndPrev(OperationAddress $address, Throwable $prev) : self
     {
-        $ex          = new static(sprintf('Validation failed for %s', $address), $prev ? $prev->getCode() : 0, $prev);
+        $ex          = new static(sprintf('Validation failed for %s', $address), $prev->getCode(), $prev);
         $ex->address = $address;
 
         return $ex;

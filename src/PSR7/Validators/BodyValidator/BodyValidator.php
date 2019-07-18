@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators\BodyValidator;
 
-use OpenAPIValidation\PSR7\Exception\NoPath;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\MessageValidator;
 use OpenAPIValidation\PSR7\OperationAddress;
@@ -23,9 +21,6 @@ final class BodyValidator implements MessageValidator
 {
     private const HEADER_CONTENT_TYPE = 'Content-Type';
     use ValidationStrategy;
-    use MultipartValidation;
-    use UnipartValidation;
-    use FormUrlencodedValidation;
 
     /** @var SpecFinder */
     private $finder;
@@ -35,11 +30,7 @@ final class BodyValidator implements MessageValidator
         $this->finder = $finder;
     }
 
-    /**
-     * @throws InvalidBody
-     * @throws InvalidHeaders
-     * @throws NoPath
-     */
+    /** {@inheritdoc} */
     public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
         $mediaTypeSpecs = $this->finder->findBodySpec($addr);
@@ -70,11 +61,11 @@ final class BodyValidator implements MessageValidator
 
         // Validate message body
         if (preg_match('#^multipart/.*#', $contentType)) {
-            $this->validateMultipart($addr, $message, $mediaTypeSpecs, $contentType);
+            (new MultipartValidator($mediaTypeSpecs[$contentType], $contentType))->validate($addr, $message);
         } elseif (preg_match('#^application/x-www-form-urlencoded$#', $contentType)) {
-            $this->validateFormUrlencoded($addr, $message, $mediaTypeSpecs, $contentType);
+            (new FormUrlencodedValidator($mediaTypeSpecs[$contentType], $contentType))->validate($addr, $message);
         } else {
-            $this->validateUnipart($addr, $message, $mediaTypeSpecs, $contentType);
+            (new UnipartValidator($mediaTypeSpecs[$contentType], $contentType))->validate($addr, $message);
         }
     }
 
