@@ -4,7 +4,7 @@ info:
   version: 0.0.1
   contact:
     name: Dmitry Lezhnev
-    url: https://lessthan12ms.com
+    url: https://github.com/lezhnev74/openapi-psr7-validator
     email: lezhnev.work@gmail.com
 paths:
   /read/{param1}/from/{param2}:

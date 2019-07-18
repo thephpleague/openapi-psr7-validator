@@ -10,7 +10,7 @@ class StringUUID
 {
     public function __invoke(string $value) : bool
     {
-        $patternUUIDV4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+        $patternUUIDV4 = '/^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$/';
 
         return (bool) preg_match($patternUUIDV4, $value);
     }
