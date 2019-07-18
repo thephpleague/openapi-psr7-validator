@@ -27,7 +27,7 @@ class InvalidBody extends AddressValidationFailed
         OperationAddress $addr,
         ?SchemaMismatch $prev = null
     ) : self {
-        $exception          = static::fromAddrAndPrev($addr, $prev);
+        $exception          = $prev ? static::fromAddrAndPrev($addr, $prev) : static::fromAddr($addr);
         $exception->message = sprintf(
             'Multipart body does not match schema for part "%s" with content-type "%s" for %s',
             $partName,
