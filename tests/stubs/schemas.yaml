@@ -16,6 +16,13 @@ components:
       required:
         - propA
         - propB
+    SchemaB:
+      type: object
+      properties:
+        age:
+          type: integer
+      required:
+        - age
   parameters:
     HeaderA:
       in: header

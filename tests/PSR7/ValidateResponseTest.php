@@ -23,11 +23,26 @@ final class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
+    public function testItValidatesMessageWithReferencesGreen() : void
+    {
+        $body     = [
+            'name' => 'good name',
+            'age'  => 100,
+        ];
+        $response = (new Response())
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody(stream_for(json_encode($body)));
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
+        $validator->validate(new OperationAddress('/ref', 'post'), $response);
+        $this->addToAssertionCount(1);
+    }
+
     public function testItValidatesBinaryResponseGreen() : void
     {
         $response = $this->makeGoodResponse('/path1', 'get')
-            ->withHeader('Content-Type', 'image/jpeg')
-            ->withBody(stream_for(__DIR__ . '/../stubs/image.jpg'));
+                         ->withHeader('Content-Type', 'image/jpeg')
+                         ->withBody(stream_for(__DIR__ . '/../stubs/image.jpg'));
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
         $validator->validate(new OperationAddress('/path1', 'get'), $response);

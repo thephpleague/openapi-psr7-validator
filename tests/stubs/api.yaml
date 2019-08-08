@@ -130,3 +130,19 @@ paths:
       responses:
         default:
           description: No content
+  /ref:
+    post:
+      responses:
+        200:
+          description: body contains schema with references
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: 'schemas.yaml#/components/schemas/SchemaB'
+                  - type: object
+                    properties:
+                      name:
+                        type: string
+                    required:
+                      - name
