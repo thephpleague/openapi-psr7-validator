@@ -175,7 +175,7 @@ class MultipartValidator implements MessageValidator
         foreach ($document->getParts() as $i => $part) {
             $partContentType = $part->getHeader('Content-Type');
 
-            if (preg_match('#^application/.*json$#', $partContentType)) {
+            if (!empty($partContentType) && preg_match('#^application/.*json$#', $partContentType)) {
                 $partBody = json_decode($part->getBody(), true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     throw InvalidBody::becauseBodyIsNotValidJson(json_last_error_msg(), $addr);
