@@ -35,6 +35,10 @@ Content-Type: text/plain
 
 123e4567-e89b-12d3-a456-426655440000
 ------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="token"
+
+some-token
+------WebKitFormBoundaryOmz20xyMCkE27rN7
 Content-Disposition: form-data; name="address"
 Content-Type: application/json
 
