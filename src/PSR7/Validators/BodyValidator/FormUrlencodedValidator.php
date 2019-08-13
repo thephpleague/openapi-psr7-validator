@@ -17,7 +17,7 @@ use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
-use function explode;
+use function parse_str;
 
 /**
  * Should validate "application/x-www-form-urlencoded" body types
@@ -79,10 +79,10 @@ class FormUrlencodedValidator implements MessageValidator
     {
         $body = [];
 
-        foreach (explode('&', $message->getBody()->getContents()) as $chunk) {
-            [$name, $value] = explode('=', $chunk);
-            $body[$name]    = $value;
-        }
+        parse_str(
+            $message->getBody()->getContents(),
+            $body
+        );
 
         return $body;
     }
