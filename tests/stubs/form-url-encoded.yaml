@@ -22,6 +22,12 @@ paths:
                   format: uuid
                 address:
                   type: string
+                phones:
+                  type: array
+              required:
+                - id
+                - address
+                - phones
 
       responses:
         204:
