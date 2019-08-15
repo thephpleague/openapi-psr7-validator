@@ -54,7 +54,7 @@ SPEC;
     {
         $spec = <<<SPEC
 schema:
-  type: array
+  type: object
   required: 
   - a
   - b
