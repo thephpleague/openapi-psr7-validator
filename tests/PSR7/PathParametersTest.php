@@ -33,6 +33,18 @@ final class PathParametersTest extends TestCase
         $validator->validate($request);
     }
 
+    public function testItValidatesRequestMissedQueryArgumentsForInvalidTypeGreen() : void
+    {
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/users/12');
+
+        $this->expectException(InvalidPath::class);
+        $this->expectExceptionMessage('Value "12" for parameter "group" is invalid for Request [get /users/{group}]');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+    }
+
     public function testItAllowsOptionalParametersGreen() : void
     {
         // Schema allows optional header,cookie, and query parameters
