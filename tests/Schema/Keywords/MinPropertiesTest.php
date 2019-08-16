@@ -28,7 +28,7 @@ SPEC;
     {
         $spec = <<<SPEC
 schema:
-  type: array
+  type: object
   minProperties: 2
 SPEC;
 

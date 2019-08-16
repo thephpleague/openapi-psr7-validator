@@ -60,6 +60,11 @@ final class SchemaValidator implements Validator
                 return;
             }
 
+            // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
+            if (isset($schema->type)) {
+                (new Type($schema))->validate($data, $schema->type, $schema->format);
+            }
+
             // This keywords come directly from JSON Schema Validation, they are the same as in JSON schema
             // https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5
             if (isset($schema->multipleOf)) {
@@ -114,11 +119,6 @@ final class SchemaValidator implements Validator
 
             if (isset($schema->enum)) {
                 (new Enum($schema))->validate($data, $schema->enum);
-            }
-
-            // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
-            if (isset($schema->type)) {
-                (new Type($schema))->validate($data, $schema->type, $schema->format);
             }
 
             if (isset($schema->items)) {
