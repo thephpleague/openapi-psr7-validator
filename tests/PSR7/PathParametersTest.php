@@ -56,4 +56,17 @@ final class PathParametersTest extends TestCase
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
+
+    public function testItValidatesParsedIntegersGreen() : void
+    {
+        // In "number/12" an id(12) parsed as a string
+        // The implementation should validate this against `type: integer`
+
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/number/99');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
 }

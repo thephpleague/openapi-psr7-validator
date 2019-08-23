@@ -48,3 +48,16 @@ paths:
             text/plain:
               schema:
                 type: string
+  /number/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Read data
+      operationId: read-int
+      responses:
+        204:
+          description: No response
