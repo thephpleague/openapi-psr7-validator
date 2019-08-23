@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7;
 
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
-use function is_numeric;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
@@ -91,14 +90,7 @@ class OperationAddress
         // 3. Combine keys and values
         $parsedParams = [];
         foreach ($parameterNames as $name) {
-            $value = $matches[$name];
-
-            // cast numeric
-            if (is_numeric($value)) {
-                $value += 0; // that will cast it properly
-            }
-
-            $parsedParams[$name] = $value;
+            $parsedParams[$name] = $matches[$name];
         }
 
         return $parsedParams;

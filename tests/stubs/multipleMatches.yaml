@@ -16,6 +16,7 @@ paths:
         required: true
         schema:
           type: string
+          pattern: ^\w+$
     get:
       summary: Read data
       operationId: read

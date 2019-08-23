@@ -15,11 +15,11 @@ final class OperationAddressTest extends TestCase
     public function dataProviderParse() : array
     {
         return [
-            ['/users/{id}/group/{group}', '/users/12/group/admin?a=2', ['id' => 12, 'group' => 'admin']],
-            ['/users/{id}', '/users/12?', ['id' => 12]],
-            ['/users/{id}/', '/users/12/', ['id' => 12]],
-            ['/users/{id}/', '/users/22.5/', ['id' => 22.5]],
-            ['/users/{id}/{name}', '/users/22/admin', ['id' => 22, 'name' => 'admin']],
+            ['/users/{id}/group/{group}', '/users/12/group/admin?a=2', ['id' => '12', 'group' => 'admin']],
+            ['/users/{id}', '/users/12?', ['id' => '12']],
+            ['/users/{id}/', '/users/12/', ['id' => '12']],
+            ['/users/{id}/', '/users/22.5/', ['id' => '22.5']],
+            ['/users/{id}/{name}', '/users/22/admin', ['id' => '22', 'name' => 'admin']],
         ];
     }
 
