@@ -112,6 +112,13 @@ class ValidatorBuilder
         return new ServerRequestValidator($schema);
     }
 
+    public function getRequestValidator() : RequestValidator
+    {
+        $schema = $this->getOrCreateSchema();
+
+        return new RequestValidator($schema);
+    }
+
     public function getResponseValidator() : ResponseValidator
     {
         return new ResponseValidator($this->getOrCreateSchema());

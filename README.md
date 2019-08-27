@@ -68,6 +68,27 @@ $validator->validate($address, $request);
 
 This would simplify validation a lot and give you more performance.
 
+### Request Message
+You can validate `\Psr\Http\Message\RequestInterface` instance like this:
+
+```php
+$yamlFile = "api.yaml";
+$jsonFile = "api.json";
+
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile($yamlFile)->getRequestValidator();
+#or
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromYaml(file_get_contents($yamlFile))->getRequestValidator();
+#or
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJson(file_get_contents($jsonFile))->getRequestValidator();
+#or
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromJsonFile($jsonFile)->getRequestValidator();
+#or
+$schema = new \cebe\openapi\spec\OpenApi(); // generate schema object by hand
+$validator = (new \OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($schema)->getRequestValidator();
+
+$match = $validator->validate($request);
+```
+
 ### Response Message
 Validation of `\Psr\Http\Message\ResponseInterface` is a bit more complicated
 . Because you need not only YAML file and Response itself, but also you need 
@@ -323,6 +344,3 @@ The MIT License (MIT). Please see `License.md` file for more information.
 
 ## TODO
 - [ ] Support Discriminator Object (note: apparently, this is not so straightforward, as discriminator can point to any external scheme)
-- [ ] add validation for Request class.
-    - Usually for serverside testing purposes ServerRequest is what we need. 
-    But, Request should be quite easy to add.
