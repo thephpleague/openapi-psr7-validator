@@ -29,6 +29,8 @@ final class CookiesValidator implements MessageValidator
     {
         $specs = $this->finder->findCookieSpecs($addr);
 
+        // Note that Response cookies (SetCookie headers) are validated as simple headers
+        // @see https://github.com/OAI/OpenAPI-Specification/issues/1237
         if ($message instanceof ServerRequestInterface) {
             (new ServerRequestCookieValidator($specs))->validate($addr, $message);
         } elseif ($message instanceof RequestInterface) {
