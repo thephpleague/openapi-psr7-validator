@@ -9,9 +9,27 @@ expressed in YAML or JSON.
 
 ![](image.jpg)
 
-## Requirements
+## Requirements as shown by Composer:
 
-- PHP 7.1 or higher
+To check your server, simply run `composer check-platform-reqs`.
+
+Sample output:
+```
+> composer check-platform-reqs
+
+composer-plugin-api  1.1.0       success
+ext-dom              20031129    success
+ext-json             1.7.0       success
+ext-libxml           7.3.3       success
+ext-mbstring         7.3.3       success
+ext-pcre             7.3.3       success
+ext-Phar             7.3.3       success
+ext-SimpleXML        7.3.3       success
+ext-tokenizer        7.3.3       success
+ext-xml              7.3.3       success
+ext-xmlwriter        7.3.3       success
+php                  7.3.3       success
+```
 
 ## Installation
 ```
