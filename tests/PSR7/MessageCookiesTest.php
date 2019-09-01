@@ -6,6 +6,8 @@ namespace OpenAPIValidationTests\PSR7;
 
 use Dflydev\FigCookies\Cookie;
 use Dflydev\FigCookies\FigRequestCookies;
+use Dflydev\FigCookies\FigResponseCookies;
+use Dflydev\FigCookies\SetCookie;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\OperationAddress;
@@ -108,7 +110,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestWithExtraCookieForServerRequestRed() : void
+    public function testItValidatesRequestWithExtraCookieForServerRequestGreen() : void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -123,7 +125,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesRequestWithExtraCookieForRequestRed() : void
+    public function testItValidatesRequestWithExtraCookieForRequestGreen() : void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodRequest($addr->path(), $addr->method());
@@ -131,6 +133,17 @@ final class MessageCookiesTest extends BaseValidatorTest
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRequestValidator();
         $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesRequestWithExtraCookieForResponseGreen() : void
+    {
+        $addr     = new ResponseAddress('/cookies', 'post', 200);
+        $response = $this->makeGoodResponse($addr->path(), $addr->method());
+        $response = FigResponseCookies::set($response, SetCookie::create('any', 'value'));
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
+        $validator->validate($addr, $response);
         $this->addToAssertionCount(1);
     }
 }

@@ -6,6 +6,8 @@ namespace OpenAPIValidationTests\PSR7;
 
 use Dflydev\FigCookies\Cookie;
 use Dflydev\FigCookies\FigRequestCookies;
+use Dflydev\FigCookies\FigResponseCookies;
+use Dflydev\FigCookies\SetCookie;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
@@ -35,9 +37,11 @@ abstract class BaseValidatorTest extends TestCase
                     ->withHeader('Header-B', 'good value')
                     ->withBody(stream_for(json_encode($body)));
             case 'post /cookies':
-                return (new Response())
-                    ->withHeader('Content-Type', 'text/plain')
-                    ->withHeader('Set-Cookie', 'anyName=anyValue');
+                $response = (new Response())
+                    ->withHeader('Content-Type', 'text/plain');
+                $response = FigResponseCookies::set($response, SetCookie::create('session_id', 'abc'));
+
+                return $response;
             default:
                 throw new InvalidArgumentException(sprintf("unexpected operation '%s %s''", $method, $path));
         }
