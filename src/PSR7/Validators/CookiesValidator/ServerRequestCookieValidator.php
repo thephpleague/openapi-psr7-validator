@@ -2,66 +2,70 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Validators;
+namespace OpenAPIValidation\PSR7\Validators\CookiesValidator;
 
 use cebe\openapi\spec\Parameter;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
 use OpenAPIValidation\PSR7\MessageValidator;
 use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\SpecFinder;
+use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Webmozart\Assert\Assert;
 use function array_key_exists;
 
-final class CookiesValidator implements MessageValidator
+class ServerRequestCookieValidator implements MessageValidator
 {
     use ValidationStrategy;
 
-    /** @var SpecFinder */
-    private $finder;
-
-    public function __construct(SpecFinder $finder)
-    {
-        $this->finder = $finder;
-    }
-
-    /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
-    {
-        $specs = $this->finder->findCookieSpecs($addr);
-
-        if ($message instanceof ServerRequestInterface) {
-            $this->validateServerRequest($addr, $message, $specs);
-        }
-        // TODO should implement validation for Response/Request classes
-    }
+    /** @var Parameter[] */
+    private $specs;
 
     /**
      * @param Parameter[] $specs
-     *
+     */
+    public function __construct(array $specs)
+    {
+        $this->specs = $specs;
+    }
+
+    /**
      * @throws InvalidCookies
      */
-    private function validateServerRequest(OperationAddress $addr, ServerRequestInterface $message, array $specs) : void
+    public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
-        // Check if message misses cookies
-        foreach ($specs as $cookieName => $spec) {
+        Assert::isInstanceOf($message, ServerRequestInterface::class);
+        $this->checkRequiredCookies($addr, $message);
+        $this->checkCookiesAgainstSchema($addr, $message);
+    }
+
+    /**
+     * @throws InvalidCookies
+     */
+    private function checkRequiredCookies(OperationAddress $addr, ServerRequestInterface $message) : void
+    {
+        foreach ($this->specs as $cookieName => $spec) {
             if ($spec->required && ! array_key_exists($cookieName, $message->getCookieParams())) {
                 throw InvalidCookies::becauseOfMissingRequiredCookie($cookieName, $addr);
             }
         }
+    }
 
-        // Check if cookies are invalid
+    /**
+     * @throws InvalidCookies
+     */
+    private function checkCookiesAgainstSchema(OperationAddress $addr, ServerRequestInterface $message) : void
+    {
         foreach ($message->getCookieParams() as $cookieName => $cookieValue) {
-            // Skip checking for non-described cookie (allow any non described cookies)
-            if (! isset($specs[$cookieName])) {
+            if (! isset($this->specs[$cookieName])) {
                 continue;
             }
 
             $validator = new SchemaValidator($this->detectValidationStrategy($message));
             try {
-                $validator->validate($cookieValue, $specs[$cookieName]->schema);
+                $validator->validate($cookieValue, $this->specs[$cookieName]->schema);
             } catch (SchemaMismatch $e) {
                 throw InvalidCookies::becauseValueDoesNotMatchSchema($cookieName, $cookieValue, $addr, $e);
             }

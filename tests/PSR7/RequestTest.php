@@ -15,7 +15,7 @@ final class RequestTest extends BaseValidatorTest
 {
     public function testItValidatesMessageGreen() : void
     {
-        $request = $this->makeGoodServerRequest('/path1', 'get');
+        $request = $this->makeGoodRequest('/path1', 'get');
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRequestValidator();
         $validator->validate($request);
@@ -25,7 +25,7 @@ final class RequestTest extends BaseValidatorTest
     public function testItValidatesBodyGreen() : void
     {
         $body    = ['name' => 'Alex'];
-        $request = $this->makeGoodServerRequest('/request-body', 'post')
+        $request = $this->makeGoodRequest('/request-body', 'post')
             ->withBody(stream_for(json_encode($body)));
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRequestValidator();
@@ -37,7 +37,7 @@ final class RequestTest extends BaseValidatorTest
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $body    = ['name' => 1000];
-        $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
+        $request = $this->makeGoodRequest($addr->path(), $addr->method())
             ->withBody(stream_for(json_encode($body)));
 
         $this->expectException(InvalidBody::class);
@@ -52,7 +52,7 @@ final class RequestTest extends BaseValidatorTest
     public function testItValidatesBodyHasUnexpectedTypeRed() : void
     {
         $addr    = new OperationAddress('/request-body', 'post');
-        $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
+        $request = $this->makeGoodRequest($addr->path(), $addr->method())
             ->withoutHeader('Content-Type')
             ->withHeader('Content-Type', 'unexpected/content');
 
@@ -68,7 +68,7 @@ final class RequestTest extends BaseValidatorTest
     public function testItValidatesMessageWrongHeaderValueRed() : void
     {
         $addr    = new OperationAddress('/path1', 'get');
-        $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
+        $request = $this->makeGoodRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
 
         $this->expectException(InvalidHeaders::class);
         $this->expectExceptionMessage('Value "wrong value" for header "Header-A" is invalid for Request [get /path1]');
@@ -80,7 +80,7 @@ final class RequestTest extends BaseValidatorTest
     public function testItValidatesMessageMissedHeaderRed() : void
     {
         $addr    = new OperationAddress('/path1', 'get');
-        $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');
+        $request = $this->makeGoodRequest($addr->path(), $addr->method())->withoutHeader('Header-A');
 
         $this->expectException(InvalidHeaders::class);
         $this->expectExceptionMessage('Missing required header "Header-A" for Request [get /path1]');

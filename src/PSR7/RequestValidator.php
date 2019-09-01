@@ -9,6 +9,7 @@ use OpenAPIValidation\PSR7\Exception\MultipleOperationsMismatchForRequest;
 use OpenAPIValidation\PSR7\Exception\NoOperation;
 use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
+use OpenAPIValidation\PSR7\Validators\CookiesValidator\CookiesValidator;
 use OpenAPIValidation\PSR7\Validators\HeadersValidator;
 use OpenAPIValidation\PSR7\Validators\PathValidator;
 use OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;
@@ -32,6 +33,7 @@ class RequestValidator implements ReusableSchema
         $finder          = new SpecFinder($this->openApi);
         $this->validator = new ValidatorChain(
             new HeadersValidator($finder),
+            new CookiesValidator($finder),
             new BodyValidator($finder),
             new QueryArgumentsValidator($finder),
             new PathValidator($finder),
