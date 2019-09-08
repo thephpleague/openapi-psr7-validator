@@ -12,7 +12,7 @@ use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface;
 
 final class PathValidator implements MessageValidator
 {
@@ -29,26 +29,25 @@ final class PathValidator implements MessageValidator
     /** {@inheritdoc} */
     public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
-        if ($message instanceof ServerRequestInterface) {
-            $this->validateServerRequest($addr, $message);
+        if (! ($message instanceof RequestInterface)) {
+            return;
         }
-        // TODO should implement validation for Request classes
+
+        $this->validateRequest($addr, $message);
     }
 
     /**
      * @throws InvalidPath
      * @throws NoPath
      */
-    private function validateServerRequest(OperationAddress $addr, ServerRequestInterface $message) : void
+    private function validateRequest(OperationAddress $addr, RequestInterface $message) : void
     {
         $specs = $this->finder->findPathSpecs($addr);
 
         $path             = $message->getUri()->getPath();
         $pathParsedParams = $addr->parseParams($path); // ['id'=>12]
+        $validator        = new SchemaValidator($this->detectValidationStrategy($message));
 
-        $validator = new SchemaValidator($this->detectValidationStrategy($message));
-
-        // Check if params are invalid
         foreach ($pathParsedParams as $name => $value) {
             try {
                 $validator->validate($value, $specs[$name]->schema);
