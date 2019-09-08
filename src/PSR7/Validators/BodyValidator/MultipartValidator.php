@@ -20,7 +20,6 @@ use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
@@ -69,7 +68,7 @@ class MultipartValidator implements MessageValidator
             throw TypeMismatch::becauseTypeDoesNotMatch('object', $schema->type);
         }
 
-        if (($message instanceof ResponseInterface) || $message->getBody()->getSize()) {
+        if ($message->getBody()->getSize()) {
             $this->validatePlainBodyMultipart($addr, $message, $schema);
         } elseif ($message instanceof ServerRequestInterface) {
             $this->validateServerRequestMultipart($addr, $message, $schema);
@@ -229,10 +228,8 @@ class MultipartValidator implements MessageValidator
         ServerRequestInterface $message,
         Schema $schema
     ) : void {
-        // add parsed simple values
         $body = $message->getParsedBody();
 
-        // add files as binary strings
         foreach ($message->getUploadedFiles() as $name => $file) {
             $body[$name] = '~~~binary~~~';
         }
@@ -258,10 +255,10 @@ class MultipartValidator implements MessageValidator
             $part = $body[$partName];
 
             // 2.1 parts encoding
-            // todo values are parsed already by php core...
+            // ...values are parsed already by php core...
 
             // 2.2. parts headers
-            // todo headers are parsed already by webserver...
+            // ...headers are parsed already by webserver...
         }
     }
 }
