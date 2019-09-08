@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators;
 
+use cebe\openapi\spec\Parameter;
 use OpenAPIValidation\PSR7\Exception\NoPath;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
 use OpenAPIValidation\PSR7\MessageValidator;
@@ -13,10 +14,14 @@ use OpenAPIValidation\Schema\BreadCrumb;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use function array_key_exists;
 use function parse_str;
 
+/**
+ * @see https://swagger.io/docs/specification/describing-parameters/
+ */
 final class QueryArgumentsValidator implements MessageValidator
 {
     use ValidationStrategy;
@@ -32,44 +37,75 @@ final class QueryArgumentsValidator implements MessageValidator
     /** {@inheritdoc} */
     public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
-        // Note: By default, OpenAPI treats all request parameters as optional.
-
-        if ($message instanceof ServerRequestInterface) {
-            $this->validateServerRequest($addr, $message);
+        if (! $message instanceof RequestInterface) {
+            return;
         }
-        // TODO should implement validation for Request classes
+
+        $validationStrategy   = $this->detectValidationStrategy($message);
+        $parsedQueryArguments = $this->parseQueryArguments($message);
+        $this->validateQueryArguments($addr, $parsedQueryArguments, $validationStrategy);
     }
 
     /**
+     * @param mixed[] $parsedQueryArguments [limit=>10]
+     *
      * @throws InvalidQueryArgs
      * @throws NoPath
      */
-    private function validateServerRequest(OperationAddress $addr, ServerRequestInterface $message) : void
+    private function validateQueryArguments(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy) : void
     {
         $specs = $this->finder->findQuerySpecs($addr);
+        $this->checkMissingArguments($addr, $parsedQueryArguments, $specs);
+        $this->validateAgainstSchema($addr, $parsedQueryArguments, $validationStrategy, $specs);
+    }
 
-        // Check if message misses query argument
+    /**
+     * @param mixed[]     $parsedQueryArguments [limit=>10]
+     * @param Parameter[] $specs
+     */
+    private function checkMissingArguments(OperationAddress $addr, array $parsedQueryArguments, array $specs) : void
+    {
         foreach ($specs as $name => $spec) {
-            if ($spec->required && ! array_key_exists($name, $message->getQueryParams())) {
+            if ($spec->required && ! array_key_exists($name, $parsedQueryArguments)) {
                 throw InvalidQueryArgs::becauseOfMissingRequiredArgument($name, $addr);
             }
         }
+    }
 
-        // Check if query arguments are invalid
-        parse_str($message->getUri()->getQuery(), $parsedQueryArguments);
+    /**
+     * @param mixed[]     $parsedQueryArguments [limit=>10]
+     * @param Parameter[] $specs
+     */
+    private function validateAgainstSchema(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy, array $specs) : void
+    {
+        // Note: By default, OpenAPI treats all request parameters as optional.
+
         foreach ($parsedQueryArguments as $name => $argumentValue) {
             // skip if there are no schema for this argument
             if (! array_key_exists($name, $specs)) {
-                // todo: maybe make this optional
                 continue;
             }
 
-            $validator = new SchemaValidator($this->detectValidationStrategy($message));
+            $validator = new SchemaValidator($validationStrategy);
             try {
                 $validator->validate($argumentValue, $specs[$name]->schema, new BreadCrumb($name));
             } catch (SchemaMismatch $e) {
                 throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($name, $argumentValue, $addr, $e);
             }
         }
+    }
+
+    /**
+     * @return mixed[] like [offset => 10]
+     */
+    private function parseQueryArguments(RequestInterface $message) : array
+    {
+        if ($message instanceof ServerRequestInterface) {
+            $parsedQueryArguments = $message->getQueryParams();
+        } else {
+            parse_str($message->getUri()->getQuery(), $parsedQueryArguments);
+        }
+
+        return $parsedQueryArguments;
     }
 }
