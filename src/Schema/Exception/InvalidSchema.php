@@ -6,6 +6,7 @@ namespace League\OpenAPIValidation\Schema\Exception;
 
 use RuntimeException;
 use Throwable;
+use function sprintf;
 
 // Something wrong with the OpenAPI schema. This sort of errors should have been caught by cebe's underlying package.
 final class InvalidSchema extends RuntimeException
@@ -23,6 +24,6 @@ final class InvalidSchema extends RuntimeException
 
     public static function becauseTypeIsNotKnown(string $type) : self
     {
-        return new static("Type '%s' is unexpected.", $type);
+        return new static(sprintf("Type '%s' is unexpected.", $type));
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\spec\Callback;
 use cebe\openapi\spec\Header;
 use cebe\openapi\spec\Header as HeaderSpec;
 use cebe\openapi\spec\MediaType;
@@ -16,6 +17,7 @@ use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Response as ResponseSpec;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
+use League\OpenAPIValidation\PSR7\Exception\NoCallback;
 use League\OpenAPIValidation\PSR7\Exception\NoOperation;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
@@ -47,7 +49,12 @@ final class SpecFinder
             throw NoOperation::fromPathAndMethod($addr->path(), $addr->method());
         }
 
-        return $pathSpec->getOperations()[$addr->method()];
+        $operation = $pathSpec->getOperations()[$addr->method()];
+        if ($addr instanceof CallbackAddress) {
+            return $this->findCallbackInOperation($addr, $operation);
+        }
+
+        return $operation;
     }
 
     /**
@@ -283,5 +290,24 @@ final class SpecFinder
         }
 
         return $cookieSpecs;
+    }
+
+    /**
+     * @throws NoCallback
+     */
+    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation) : Operation
+    {
+        $callbacks = $operation->callbacks;
+        if (! isset($callbacks[$addr->callbackName()])) {
+            throw NoCallback::fromCallbackPath($addr->path(), $addr->method(), $addr->callbackName(), $addr->callbackMethod());
+        }
+
+        /** @var Callback $callback */
+        $callback = $callbacks[$addr->callbackName()];
+        if (! isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
+            throw NoCallback::fromCallbackPath($addr->path(), $addr->method(), $addr->callbackName(), $addr->callbackMethod());
+        }
+
+        return $callback->getRequest()->getOperations()[$addr->callbackMethod()];
     }
 }
