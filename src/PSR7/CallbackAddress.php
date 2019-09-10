@@ -9,10 +9,10 @@ use function sprintf;
 class CallbackAddress extends OperationAddress
 {
     /** @var string */
-    private $callbackName;
+    protected $callbackName;
 
     /** @var string */
-    private $callbackMethod;
+    protected $callbackMethod;
 
     public function __construct(string $path, string $method, string $callbackName, string $callbackMethod)
     {
