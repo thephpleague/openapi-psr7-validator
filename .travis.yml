@@ -4,14 +4,13 @@ php:
   - nightly
   - "7.3"
   - "7.2"
-  - "7.1"
 
 env:
   - RUN_PHPUNIT=1 CSCHECK=0
 
 matrix:
   include:
-    - php: "7.1"
+    - php: "7.2"
       env: RUN_PHPUNIT=0 CSCHECK=1
 
   allow_failures:

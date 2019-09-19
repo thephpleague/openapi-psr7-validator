@@ -15,12 +15,12 @@ use OpenAPIValidation\PSR7\Validators\PathValidator;
 use OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;
 use OpenAPIValidation\PSR7\Validators\SecurityValidator;
 use OpenAPIValidation\PSR7\Validators\ValidatorChain;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface;
 use Throwable;
 use function count;
 use function strtolower;
 
-class ServerRequestValidator implements ReusableSchema
+class RequestValidator implements ReusableSchema
 {
     /** @var OpenApi */
     protected $openApi;
@@ -51,16 +51,16 @@ class ServerRequestValidator implements ReusableSchema
      *
      * @throws ValidationFailed
      */
-    public function validate(ServerRequestInterface $serverRequest) : OperationAddress
+    public function validate(RequestInterface $request) : OperationAddress
     {
-        $path   = $serverRequest->getUri()->getPath();
-        $method = strtolower($serverRequest->getMethod());
+        $path   = $request->getUri()->getPath();
+        $method = strtolower($request->getMethod());
 
         // 0. Find matching operations
         // If there is only one - then proceed with checking
         // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
         // "This request matched operations A,B and C, but mismatched its schemas."
-        $matchingOperationsAddrs = $this->findMatchingOperations($serverRequest);
+        $matchingOperationsAddrs = $this->findMatchingOperations($request);
 
         if (! $matchingOperationsAddrs) {
             throw NoOperation::fromPathAndMethod($path, $method);
@@ -68,7 +68,7 @@ class ServerRequestValidator implements ReusableSchema
 
         // Single match is the most desirable variant, because we reduce ambiguity down to zero
         if (count($matchingOperationsAddrs) === 1) {
-            $this->validator->validate($matchingOperationsAddrs[0], $serverRequest);
+            $this->validator->validate($matchingOperationsAddrs[0], $request);
 
             return $matchingOperationsAddrs[0];
         }
@@ -77,7 +77,7 @@ class ServerRequestValidator implements ReusableSchema
         // then we cannot say reliably which one intended to match
         foreach ($matchingOperationsAddrs as $matchedAddr) {
             try {
-                $this->validator->validate($matchedAddr, $serverRequest);
+                $this->validator->validate($matchedAddr, $request);
 
                 return $matchedAddr; // Good, operation matched and request is valid against it, stop here
             } catch (Throwable $e) {
@@ -96,7 +96,7 @@ class ServerRequestValidator implements ReusableSchema
      *
      * @return OperationAddress[]
      */
-    private function findMatchingOperations(ServerRequestInterface $request) : array
+    private function findMatchingOperations(RequestInterface $request) : array
     {
         $pathFinder = new PathFinder($this->openApi, $request->getUri(), $request->getMethod());
 

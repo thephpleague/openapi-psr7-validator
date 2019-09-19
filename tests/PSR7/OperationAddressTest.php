@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenAPIValidationTests\PSR7;
 
+use OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use OpenAPIValidation\PSR7\OperationAddress;
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +13,7 @@ final class OperationAddressTest extends TestCase
     /**
      * @return mixed[][]
      */
-    public function dataProviderParse() : array
+    public function dataProviderParseGreen() : array
     {
         return [
             ['/users/{id}/group/{group}', '/users/12/group/admin?a=2', ['id' => '12', 'group' => 'admin']],
@@ -26,7 +27,7 @@ final class OperationAddressTest extends TestCase
     /**
      * @param mixed[] $result
      *
-     * @dataProvider dataProviderParse
+     * @dataProvider dataProviderParseGreen
      */
     public function testItParsesParams(string $spec, string $url, array $result) : void
     {
@@ -35,6 +36,29 @@ final class OperationAddressTest extends TestCase
         $parsed = $addr->parseParams($url);
 
         $this->assertSame($result, $parsed);
+    }
+
+    /**
+     * @return mixed[][]
+     */
+    public function dataProviderParseRed() : array
+    {
+        return [
+            ['/users/{id}/', '/users/'],
+            ['/users/{id}/action/{action}', '/users/10/action/'],
+        ];
+    }
+
+    /**
+     * @param mixed[] $result
+     *
+     * @dataProvider dataProviderParseRed
+     */
+    public function testItThrowsIfParsingNotPossible(string $spec, string $url) : void
+    {
+        $this->expectException(InvalidPath::class);
+        $addr   = new OperationAddress($spec, 'post');
+        $parsed = $addr->parseParams($url);
     }
 
     /**

@@ -7,7 +7,7 @@ namespace OpenAPIValidation\PSR7;
 use cebe\openapi\spec\OpenApi;
 use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
-use OpenAPIValidation\PSR7\Validators\CookiesValidator;
+use OpenAPIValidation\PSR7\Validators\CookiesValidator\CookiesValidator;
 use OpenAPIValidation\PSR7\Validators\HeadersValidator;
 use OpenAPIValidation\PSR7\Validators\PathValidator;
 use OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;

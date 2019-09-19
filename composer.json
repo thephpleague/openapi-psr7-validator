@@ -29,9 +29,10 @@
         }
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-json": "*",
         "cebe/php-openapi": "^1.2",
+        "dflydev/fig-cookies": "^2.0",
         "psr/cache": "^1.0",
         "psr/http-message": "^1.0",
         "psr/http-server-middleware": "^1.0",

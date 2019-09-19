@@ -16,7 +16,7 @@ use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface;
 use function count;
 use function preg_match;
 use function sprintf;
@@ -43,7 +43,8 @@ final class SecurityValidator implements MessageValidator
         // Items in a hashmap are combined using logical AND, and array items are combined using logical OR.
         // Security schemes combined via OR are alternatives – any one can be used in the given context.
         // Security schemes combined via AND must be used simultaneously in the same request.
-        if (! ($message instanceof ServerRequestInterface)) {
+        // @see https://swagger.io/docs/specification/authentication/
+        if (! ($message instanceof RequestInterface)) {
             return;
         }
 
@@ -53,7 +54,7 @@ final class SecurityValidator implements MessageValidator
     /**
      * @throws ValidationFailed
      */
-    private function validateServerRequest(OperationAddress $addr, ServerRequestInterface $request) : void
+    private function validateServerRequest(OperationAddress $addr, RequestInterface $request) : void
     {
         $securitySpecs = $this->finder->findSecuritySpecs($addr);
 
@@ -82,7 +83,7 @@ final class SecurityValidator implements MessageValidator
      */
     private function validateSecurityScheme(
         OperationAddress $addr,
-        ServerRequestInterface $request,
+        RequestInterface $request,
         SecurityRequirement $spec
     ) : void {
         // Here I implement AND-union
@@ -93,7 +94,7 @@ final class SecurityValidator implements MessageValidator
         foreach ($spec->getSerializableData() as $securitySchemeName => $scopes) {
             if (! isset($securitySchemesSpecs[$securitySchemeName])) {
                 throw new InvalidSchema(
-                    sprintf("Mentioned security scheme '%s' not found in OAS spec", $securitySchemeName)
+                    sprintf("Mentioned security scheme '%s' not found in the given spec", $securitySchemeName)
                 );
             }
             $securityScheme = $securitySchemesSpecs[$securitySchemeName];
@@ -118,7 +119,7 @@ final class SecurityValidator implements MessageValidator
      */
     private function validateHTTPSecurityScheme(
         OperationAddress $addr,
-        ServerRequestInterface $request,
+        RequestInterface $request,
         SecurityScheme $securityScheme
     ) : void {
         // Supported schemas: https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
@@ -159,7 +160,7 @@ final class SecurityValidator implements MessageValidator
      */
     private function validateApiKeySecurityScheme(
         OperationAddress $addr,
-        ServerRequestInterface $request,
+        RequestInterface $request,
         SecurityScheme $securityScheme
     ) : void {
         switch ($securityScheme->in) {
