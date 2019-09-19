@@ -1,6 +1,6 @@
-[![Latest Stable Version](https://poser.pugx.org/lezhnev74/openapi-psr7-validator/v/stable)](https://packagist.org/packages/lezhnev74/openapi-psr7-validator)
-[![Build Status](https://travis-ci.org/lezhnev74/openapi-psr7-validator.svg?branch=master)](https://travis-ci.org/lezhnev74/openapi-psr7-validator)
-[![License](https://poser.pugx.org/lezhnev74/openapi-psr7-validator/license)](https://packagist.org/packages/lezhnev74/openapi-psr7-validator)
+[![Latest Stable Version](https://poser.pugx.org/league/openapi-psr7-validator/v/stable)](https://packagist.org/packages/league/openapi-psr7-validator)
+[![Build Status](https://travis-ci.org/league/openapi-psr7-validator.svg?branch=master)](https://travis-ci.org/lezhnev74/openapi-psr7-validator)
+[![License](https://poser.pugx.org/league/openapi-psr7-validator/license)](https://packagist.org/packages/lezhnev74/openapi-psr7-validator)
 ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)
 
 # OpenAPI PSR-7 Message (HTTP Request/Response) Validator
