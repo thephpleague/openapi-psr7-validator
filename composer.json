@@ -1,5 +1,5 @@
 {
-    "name": "lezhnev74/openapi-psr7-validator",
+    "name": "league/openapi-validator",
     "description": "Validate PSR-7 messages against OpenAPI (3.0.2) specifications \nexpressed in YAML or JSON",
     "keywords": [
         "OpenAPI",
@@ -7,16 +7,8 @@
         "http",
         "validation"
     ],
-    "homepage": "https://github.com/lezhnev74/openapi-psr7-validator",
+    "homepage": "https://github.com/thephpleague/openapi-psr7-validator",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Dmitry Lezhnev",
-            "email": "lezhnev.work@gmail.com",
-            "homepage": "https://github.com/lezhnev74/openapi-psr7-validator",
-            "role": "Developer"
-        }
-    ],
     "type": "library",
     "autoload": {
         "psr-4": {
