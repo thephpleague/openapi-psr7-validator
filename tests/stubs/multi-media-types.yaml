@@ -1,0 +1,26 @@
+openapi: 3.0.2
+info:
+  title: Multi Media Types API
+  version: 0.0.1
+paths:
+  /get-multi-media-type:
+    get:
+      summary: Get multi-media-type body
+      operationId: get-multi-media-type
+      responses:
+        200:
+          description: media image
+          content:
+            'image/png':
+              schema:
+                type: string
+                format: binary
+            'image/*':
+              schema:
+                type: string
+                format: binary
+            '*/*':
+              schema:
+                type: string
+                format: binary
+

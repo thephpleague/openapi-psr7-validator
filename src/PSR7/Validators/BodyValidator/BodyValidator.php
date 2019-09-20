@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenAPIValidation\PSR7\Validators\BodyValidator;
 
+use cebe\openapi\spec\MediaType;
+use cebe\openapi\spec\Reference;
 use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use OpenAPIValidation\PSR7\MessageValidator;
 use OpenAPIValidation\PSR7\OperationAddress;
@@ -47,12 +49,12 @@ final class BodyValidator implements MessageValidator
         }
 
         // does the response contain one of described media types?
-        if (! isset($mediaTypeSpecs[$contentType])) {
+        if (! ($mediaTypeSpec = $this->matchMediaTypeSpec($mediaTypeSpecs, $contentType))) {
             throw InvalidHeaders::becauseContentTypeIsNotExpected($contentType, $addr);
         }
 
         // detect the schema for the media type
-        $schema = $mediaTypeSpecs[$contentType]->schema;
+        $schema = $mediaTypeSpec->schema;
         if (! $schema) {
             // no schema means no validation
             // note: schema is REQUIRED to define the input parameters to the operation when using multipart content
@@ -85,5 +87,35 @@ final class BodyValidator implements MessageValidator
         $contentType = strtok($contentType, ';');
 
         return $contentType;
+    }
+
+    /**
+     * Match the spec from media type specs for the given media type.
+     *
+     * @param Reference[]|MediaType[] $mediaTypeSpecs
+     * @param string                  $mediaType
+     *
+     * @return null|Reference|MediaType
+     */
+    private function matchMediaTypeSpec(array $mediaTypeSpecs, string $mediaType)
+    {
+        [$mediaTypeType,] = explode('/', $mediaType);
+
+        // Allow sub-type ranges and match all, like 'image/*', '*/*'
+        // In the order: type/subtype > type/* > */*
+        // see: https://tools.ietf.org/html/rfc7231#section-5.3.2
+        $candidateContentTypes = [
+            $mediaType,
+            $mediaTypeType .'/*',
+            '*/*',
+        ];
+
+        foreach ($candidateContentTypes as $type) {
+            if (isset($mediaTypeSpecs[$type])) {
+                return $mediaTypeSpecs[$type];
+            }
+        }
+
+        return null;
     }
 }
