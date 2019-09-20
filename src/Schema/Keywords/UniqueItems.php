@@ -39,7 +39,7 @@ class UniqueItems extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        if (array_unique($data) !== count($data)) {
+        if (count(array_unique($data)) !== count($data)) {
             throw KeywordMismatch::fromKeyword('uniqueItems', $data, 'All array items must be unique');
         }
     }
