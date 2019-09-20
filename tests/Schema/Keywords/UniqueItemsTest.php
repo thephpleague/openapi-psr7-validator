@@ -58,6 +58,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Exception expected');
         } catch (KeywordMismatch $e) {
             $this->assertEquals('uniqueItems', $e->keyword());
         }
