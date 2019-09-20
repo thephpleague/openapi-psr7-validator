@@ -10,7 +10,7 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class UniqueItemsTest extends SchemaValidatorTest
 {
-    public function testItValidatesUniqueItemsGreen() : void
+    public function testItValidatesUniqueItemsNoValidationGreen() : void
     {
         $spec = <<<SPEC
 schema:
@@ -21,6 +21,23 @@ SPEC;
 
         $schema = $this->loadRawSchema($spec);
         $data   = [1, 1];
+
+        (new SchemaValidator())->validate($data, $schema);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesUniqueItemsGreen() : void
+    {
+        $spec = <<<SPEC
+schema:
+  type: array
+  items:
+    type: integer
+  uniqueItems: true
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = [1, 2];
 
         (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
