@@ -12,6 +12,7 @@ use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\SpecFinder;
 use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use Psr\Http\Message\MessageInterface;
+use function explode;
 use function preg_match;
 use function strtok;
 
@@ -49,7 +50,8 @@ final class BodyValidator implements MessageValidator
         }
 
         // does the response contain one of described media types?
-        if (! ($mediaTypeSpec = $this->matchMediaTypeSpec($mediaTypeSpecs, $contentType))) {
+        $mediaTypeSpec = $this->matchMediaTypeSpec($mediaTypeSpecs, $contentType);
+        if ($mediaTypeSpec === null) {
             throw InvalidHeaders::becauseContentTypeIsNotExpected($contentType, $addr);
         }
 
@@ -93,20 +95,19 @@ final class BodyValidator implements MessageValidator
      * Match the spec from media type specs for the given media type.
      *
      * @param Reference[]|MediaType[] $mediaTypeSpecs
-     * @param string                  $mediaType
      *
-     * @return null|Reference|MediaType
+     * @return Reference|MediaType|null
      */
     private function matchMediaTypeSpec(array $mediaTypeSpecs, string $mediaType)
     {
-        [$mediaTypeType,] = explode('/', $mediaType);
+        [$mediaTypeType, $mediaTypeSubType] = explode('/', $mediaType);
 
         // Allow sub-type ranges and match all, like 'image/*', '*/*'
         // In the order: type/subtype > type/* > */*
         // see: https://tools.ietf.org/html/rfc7231#section-5.3.2
         $candidateContentTypes = [
             $mediaType,
-            $mediaTypeType .'/*',
+            $mediaTypeType . '/*',
             '*/*',
         ];
 
