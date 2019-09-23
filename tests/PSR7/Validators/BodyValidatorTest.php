@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\parse_request;
@@ -32,30 +33,34 @@ HTTP
             [
                 __DIR__ . '/../../stubs/multi-media-types.yaml',
                 <<<HTTP
-GET /get-multi-media-type HTTP/1.1
-Accept: image/png
+POST /post-media-range HTTP/1.1
+Content-Type: text/plain
+Content-Length: 3
 
+abc
+HTTP
+,
+                new OperationAddress('/post-media-range', 'post'),
+            ],
+            [
+                __DIR__ . '/../../stubs/multi-media-types.yaml',
+                <<<HTTP
+POST /post-media-range HTTP/1.1
+Content-Type: text/html
+Content-Length: 13
 
+<html></html>
 HTTP
 ,
             ],
             [
                 __DIR__ . '/../../stubs/multi-media-types.yaml',
                 <<<HTTP
-GET /get-multi-media-type HTTP/1.1
-Accept: image/*
+POST /post-media-range HTTP/1.1
+Content-Type: application/json
+Content-Length: 1
 
-
-HTTP
-,
-            ],
-            [
-                __DIR__ . '/../../stubs/multi-media-types.yaml',
-                <<<HTTP
-GET /get-multi-media-type HTTP/1.1
-Accept: */*
-
-
+1
 HTTP
 ,
             ],
@@ -76,7 +81,7 @@ HTTP
         );
 
         $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
-        $validator->validate($serverRequest);
+        $opAddress = $validator->validate($serverRequest);
         $this->addToAssertionCount(1);
     }
 }

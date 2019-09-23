@@ -65,11 +65,11 @@ final class BodyValidator implements MessageValidator
 
         // Validate message body
         if (preg_match('#^multipart/.*#', $contentType)) {
-            (new MultipartValidator($mediaTypeSpecs[$contentType], $contentType))->validate($addr, $message);
+            (new MultipartValidator($mediaTypeSpec, $contentType))->validate($addr, $message);
         } elseif (preg_match('#^application/x-www-form-urlencoded$#', $contentType)) {
-            (new FormUrlencodedValidator($mediaTypeSpecs[$contentType], $contentType))->validate($addr, $message);
+            (new FormUrlencodedValidator($mediaTypeSpec, $contentType))->validate($addr, $message);
         } else {
-            (new UnipartValidator($mediaTypeSpecs[$contentType], $contentType))->validate($addr, $message);
+            (new UnipartValidator($mediaTypeSpec, $contentType))->validate($addr, $message);
         }
     }
 
