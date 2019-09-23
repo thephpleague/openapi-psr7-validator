@@ -10,51 +10,201 @@ use OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class UniqueItemsTest extends SchemaValidatorTest
 {
-    public function testItValidatesUniqueItemsNoValidationGreen() : void
+    /**
+     * @return array<array<string, array<mixed>>>>
+     */
+    public function dataProviderGreen() : array
     {
-        $spec = <<<SPEC
+        return [
+            [
+                <<<SPEC
 schema:
   type: array
   items:
     type: integer
-SPEC;
-
-        $schema = $this->loadRawSchema($spec);
-        $data   = [1, 1];
-
-        (new SchemaValidator())->validate($data, $schema);
-        $this->addToAssertionCount(1);
-    }
-
-    public function testItValidatesUniqueItemsGreen() : void
-    {
-        $spec = <<<SPEC
+SPEC
+,
+                [],
+            ],
+            [
+                <<<SPEC
 schema:
   type: array
   items:
     type: integer
-  uniqueItems: true
-SPEC;
-
-        $schema = $this->loadRawSchema($spec);
-        $data   = [1, 2];
-
-        (new SchemaValidator())->validate($data, $schema);
-        $this->addToAssertionCount(1);
-    }
-
-    public function testItValidatesUniqueItemsRed() : void
-    {
-        $spec = <<<SPEC
+SPEC
+,
+                [1, 1],
+            ],
+            [
+                <<<SPEC
 schema:
   type: array
   items:
     type: integer
   uniqueItems: true
-SPEC;
+SPEC
+,
+                [1, 2],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: boolean
+  uniqueItems: true
+SPEC
+,
+                [true, false],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: string
+  uniqueItems: true
+SPEC
+,
+                ['one', 'oNe'],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: object
+  uniqueItems: true
+SPEC
+,
+                [(object) [1, 2], (object) [3, 4]],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: array
+    items:
+        type: object
+  uniqueItems: true
+SPEC
+,
+                [[(object) [1, 2], (object) [3, 4]], [(object) [1, 2], (object) [1, 2]]],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: array
+    items:
+        type: object
+    uniqueItems: true
+  uniqueItems: true
+SPEC
+,
+                [[(object) [1, 2], (object) [3, 4]], [(object) [1, 2], (object) [3, 5]]],
+            ],
+        ];
+    }
 
+    /**
+     * @return array<array<string, array<mixed>>>>
+     */
+    public function dataProviderRed() : array
+    {
+        return [
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: integer
+  uniqueItems: true
+SPEC,
+                [1, 1],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: boolean
+  uniqueItems: true
+SPEC,
+                [true, true],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: string
+  uniqueItems: true
+SPEC,
+                ['one', 'one'],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: object
+  uniqueItems: true
+SPEC,
+                [(object) [1, 2], (object) [1, 2]],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: array
+    items:
+        type: object
+  uniqueItems: true
+SPEC,
+                [[(object) [1, 2], (object) [3, 4]], [(object) [1, 2], (object) [3, 4]]],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
+    type: array
+    items:
+        type: object
+    uniqueItems: true
+  uniqueItems: true
+SPEC,
+                [[(object) [1, 2], (object) [3, 4]], [(object) [1, 2], (object) [1, 2]]],
+            ],
+        ];
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @dataProvider dataProviderGreen
+     */
+    public function testsGreen(string $spec, array $data) : void
+    {
         $schema = $this->loadRawSchema($spec);
-        $data   = [1, 1];
+
+        (new SchemaValidator())->validate($data, $schema);
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @dataProvider dataProviderRed
+     */
+    public function testsRed(string $spec, array $data) : void
+    {
+        $schema = $this->loadRawSchema($spec);
 
         try {
             (new SchemaValidator())->validate($data, $schema);
