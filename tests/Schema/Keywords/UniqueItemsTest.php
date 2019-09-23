@@ -123,7 +123,8 @@ schema:
   items:
     type: integer
   uniqueItems: true
-SPEC,
+SPEC
+,
                 [1, 1],
             ],
             [
@@ -133,7 +134,8 @@ schema:
   items:
     type: boolean
   uniqueItems: true
-SPEC,
+SPEC
+,
                 [true, true],
             ],
             [
@@ -143,7 +145,8 @@ schema:
   items:
     type: string
   uniqueItems: true
-SPEC,
+SPEC
+,
                 ['one', 'one'],
             ],
             [
@@ -153,7 +156,8 @@ schema:
   items:
     type: object
   uniqueItems: true
-SPEC,
+SPEC
+,
                 [(object) [1, 2], (object) [1, 2]],
             ],
             [
@@ -165,7 +169,8 @@ schema:
     items:
         type: object
   uniqueItems: true
-SPEC,
+SPEC
+,
                 [[(object) [1, 2], (object) [3, 4]], [(object) [1, 2], (object) [3, 4]]],
             ],
             [
@@ -178,7 +183,8 @@ schema:
         type: object
     uniqueItems: true
   uniqueItems: true
-SPEC,
+SPEC
+,
                 [[(object) [1, 2], (object) [3, 4]], [(object) [1, 2], (object) [1, 2]]],
             ],
         ];
