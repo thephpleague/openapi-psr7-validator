@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\parse_request;
@@ -28,36 +29,43 @@ Content-Type: application/x-www-form-urlencoded; charset=utf-8
 address=Moscow%2C+ulitsa+Rusakova%2C+d.15&id=59731930-a95a-11e9-a2a3-2a2ae2dbcce4&phones%5B0%5D=123-456&phones%5B1%5D=456-789&phones%5B%5D=101-112
 HTTP
 ,
+                new OperationAddress('/urlencoded/scalar-types', 'post'),
             ],
             [
                 __DIR__ . '/../../stubs/multi-media-types.yaml',
                 <<<HTTP
-GET /get-multi-media-type HTTP/1.1
-Accept: image/png
+POST /post-media-range HTTP/1.1
+Content-Type: text/plain
+Content-Length: 3
 
-
+abc
 HTTP
 ,
+                new OperationAddress('/post-media-range', 'post'),
             ],
             [
                 __DIR__ . '/../../stubs/multi-media-types.yaml',
                 <<<HTTP
-GET /get-multi-media-type HTTP/1.1
-Accept: image/*
+POST /post-media-range HTTP/1.1
+Content-Type: text/html
+Content-Length: 13
 
-
+<html></html>
 HTTP
 ,
+                new OperationAddress('/post-media-range', 'post'),
             ],
             [
                 __DIR__ . '/../../stubs/multi-media-types.yaml',
                 <<<HTTP
-GET /get-multi-media-type HTTP/1.1
-Accept: */*
+POST /post-media-range HTTP/1.1
+Content-Type: application/json
+Content-Length: 1
 
-
+1
 HTTP
 ,
+                new OperationAddress('/post-media-range', 'post'),
             ],
         ];
     }
@@ -65,7 +73,7 @@ HTTP
     /**
      * @dataProvider dataProviderGreen
      */
-    public function testValidateGreen(string $specFile, string $message) : void
+    public function testValidateGreen(string $specFile, string $message, OperationAddress $expectedOpAddress) : void
     {
         $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
         $serverRequest = new ServerRequest(
@@ -76,7 +84,7 @@ HTTP
         );
 
         $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
-        $validator->validate($serverRequest);
-        $this->addToAssertionCount(1);
+        $opAddress = $validator->validate($serverRequest);
+        $this->assertEquals($expectedOpAddress, $opAddress);
     }
 }
