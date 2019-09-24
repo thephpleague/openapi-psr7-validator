@@ -51,7 +51,7 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::BOOLEAN:
-                if (is_scalar($data) && ! is_bool($data) && ! preg_match('#^(true|false)$#i', (string) $data)) {
+                if (! is_bool($data) && ! preg_match('#^(true|false)$#i', (string) $data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                 }
                 break;
@@ -61,7 +61,8 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::INTEGER:
-                if (is_scalar($data) && ! is_int($data) && ! preg_match('#^[-+]?\d+$#', (string) $data)) {
+                $stringifiedInt = preg_match('#^[-+]?\d+$#', (string) $data) && !is_float($data);
+                if (is_scalar($data) && ! is_int($data) && !$stringifiedInt) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;
