@@ -8,8 +8,10 @@ use OpenAPIValidation\Schema\Exception\InvalidSchema;
 use OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+use function array_map;
 use function array_unique;
 use function count;
+use function var_export;
 
 class UniqueItems extends BaseKeyword
 {
@@ -39,7 +41,14 @@ class UniqueItems extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        if (count(array_unique($data)) !== count($data)) {
+        $items = $data;
+        if (count($data)) {
+            $items = array_map(static function ($item) {
+                return var_export($item, true);
+            }, $data);
+        }
+
+        if (count(array_unique($items)) !== count($items)) {
             throw KeywordMismatch::fromKeyword('uniqueItems', $data, 'All array items must be unique');
         }
     }
