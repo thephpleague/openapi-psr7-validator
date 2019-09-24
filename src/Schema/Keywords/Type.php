@@ -14,6 +14,7 @@ use RuntimeException;
 use function class_exists;
 use function is_array;
 use function is_bool;
+use function is_float;
 use function is_int;
 use function is_numeric;
 use function is_object;
@@ -51,7 +52,8 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::BOOLEAN:
-                if (is_scalar($data) && ! is_bool($data) && ! preg_match('#^(true|false)$#i', (string) $data)) {
+                $stringifiedBool = is_scalar($data) && preg_match('#^(true|false)$#i', (string) $data);
+                if (! is_bool($data) && ! $stringifiedBool) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                 }
                 break;
@@ -61,7 +63,8 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::INTEGER:
-                if (is_scalar($data) && ! is_int($data) && ! preg_match('#^[-+]?\d+$#', (string) $data)) {
+                $stringifiedInt = is_scalar($data) && preg_match('#^[-+]?\d+$#', (string) $data) && ! is_float($data);
+                if (! is_int($data) && ! $stringifiedInt) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;
