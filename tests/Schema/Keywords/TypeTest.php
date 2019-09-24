@@ -7,6 +7,7 @@ namespace OpenAPIValidationTests\Schema\Keywords;
 use OpenAPIValidation\Schema\Exception\TypeMismatch;
 use OpenAPIValidation\Schema\SchemaValidator;
 use OpenAPIValidationTests\Schema\SchemaValidatorTest;
+use stdClass;
 
 final class TypeTest extends SchemaValidatorTest
 {
@@ -91,6 +92,7 @@ SPEC;
             ['boolean', [1, 2]],
             ['number', []],
             ['integer', 12.55],
+            ['integer', new stdClass()],
             ['integer', 1.0],
         ];
     }
