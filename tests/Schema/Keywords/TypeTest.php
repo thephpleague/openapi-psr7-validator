@@ -61,27 +61,37 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesTypeRed() : void
+    /**
+     * @param mixed $invalidValue
+     *
+     * @dataProvider invalidDataProvider
+     */
+    public function testItValidatesTypeRed(string $type, $invalidValue) : void
     {
-        $typedValues = [
-            'string'  => 12,
-            'object'  => 'not object',
-            'array'   => ['a' => 1, 'b' => 2], // this is not a plain array (ala JSON)
-            'boolean' => [1, 2],
-            'number'  => [],
-            'integer' => 12.55,
-        ];
-
-        foreach ($typedValues as $type => $invalidValue) {
-            $spec = <<<SPEC
+        $spec = <<<SPEC
 schema:
-  type: $type
+  type: $type\n
 SPEC;
 
-            $schema = $this->loadRawSchema($spec);
+        $schema = $this->loadRawSchema($spec);
 
-            $this->expectException(TypeMismatch::class);
-            (new SchemaValidator())->validate($invalidValue, $schema);
-        }
+        $this->expectException(TypeMismatch::class);
+        (new SchemaValidator())->validate($invalidValue, $schema);
+    }
+
+    /**
+     * @return array<array<string, mixed>>
+     */
+    public function invalidDataProvider() : array
+    {
+        return [
+            ['string', 12],
+            ['object', 'not object'],
+            ['array', ['a' => 1, 'b' => 2]], // this is not a plain array (a-la JSON)
+            ['boolean', [1, 2]],
+            ['number', []],
+            ['integer', 12.55],
+            ['integer', 1.0],
+        ];
     }
 }
