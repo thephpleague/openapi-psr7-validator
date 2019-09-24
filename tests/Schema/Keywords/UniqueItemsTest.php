@@ -52,6 +52,17 @@ SPEC
 schema:
   type: array
   items:
+    type: number
+  uniqueItems: true
+SPEC
+,
+                [1, 1.0],
+            ],
+            [
+                <<<SPEC
+schema:
+  type: array
+  items:
     type: boolean
   uniqueItems: true
 SPEC
