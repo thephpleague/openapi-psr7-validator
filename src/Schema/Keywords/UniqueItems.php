@@ -11,7 +11,6 @@ use Respect\Validation\Validator;
 use function array_map;
 use function array_unique;
 use function count;
-use function is_array;
 use function var_export;
 
 class UniqueItems extends BaseKeyword
@@ -43,7 +42,7 @@ class UniqueItems extends BaseKeyword
         }
 
         $items = $data;
-        if (is_array($data) && count($data)) {
+        if (count($data)) {
             $items = array_map(static function ($item) {
                 return var_export($item, true);
             }, $data);
