@@ -1,4 +1,4 @@
-title:
-tagline:
-description:
+title: "OpenAPI PSR-7 validator"
+tagline: "Schema-driven API validation"
+description: "Simple library to validate your request, response or custom data against OAS3 schema"
 google_analytics_tracking_id:
