@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\PSR7\SchemaFactory;
 
 use OpenAPIValidation\PSR7\CacheableSchemaFactory;
-use function crc32;
+use function hash;
 
 abstract class StringFactory implements CacheableSchemaFactory
 {
@@ -19,7 +19,7 @@ abstract class StringFactory implements CacheableSchemaFactory
 
     public function getCacheKey() : string
     {
-        return 'openapi_' . crc32($this->getContent());
+        return 'openapi_' . hash('crc32b', $this->getContent());
     }
 
     protected function getContent() : string
