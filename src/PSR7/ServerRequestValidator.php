@@ -49,6 +49,7 @@ class ServerRequestValidator implements ReusableSchema
     /**
      * @return OperationAddress which matched the Request
      *
+     * @throws MultipleOperationsMismatchForRequest
      * @throws ValidationFailed
      */
     public function validate(ServerRequestInterface $serverRequest) : OperationAddress
