@@ -126,8 +126,8 @@ final class SchemaValidator implements Validator
                 (new Items($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->items);
             }
 
-            $additionalProperties = $schema->additionalProperties ?? null; // defaults to true
             if ($schema->type === CebeType::OBJECT) {
+                $additionalProperties = $schema->additionalProperties ?? null; // defaults to true
                 if ((isset($schema->properties) && count($schema->properties)) || $additionalProperties) {
                     (new Properties($schema, $this->validationStrategy, $breadCrumb))->validate(
                         $data,
