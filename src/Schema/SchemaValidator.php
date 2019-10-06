@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidation\Schema;
 
 use cebe\openapi\spec\Schema as CebeSchema;
+use cebe\openapi\spec\Type as CebeType;
 use OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use OpenAPIValidation\Schema\Keywords\AllOf;
 use OpenAPIValidation\Schema\Keywords\AnyOf;
@@ -125,9 +126,15 @@ final class SchemaValidator implements Validator
                 (new Items($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->items);
             }
 
-            if (isset($schema->properties) && count($schema->properties)) {
-                $additionalProperties = $schema->additionalProperties ?? null; // defaults to true
-                (new Properties($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->properties, $additionalProperties);
+            $additionalProperties = $schema->additionalProperties ?? null; // defaults to true
+            if ($schema->type === CebeType::OBJECT) {
+                if ((isset($schema->properties) && count($schema->properties)) || $additionalProperties) {
+                    (new Properties($schema, $this->validationStrategy, $breadCrumb))->validate(
+                        $data,
+                        $schema->properties,
+                        $additionalProperties
+                    );
+                }
             }
 
             if (isset($schema->allOf) && count($schema->allOf)) {
