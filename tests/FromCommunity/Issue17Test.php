@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenAPIValidationTests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use OpenAPIValidation\PSR7\OperationAddress;
 use OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +15,7 @@ final class Issue17Test extends TestCase
     /**
      * @see https://github.com/thephpleague/openapi-psr7-validator/issues/17
      */
-    public function testIssue57() : void
+    public function testIssue17() : void
     {
         $yaml = /** @lang yaml */
             <<<YAML
@@ -63,8 +64,9 @@ JSON
         );
 
         $address = new OperationAddress('/products.create', 'post');
-        $validator->validate($address, $psrRequest);
 
-        $this->addToAssertionCount(1);
+        $this->expectException(ValidationFailed::class);
+
+        $validator->validate($address, $psrRequest);
     }
 }
