@@ -10,8 +10,10 @@ use function preg_match;
 use function strpos;
 use function strtoupper;
 
-class Rfc3339
+class Rfc3339DatetimeFactory
 {
+    // RFC 3339, section 5.6 DateTime format
+    // for example, 2017-07-21T17:32:28Z or with optional fractional seconds, 2017-07-21T17:32:28.123Z
     public const RFC3339_PATTERN = '/^(\d{4}-\d{2}-\d{2}[T ]{1}\d{2}:\d{2}:\d{2})(\.\d+)?(Z|([+-]\d{2}):?(\d{2}))$/';
 
     public static function createFromString(string $string) : ?DateTime

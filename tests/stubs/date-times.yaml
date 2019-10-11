@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000'
+paths:
+  /products.create:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                createdAt:
+                  type: string
+                  format: 'date-time'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: string
