@@ -42,7 +42,7 @@ class Type extends BaseKeyword
     {
         switch ($type) {
             case CebeType::OBJECT:
-                if (! is_object($data) && ! is_array($data)) {
+                if (! is_object($data) && ! (is_array($data) && ArrayHelper::isAssoc($data))) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
                 }
                 break;
