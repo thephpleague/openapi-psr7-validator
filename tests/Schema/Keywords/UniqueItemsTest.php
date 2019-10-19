@@ -89,7 +89,7 @@ schema:
   uniqueItems: true
 SPEC
 ,
-                [(array) (object) [1, 2], (array) (object) [3, 4]],
+                [['a' => 1, 'b' => 2], ['a' => 3, 'b' => 4]],
             ],
             [
                 <<<SPEC
@@ -102,7 +102,7 @@ schema:
   uniqueItems: true
 SPEC
 ,
-                [[(array) (object) [1, 2], (array) (object) [3, 4]], [(array) (object) [1, 2], (array) (object) [1, 2]]],
+                [[['a' => 1, 'b' => 2], ['a' => 3, 'b' => 4]], [['a' => 1, 'b' => 2], ['a' => 1, 'b' => 2]]],
             ],
             [
                 <<<SPEC
@@ -116,7 +116,7 @@ schema:
   uniqueItems: true
 SPEC
 ,
-                [[(array) (object) [1, 2], (array) (object) [3, 4]], [(array) (object) [1, 2], (array) (object) [3, 5]]],
+                [[['a' => 1, 'b' => 2], ['a' => 3, 'b' => 4]], [['a' => 1, 'b' => 2], ['a' => 3, 'b' => 5]]],
             ],
         ];
     }
@@ -169,7 +169,7 @@ schema:
   uniqueItems: true
 SPEC
 ,
-                [(array) (object) [1, 2], (array) (object) [1, 2]],
+                [['a' => 1, 'b' => 2], ['a' => 1, 'b' => 2]],
             ],
             [
                 <<<SPEC
@@ -182,7 +182,7 @@ schema:
   uniqueItems: true
 SPEC
 ,
-                [[(array) (object) [1, 2], (array) (object) [3, 4]], [(array) (object) [1, 2], (array) (object) [3, 4]]],
+                [[['a' => 1, 'b' => 2], ['a' => 3, 'b' => 4]], [['a' => 1, 'b' => 2], ['a' => 3, 'b' => 4]]],
             ],
             [
                 <<<SPEC
@@ -196,7 +196,7 @@ schema:
   uniqueItems: true
 SPEC
 ,
-                [[(array) (object) [1, 2], (array) (object) [3, 4]], [(array) (object) [1, 2], (array) (object) [1, 2]]],
+                [[['a' => 1, 'b' => 2], ['a' => 3, 'b' => 4]], [['a' => 1, 'b' => 2], ['a' => 1, 'b' => 2]]],
             ],
         ];
     }
