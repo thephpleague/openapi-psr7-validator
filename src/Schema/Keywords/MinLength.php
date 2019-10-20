@@ -45,7 +45,7 @@ class MinLength extends BaseKeyword
             throw KeywordMismatch::fromKeyword(
                 'minLength',
                 $data,
-                sprintf("Length of '%d' must be longer or equal to %d", $data, $minLength)
+                sprintf("Length of '%s' must be longer or equal to %d", $data, $minLength)
             );
         }
     }

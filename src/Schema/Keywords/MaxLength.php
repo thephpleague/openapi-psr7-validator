@@ -40,7 +40,7 @@ class MaxLength extends BaseKeyword
         }
 
         if (mb_strlen($data) > $maxLength) {
-            throw KeywordMismatch::fromKeyword('maxLength', $data, sprintf("Length of '%d' must be shorter or equal to %d", $data, $maxLength));
+            throw KeywordMismatch::fromKeyword('maxLength', $data, sprintf("Length of '%s' must be shorter or equal to %d", $data, $maxLength));
         }
     }
 }
