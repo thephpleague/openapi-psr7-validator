@@ -23,7 +23,7 @@
     "require": {
         "php": ">=7.2",
         "ext-json": "*",
-        "cebe/php-openapi": "^1.2",
+        "cebe/php-openapi": "^1.3",
         "dflydev/fig-cookies": "^2.0",
         "psr/cache": "^1.0",
         "psr/http-message": "^1.0",
