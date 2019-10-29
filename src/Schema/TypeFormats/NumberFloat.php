@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\TypeFormats;
+namespace League\OpenAPIValidation\Schema\TypeFormats;
 
 use function is_float;
 use function is_int;

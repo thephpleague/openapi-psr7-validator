@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\Schema;
+namespace League\OpenAPIValidationTests\Schema;
 
-use OpenAPIValidation\Schema\BreadCrumb;
+use League\OpenAPIValidation\Schema\BreadCrumb;
 use PHPUnit\Framework\TestCase;
 
 final class BreadCrumbTest extends TestCase

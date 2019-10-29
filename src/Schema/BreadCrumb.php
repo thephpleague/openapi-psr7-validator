@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema;
+namespace League\OpenAPIValidation\Schema;
 
 use RuntimeException;
 use function array_unshift;

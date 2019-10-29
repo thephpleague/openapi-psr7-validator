@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\TypeFormats;
+namespace League\OpenAPIValidation\Schema\TypeFormats;
 
 use const FILTER_FLAG_IPV6;
 use const FILTER_VALIDATE_IP;

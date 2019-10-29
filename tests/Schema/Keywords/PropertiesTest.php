@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\Schema\Keywords;
+namespace League\OpenAPIValidationTests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\KeywordMismatch;
-use OpenAPIValidation\Schema\Exception\TypeMismatch;
-use OpenAPIValidation\Schema\SchemaValidator;
-use OpenAPIValidationTests\Schema\SchemaValidatorTest;
+use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
+use League\OpenAPIValidationTests\Schema\SchemaValidatorTest;
 
 final class PropertiesTest extends SchemaValidatorTest
 {

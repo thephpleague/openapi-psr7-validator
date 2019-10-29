@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidationTests\PSR7;
 
 use GuzzleHttp\Psr7\Uri;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
 final class QueryArgumentsTest extends BaseValidatorTest
 {

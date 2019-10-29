@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Validators;
+namespace League\OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter;
-use OpenAPIValidation\PSR7\Exception\NoPath;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
-use OpenAPIValidation\PSR7\MessageValidator;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\SpecFinder;
-use OpenAPIValidation\Schema\BreadCrumb;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use OpenAPIValidation\Schema\SchemaValidator;
+use League\OpenAPIValidation\PSR7\Exception\NoPath;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
+use League\OpenAPIValidation\PSR7\MessageValidator;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\SpecFinder;
+use League\OpenAPIValidation\Schema\BreadCrumb;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;

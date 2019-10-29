@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidationTests\PSR7;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
 final class HeadersTest extends BaseValidatorTest
 {

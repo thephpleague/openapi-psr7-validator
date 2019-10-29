@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7\Validators;
+namespace League\OpenAPIValidationTests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\parse_request;
 

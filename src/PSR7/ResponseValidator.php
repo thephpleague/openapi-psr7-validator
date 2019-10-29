@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7;
+namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
-use OpenAPIValidation\PSR7\Exception\ValidationFailed;
-use OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
-use OpenAPIValidation\PSR7\Validators\HeadersValidator;
-use OpenAPIValidation\PSR7\Validators\ValidatorChain;
+use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use League\OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
+use League\OpenAPIValidation\PSR7\Validators\HeadersValidator;
+use League\OpenAPIValidation\PSR7\Validators\ValidatorChain;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseValidator implements ReusableSchema

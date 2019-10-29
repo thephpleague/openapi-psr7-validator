@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidationTests\PSR7;
 
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
-use OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
+use League\OpenAPIValidation\PSR7\OperationAddress;
 use PHPUnit\Framework\TestCase;
 
 final class OperationAddressTest extends TestCase

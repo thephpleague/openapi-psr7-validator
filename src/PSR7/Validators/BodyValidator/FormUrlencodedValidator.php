@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Validators\BodyValidator;
+namespace League\OpenAPIValidation\PSR7\Validators\BodyValidator;
 
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Type as CebeType;
-use OpenAPIValidation\PSR7\Exception\NoPath;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
-use OpenAPIValidation\PSR7\Exception\ValidationFailed;
-use OpenAPIValidation\PSR7\MessageValidator;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use OpenAPIValidation\Schema\Exception\TypeMismatch;
-use OpenAPIValidation\Schema\SchemaValidator;
+use League\OpenAPIValidation\PSR7\Exception\NoPath;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
+use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use League\OpenAPIValidation\PSR7\MessageValidator;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use function parse_str;
 

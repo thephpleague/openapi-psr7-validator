@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Validators;
+namespace League\OpenAPIValidation\PSR7\Validators;
 
-use OpenAPIValidation\PSR7\MessageValidator;
-use OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\MessageValidator;
+use League\OpenAPIValidation\PSR7\OperationAddress;
 use Psr\Http\Message\MessageInterface;
 
 final class ValidatorChain implements MessageValidator

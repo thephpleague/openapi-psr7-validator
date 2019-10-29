@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Exception;
+namespace League\OpenAPIValidation\PSR7\Exception;
 
-use OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\OperationAddress;
 use function array_map;
 use function implode;
 use function sprintf;

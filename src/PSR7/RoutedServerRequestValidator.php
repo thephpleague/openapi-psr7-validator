@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7;
+namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
-use OpenAPIValidation\PSR7\Exception\ValidationFailed;
-use OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
-use OpenAPIValidation\PSR7\Validators\CookiesValidator\CookiesValidator;
-use OpenAPIValidation\PSR7\Validators\HeadersValidator;
-use OpenAPIValidation\PSR7\Validators\PathValidator;
-use OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;
-use OpenAPIValidation\PSR7\Validators\SecurityValidator;
-use OpenAPIValidation\PSR7\Validators\ValidatorChain;
+use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use League\OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
+use League\OpenAPIValidation\PSR7\Validators\CookiesValidator\CookiesValidator;
+use League\OpenAPIValidation\PSR7\Validators\HeadersValidator;
+use League\OpenAPIValidation\PSR7\Validators\PathValidator;
+use League\OpenAPIValidation\PSR7\Validators\QueryArgumentsValidator;
+use League\OpenAPIValidation\PSR7\Validators\SecurityValidator;
+use League\OpenAPIValidation\PSR7\Validators\ValidatorChain;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RoutedServerRequestValidator implements ReusableSchema

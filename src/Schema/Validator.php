@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema;
+namespace League\OpenAPIValidation\Schema;
 
 use cebe\openapi\spec\Schema;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 
 interface Validator
 {

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Validators\CookiesValidator;
+namespace League\OpenAPIValidation\PSR7\Validators\CookiesValidator;
 
 use cebe\openapi\spec\Parameter;
 use Dflydev\FigCookies\Cookie;
 use Dflydev\FigCookies\Cookies;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
-use OpenAPIValidation\PSR7\MessageValidator;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use OpenAPIValidation\Schema\SchemaValidator;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
+use League\OpenAPIValidation\PSR7\MessageValidator;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Webmozart\Assert\Assert;

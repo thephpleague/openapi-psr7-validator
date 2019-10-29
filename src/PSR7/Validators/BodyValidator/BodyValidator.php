@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Validators\BodyValidator;
+namespace League\OpenAPIValidation\PSR7\Validators\BodyValidator;
 
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\Reference;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
-use OpenAPIValidation\PSR7\MessageValidator;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\SpecFinder;
-use OpenAPIValidation\PSR7\Validators\ValidationStrategy;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
+use League\OpenAPIValidation\PSR7\MessageValidator;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\SpecFinder;
+use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use Psr\Http\Message\MessageInterface;
 use function explode;
 use function preg_match;

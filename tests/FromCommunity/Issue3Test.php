@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\FromCommunity;
+namespace League\OpenAPIValidationTests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;

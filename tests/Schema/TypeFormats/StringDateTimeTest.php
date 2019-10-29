@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\Schema\TypeFormats;
+namespace League\OpenAPIValidationTests\Schema\TypeFormats;
 
-use OpenAPIValidation\Schema\TypeFormats\StringDateTime;
+use League\OpenAPIValidation\Schema\TypeFormats\StringDateTime;
 use PHPUnit\Framework\TestCase;
 
 final class StringDateTimeTest extends TestCase
