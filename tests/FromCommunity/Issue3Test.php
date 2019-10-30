@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\FromCommunity;
+namespace League\OpenAPIValidation\Tests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;

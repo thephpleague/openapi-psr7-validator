@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidation\Tests\PSR7;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;

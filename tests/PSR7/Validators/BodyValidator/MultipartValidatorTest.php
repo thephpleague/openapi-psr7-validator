@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\PSR7\Validators\BodyValidator;
+namespace League\OpenAPIValidation\Tests\PSR7\Validators\BodyValidator;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\UploadedFile;

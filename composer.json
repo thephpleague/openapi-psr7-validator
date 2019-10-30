@@ -17,7 +17,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "League\\OpenAPIValidationTests\\": "tests/"
+            "League\\OpenAPIValidation\\Tests\\": "tests/"
         }
     },
     "require": {

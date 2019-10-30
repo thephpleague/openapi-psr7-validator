@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\Schema;
+namespace League\OpenAPIValidation\Tests\Schema;
 
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use PHPUnit\Framework\TestCase;

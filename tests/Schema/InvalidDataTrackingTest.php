@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\Schema;
+namespace League\OpenAPIValidation\Tests\Schema;
 
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;

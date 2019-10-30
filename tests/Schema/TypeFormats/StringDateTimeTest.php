@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\Schema\TypeFormats;
+namespace League\OpenAPIValidation\Tests\Schema\TypeFormats;
 
 use League\OpenAPIValidation\Schema\TypeFormats\StringDateTime;
 use PHPUnit\Framework\TestCase;

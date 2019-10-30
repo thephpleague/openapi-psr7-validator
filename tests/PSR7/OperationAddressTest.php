@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidation\Tests\PSR7;
 
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use League\OpenAPIValidation\PSR7\OperationAddress;

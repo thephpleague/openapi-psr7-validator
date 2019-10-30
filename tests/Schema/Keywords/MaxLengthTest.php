@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\Schema\Keywords;
+namespace League\OpenAPIValidation\Tests\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
-use League\OpenAPIValidationTests\Schema\SchemaValidatorTest;
+use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class MaxLengthTest extends SchemaValidatorTest
 {

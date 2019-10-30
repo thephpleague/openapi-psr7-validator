@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\FromCommunity;
+namespace League\OpenAPIValidation\Tests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use function json_encode;
 
 /**
- * @see https://github.com/thephpleague/openapi-psr7-validator/issues/19
+ * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/19
  */
 final class Issue19Test extends TestCase
 {

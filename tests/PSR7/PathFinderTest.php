@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidation\Tests\PSR7;
 
 use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\Uri;

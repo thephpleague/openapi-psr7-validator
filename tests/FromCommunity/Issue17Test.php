@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidationTests\FromCommunity;
+namespace League\OpenAPIValidation\Tests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 final class Issue17Test extends TestCase
 {
     /**
-     * @see https://github.com/thephpleague/openapi-psr7-validator/issues/17
+     * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/17
      */
     public function testIssue17() : void
     {
