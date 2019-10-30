@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR15;
+namespace League\OpenAPIValidation\PSR15;
 
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Http\Server\MiddlewareInterface;
 
 class ValidationMiddlewareBuilder extends ValidatorBuilder

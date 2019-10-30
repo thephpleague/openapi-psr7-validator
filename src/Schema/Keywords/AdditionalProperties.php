@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\Keywords;
+namespace League\OpenAPIValidation\Schema\Keywords;
 
 class AdditionalProperties extends BaseKeyword
 {

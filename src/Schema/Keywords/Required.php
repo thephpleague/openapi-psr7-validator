@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\Keywords;
+namespace League\OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
-use OpenAPIValidation\Schema\Exception\InvalidSchema;
-use OpenAPIValidation\Schema\Exception\KeywordMismatch;
-use OpenAPIValidation\Schema\SchemaValidator;
+use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
+use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function array_unique;

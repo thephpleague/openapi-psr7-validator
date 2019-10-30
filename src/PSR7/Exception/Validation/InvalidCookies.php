@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\Exception\Validation;
+namespace League\OpenAPIValidation\PSR7\Exception\Validation;
 
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use function sprintf;
 
 class InvalidCookies extends AddressValidationFailed

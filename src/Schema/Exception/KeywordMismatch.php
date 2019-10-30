@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\Exception;
+namespace League\OpenAPIValidation\Schema\Exception;
 
 use Throwable;
 

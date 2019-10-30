@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\Schema;
+namespace League\OpenAPIValidation\Tests\Schema;
 
 use cebe\openapi\Reader;
 use cebe\openapi\ReferenceContext;

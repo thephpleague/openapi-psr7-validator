@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidation\Tests\PSR7;
 
 use cebe\openapi\Reader;
 use GuzzleHttp\Psr7\Uri;
-use OpenAPIValidation\PSR7\PathFinder;
+use League\OpenAPIValidation\PSR7\PathFinder;
 use PHPUnit\Framework\TestCase;
 
 final class PathFinderTest extends TestCase

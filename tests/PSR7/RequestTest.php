@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidation\Tests\PSR7;
 
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 

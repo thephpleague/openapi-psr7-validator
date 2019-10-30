@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7;
+namespace League\OpenAPIValidation\PSR7;
 
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR15;
+namespace League\OpenAPIValidation\PSR15;
 
-use OpenAPIValidation\PSR7\ResponseValidator;
-use OpenAPIValidation\PSR7\ServerRequestValidator;
+use League\OpenAPIValidation\PSR7\ResponseValidator;
+use League\OpenAPIValidation\PSR7\ServerRequestValidator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

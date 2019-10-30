@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\Schema\Keywords;
+namespace League\OpenAPIValidation\Tests\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\TypeMismatch;
-use OpenAPIValidation\Schema\SchemaValidator;
-use OpenAPIValidationTests\Schema\SchemaValidatorTest;
+use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
+use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 use stdClass;
 
 final class TypeTest extends SchemaValidatorTest

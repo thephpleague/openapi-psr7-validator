@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\Keywords;
+namespace League\OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
 

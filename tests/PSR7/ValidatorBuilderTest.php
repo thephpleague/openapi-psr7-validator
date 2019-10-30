@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidation\Tests\PSR7;
 
 use Cache\Adapter\PHPArray\ArrayCachePool;
 use cebe\openapi\spec\OpenApi;
-use OpenAPIValidation\PSR7\CacheableSchemaFactory;
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\CacheableSchemaFactory;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
 /**

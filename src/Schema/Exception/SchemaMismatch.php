@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\Exception;
+namespace League\OpenAPIValidation\Schema\Exception;
 
 use Exception;
-use OpenAPIValidation\Schema\BreadCrumb;
+use League\OpenAPIValidation\Schema\BreadCrumb;
 
 class SchemaMismatch extends Exception
 {

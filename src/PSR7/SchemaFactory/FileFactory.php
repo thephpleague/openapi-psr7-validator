@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7\SchemaFactory;
+namespace League\OpenAPIValidation\PSR7\SchemaFactory;
 
-use OpenAPIValidation\PSR7\CacheableSchemaFactory;
+use League\OpenAPIValidation\PSR7\CacheableSchemaFactory;
 use Webmozart\Assert\Assert;
 use function crc32;
 use function realpath;

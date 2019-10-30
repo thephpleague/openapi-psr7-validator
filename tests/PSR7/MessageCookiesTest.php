@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidationTests\PSR7;
+namespace League\OpenAPIValidation\Tests\PSR7;
 
 use Dflydev\FigCookies\Cookie;
 use Dflydev\FigCookies\FigRequestCookies;
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
-use OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
-use OpenAPIValidation\PSR7\OperationAddress;
-use OpenAPIValidation\PSR7\ResponseAddress;
-use OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\ResponseAddress;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
 final class MessageCookiesTest extends BaseValidatorTest
 {

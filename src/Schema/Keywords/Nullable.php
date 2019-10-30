@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema\Keywords;
+namespace League\OpenAPIValidation\Schema\Keywords;
 
-use OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 
 class Nullable extends BaseKeyword
 {

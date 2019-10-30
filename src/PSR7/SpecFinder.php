@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\PSR7;
+namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\Header;
@@ -16,10 +16,10 @@ use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Response as ResponseSpec;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
-use OpenAPIValidation\PSR7\Exception\NoOperation;
-use OpenAPIValidation\PSR7\Exception\NoPath;
-use OpenAPIValidation\PSR7\Exception\NoResponseCode;
-use OpenAPIValidation\Schema\Exception\InvalidSchema;
+use League\OpenAPIValidation\PSR7\Exception\NoOperation;
+use League\OpenAPIValidation\PSR7\Exception\NoPath;
+use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
+use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use function json_decode;
 use function json_encode;
 use function property_exists;

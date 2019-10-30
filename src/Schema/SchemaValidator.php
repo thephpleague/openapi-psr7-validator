@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace OpenAPIValidation\Schema;
+namespace League\OpenAPIValidation\Schema;
 
 use cebe\openapi\spec\Schema as CebeSchema;
 use cebe\openapi\spec\Type as CebeType;
-use OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use OpenAPIValidation\Schema\Keywords\AllOf;
-use OpenAPIValidation\Schema\Keywords\AnyOf;
-use OpenAPIValidation\Schema\Keywords\Enum;
-use OpenAPIValidation\Schema\Keywords\Items;
-use OpenAPIValidation\Schema\Keywords\Maximum;
-use OpenAPIValidation\Schema\Keywords\MaxItems;
-use OpenAPIValidation\Schema\Keywords\MaxLength;
-use OpenAPIValidation\Schema\Keywords\MaxProperties;
-use OpenAPIValidation\Schema\Keywords\Minimum;
-use OpenAPIValidation\Schema\Keywords\MinItems;
-use OpenAPIValidation\Schema\Keywords\MinLength;
-use OpenAPIValidation\Schema\Keywords\MinProperties;
-use OpenAPIValidation\Schema\Keywords\MultipleOf;
-use OpenAPIValidation\Schema\Keywords\Not;
-use OpenAPIValidation\Schema\Keywords\Nullable;
-use OpenAPIValidation\Schema\Keywords\OneOf;
-use OpenAPIValidation\Schema\Keywords\Pattern;
-use OpenAPIValidation\Schema\Keywords\Properties;
-use OpenAPIValidation\Schema\Keywords\Required;
-use OpenAPIValidation\Schema\Keywords\Type;
-use OpenAPIValidation\Schema\Keywords\UniqueItems;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use League\OpenAPIValidation\Schema\Keywords\AllOf;
+use League\OpenAPIValidation\Schema\Keywords\AnyOf;
+use League\OpenAPIValidation\Schema\Keywords\Enum;
+use League\OpenAPIValidation\Schema\Keywords\Items;
+use League\OpenAPIValidation\Schema\Keywords\Maximum;
+use League\OpenAPIValidation\Schema\Keywords\MaxItems;
+use League\OpenAPIValidation\Schema\Keywords\MaxLength;
+use League\OpenAPIValidation\Schema\Keywords\MaxProperties;
+use League\OpenAPIValidation\Schema\Keywords\Minimum;
+use League\OpenAPIValidation\Schema\Keywords\MinItems;
+use League\OpenAPIValidation\Schema\Keywords\MinLength;
+use League\OpenAPIValidation\Schema\Keywords\MinProperties;
+use League\OpenAPIValidation\Schema\Keywords\MultipleOf;
+use League\OpenAPIValidation\Schema\Keywords\Not;
+use League\OpenAPIValidation\Schema\Keywords\Nullable;
+use League\OpenAPIValidation\Schema\Keywords\OneOf;
+use League\OpenAPIValidation\Schema\Keywords\Pattern;
+use League\OpenAPIValidation\Schema\Keywords\Properties;
+use League\OpenAPIValidation\Schema\Keywords\Required;
+use League\OpenAPIValidation\Schema\Keywords\Type;
+use League\OpenAPIValidation\Schema\Keywords\UniqueItems;
 use function count;
 
 // This will load a whole schema and data to validate if one matches another
