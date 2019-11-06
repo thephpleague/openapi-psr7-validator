@@ -146,3 +146,46 @@ paths:
                         type: string
                     required:
                       - name
+  /callback:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                url:
+                  type: string
+      callbacks:
+        somethingHappened:
+          '{\$request.body#/url}':
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+              responses:
+                '200':
+                  description: Callback received the request.
+                  content:
+                    application/json:
+                      schema:
+                        required:
+                          - success
+                        properties:
+                          success:
+                            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: string

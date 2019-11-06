@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\spec\Callback;
 use cebe\openapi\spec\Header;
 use cebe\openapi\spec\Header as HeaderSpec;
 use cebe\openapi\spec\MediaType;
@@ -16,10 +17,12 @@ use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Response as ResponseSpec;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
+use League\OpenAPIValidation\PSR7\Exception\NoCallback;
 use League\OpenAPIValidation\PSR7\Exception\NoOperation;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
+use Webmozart\Assert\Assert;
 use function json_decode;
 use function json_encode;
 use function property_exists;
@@ -47,7 +50,12 @@ final class SpecFinder
             throw NoOperation::fromPathAndMethod($addr->path(), $addr->method());
         }
 
-        return $pathSpec->getOperations()[$addr->method()];
+        $operation = $pathSpec->getOperations()[$addr->method()];
+        if ($addr instanceof CallbackAddress) {
+            return $this->findCallbackInOperation($addr, $operation);
+        }
+
+        return $operation;
     }
 
     /**
@@ -168,7 +176,7 @@ final class SpecFinder
      */
     public function findBodySpec(OperationAddress $addr) : array
     {
-        if ($addr instanceof ResponseAddress) {
+        if ($addr instanceof ResponseAddress || $addr instanceof CallbackResponseAddress) {
             return $this->findResponseSpec($addr)->content;
         }
 
@@ -184,10 +192,17 @@ final class SpecFinder
     /**
      * Find the schema which describes a given response
      *
+     * @param ResponseAddress|CallbackResponseAddress $addr
+     *
      * @throws NoPath
      */
-    public function findResponseSpec(ResponseAddress $addr) : ResponseSpec
+    public function findResponseSpec($addr) : ResponseSpec
     {
+        Assert::isInstanceOfAny($addr, [
+            ResponseAddress::class,
+            CallbackResponseAddress::class,
+        ]);
+
         $operation = $this->findOperationSpec($addr);
 
         $response = $operation->responses->getResponse($addr->responseCode());
@@ -215,7 +230,7 @@ final class SpecFinder
     public function findHeaderSpecs(OperationAddress $addr) : array
     {
         // Response headers are specified differently from request headers
-        if ($addr instanceof ResponseAddress) {
+        if ($addr instanceof ResponseAddress || $addr instanceof CallbackResponseAddress) {
             return $this->findResponseSpec($addr)->headers;
         }
 
@@ -283,5 +298,24 @@ final class SpecFinder
         }
 
         return $cookieSpecs;
+    }
+
+    /**
+     * @throws NoCallback
+     */
+    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation) : Operation
+    {
+        $callbacks = $operation->callbacks;
+        if (! isset($callbacks[$addr->callbackName()])) {
+            throw NoCallback::fromCallbackPath($addr->path(), $addr->method(), $addr->callbackName(), $addr->callbackMethod());
+        }
+
+        /** @var Callback $callback */
+        $callback = $callbacks[$addr->callbackName()];
+        if (! isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
+            throw NoCallback::fromCallbackPath($addr->path(), $addr->method(), $addr->callbackName(), $addr->callbackMethod());
+        }
+
+        return $callback->getRequest()->getOperations()[$addr->callbackMethod()];
     }
 }
