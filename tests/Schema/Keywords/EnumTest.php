@@ -42,6 +42,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('exception expected');
         } catch (KeywordMismatch $e) {
             $this->assertEquals('enum', $e->keyword());
         }
