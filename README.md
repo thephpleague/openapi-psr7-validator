@@ -109,7 +109,7 @@ $validator = (new \League\OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($
 
 $operation = new \League\OpenAPIValidation\PSR7\OperationAddress('/password/gen', 'get') ;
 
-$validator->validate($operation, $request);
+$validator->validate($operation, $response);
 ```
 
 ### Reuse Schema After Validation
