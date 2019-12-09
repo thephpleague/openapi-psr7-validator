@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\PSR7\Validators;
 
@@ -10,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class PathValidatorTest extends TestCase
 {
-    public function testItThrowsHelpfulExceptionWhenMissingParams(): void
+    public function testItThrowsHelpfulExceptionWhenMissingParams() : void
     {
         $this->expectException(ValidationFailed::class);
 
@@ -33,6 +35,5 @@ class PathValidatorTest extends TestCase
 JSON;
         $validator = (new ValidatorBuilder())->fromJson($json)->getRequestValidator();
         $validator->validate(new Request('get', new Uri('/api/1.0/order/123')));
-
     }
 }

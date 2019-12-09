@@ -28,9 +28,9 @@ final class PathValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message): void
+    public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
-        if (!($message instanceof RequestInterface)) {
+        if (! ($message instanceof RequestInterface)) {
             return;
         }
 
@@ -42,10 +42,10 @@ final class PathValidator implements MessageValidator
      * @throws NoPath
      * @throws NoParameter
      */
-    private function validateRequest(OperationAddress $addr, RequestInterface $message): void
+    private function validateRequest(OperationAddress $addr, RequestInterface $message) : void
     {
         $specs = $this->finder->findPathSpecs($addr);
-        if ([] === $specs) {
+        if ($specs === []) {
             throw NoParameter::fromPath($addr->path());
         }
 
@@ -57,7 +57,7 @@ final class PathValidator implements MessageValidator
             try {
                 $validator->validate($value, $specs[$name]->schema);
             } catch (SchemaMismatch $e) {
-                throw InvalidPath::becauseValueDoesNotMatchSchema($name, (string)$value, $addr, $e);
+                throw InvalidPath::becauseValueDoesNotMatchSchema($name, (string) $value, $addr, $e);
             }
         }
     }
