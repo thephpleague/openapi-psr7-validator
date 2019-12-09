@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\PSR7\Validators;
 
+use League\OpenAPIValidation\PSR7\Exception\NoParameter;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use League\OpenAPIValidation\PSR7\MessageValidator;
@@ -27,9 +28,9 @@ final class PathValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
-        if (! ($message instanceof RequestInterface)) {
+        if (!($message instanceof RequestInterface)) {
             return;
         }
 
@@ -39,10 +40,14 @@ final class PathValidator implements MessageValidator
     /**
      * @throws InvalidPath
      * @throws NoPath
+     * @throws NoParameter
      */
-    private function validateRequest(OperationAddress $addr, RequestInterface $message) : void
+    private function validateRequest(OperationAddress $addr, RequestInterface $message): void
     {
         $specs = $this->finder->findPathSpecs($addr);
+        if ([] === $specs) {
+            throw NoParameter::fromPath($addr->path());
+        }
 
         $path             = $message->getUri()->getPath();
         $pathParsedParams = $addr->parseParams($path); // ['id'=>12]
@@ -52,7 +57,7 @@ final class PathValidator implements MessageValidator
             try {
                 $validator->validate($value, $specs[$name]->schema);
             } catch (SchemaMismatch $e) {
-                throw InvalidPath::becauseValueDoesNotMatchSchema($name, (string) $value, $addr, $e);
+                throw InvalidPath::becauseValueDoesNotMatchSchema($name, (string)$value, $addr, $e);
             }
         }
     }
