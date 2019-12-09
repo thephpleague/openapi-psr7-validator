@@ -14,7 +14,7 @@ use function iterator_to_array;
 
 final class SpecFinderTest extends TestCase
 {
-    public function testFindCallbackSpecs(): void
+    public function testFindCallbackSpecs() : void
     {
         $yaml = <<<YAML
 openapi: 3.0.0
@@ -66,12 +66,14 @@ YAML;
         $operation = $specFinder->findOperationSpec($address);
 
         // Some assertions to ensure we have the right operation
-        $this->assertEquals('boolean',
-                            $operation->requestBody->content['application/json']->schema->properties['success']->type);
+        $this->assertEquals(
+            'boolean',
+            $operation->requestBody->content['application/json']->schema->properties['success']->type
+        );
         $this->assertEquals(['200'], array_keys(iterator_to_array($operation->responses->getIterator())));
     }
 
-    public function testHandleParameters(): void
+    public function testHandleParameters() : void
     {
         $json       = /** @lang JSON */
             <<<'JSON'
@@ -118,7 +120,5 @@ JSON;
         $specFinder = new SpecFinder($schema);
         $pathItem   = $specFinder->findPathSpec(new OperationAddress('/api/1.0/order/123', 'get'));
         self::assertSame('The order object', $pathItem->get->responses[200]->description);
-
-
     }
 }
