@@ -22,6 +22,7 @@ use League\OpenAPIValidation\PSR7\Exception\NoOperation;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
+use Nyholm\Psr7\Uri;
 use Webmozart\Assert\Assert;
 use function json_decode;
 use function json_encode;
@@ -63,15 +64,31 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findPathSpec(OperationAddress $addr) : PathItem
+    public function findPathSpec(OperationAddress $addr): PathItem
     {
-        $pathSpec = $this->openApi->paths->getPath($addr->path());
+        $pathSpec = $this->findPathSimple($addr) ?? $this->findPathUsingFinder($addr);
 
-        if (! $pathSpec) {
+        if (!$pathSpec) {
             throw NoPath::fromPath($addr->path());
         }
 
         return $pathSpec;
+    }
+
+    private function findPathSimple(OperationAddress $addr): ?PathItem
+    {
+        return $this->openApi->paths->getPath($addr->path());
+    }
+
+    private function findPathUsingFinder(OperationAddress $addr): ?PathItem
+    {
+        $finder  = new PathFinder($this->openApi, new Uri($addr->path()), $addr->method());
+        $results = $finder->search();
+        if (1 === count($results)) {
+            return $this->findPathSimple($results[0]);
+        }
+
+        return null;
     }
 
     /**
