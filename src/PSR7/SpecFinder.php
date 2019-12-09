@@ -17,13 +17,14 @@ use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Response as ResponseSpec;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
+use GuzzleHttp\Psr7\Uri;
 use League\OpenAPIValidation\PSR7\Exception\NoCallback;
 use League\OpenAPIValidation\PSR7\Exception\NoOperation;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
-use Nyholm\Psr7\Uri;
 use Webmozart\Assert\Assert;
+use function count;
 use function json_decode;
 use function json_encode;
 use function property_exists;
@@ -64,27 +65,27 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findPathSpec(OperationAddress $addr): PathItem
+    public function findPathSpec(OperationAddress $addr) : PathItem
     {
         $pathSpec = $this->findPathSimple($addr) ?? $this->findPathUsingFinder($addr);
 
-        if (!$pathSpec) {
+        if (! $pathSpec) {
             throw NoPath::fromPath($addr->path());
         }
 
         return $pathSpec;
     }
 
-    private function findPathSimple(OperationAddress $addr): ?PathItem
+    private function findPathSimple(OperationAddress $addr) : ?PathItem
     {
         return $this->openApi->paths->getPath($addr->path());
     }
 
-    private function findPathUsingFinder(OperationAddress $addr): ?PathItem
+    private function findPathUsingFinder(OperationAddress $addr) : ?PathItem
     {
         $finder  = new PathFinder($this->openApi, new Uri($addr->path()), $addr->method());
         $results = $finder->search();
-        if (1 === count($results)) {
+        if (count($results) === 1) {
             return $this->findPathSimple($results[0]);
         }
 
