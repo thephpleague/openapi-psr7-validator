@@ -35,7 +35,7 @@ final class SpecFinder
 
     public function __construct(OpenApi $openApi)
     {
-        $this->openApi    = $openApi;
+        $this->openApi = $openApi;
     }
 
     /**
@@ -43,7 +43,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findPathSpecs(OperationAddress $addr): array
+    public function findPathSpecs(OperationAddress $addr) : array
     {
         $spec = $this->findOperationSpec($addr);
 
@@ -76,11 +76,11 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findOperationSpec(OperationAddress $addr): Operation
+    public function findOperationSpec(OperationAddress $addr) : Operation
     {
         $pathSpec = $this->findPathSpec($addr);
 
-        if (!isset($pathSpec->getOperations()[$addr->method()])) {
+        if (! isset($pathSpec->getOperations()[$addr->method()])) {
             throw NoOperation::fromPathAndMethod($addr->path(), $addr->method());
         }
 
@@ -97,23 +97,23 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findPathSpec(OperationAddress $addr): PathItem
+    public function findPathSpec(OperationAddress $addr) : PathItem
     {
         $pathSpec = $this->findPathSimple($addr) ?? $this->findPathUsingFinder($addr);
 
-        if (!$pathSpec) {
+        if (! $pathSpec) {
             throw NoPath::fromPath($addr->path());
         }
 
         return $pathSpec;
     }
 
-    private function findPathSimple(OperationAddress $addr): ?PathItem
+    private function findPathSimple(OperationAddress $addr) : ?PathItem
     {
         return $this->openApi->paths->getPath($addr->path());
     }
 
-    private function findPathUsingFinder(OperationAddress $addr): ?PathItem
+    private function findPathUsingFinder(OperationAddress $addr) : ?PathItem
     {
         $finder  = new PathFinder($this->openApi, $addr->path(), $addr->method());
         $results = $finder->search();
@@ -127,23 +127,27 @@ final class SpecFinder
     /**
      * @throws NoCallback
      */
-    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation): Operation
+    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation) : Operation
     {
         $callbacks = $operation->callbacks;
-        if (!isset($callbacks[$addr->callbackName()])) {
-            throw NoCallback::fromCallbackPath($addr->path(),
-                                               $addr->method(),
-                                               $addr->callbackName(),
-                                               $addr->callbackMethod());
+        if (! isset($callbacks[$addr->callbackName()])) {
+            throw NoCallback::fromCallbackPath(
+                $addr->path(),
+                $addr->method(),
+                $addr->callbackName(),
+                $addr->callbackMethod()
+            );
         }
 
         /** @var Callback $callback */
         $callback = $callbacks[$addr->callbackName()];
-        if (!isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
-            throw NoCallback::fromCallbackPath($addr->path(),
-                                               $addr->method(),
-                                               $addr->callbackName(),
-                                               $addr->callbackMethod());
+        if (! isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
+            throw NoCallback::fromCallbackPath(
+                $addr->path(),
+                $addr->method(),
+                $addr->callbackName(),
+                $addr->callbackMethod()
+            );
         }
 
         return $callback->getRequest()->getOperations()[$addr->callbackMethod()];
@@ -154,7 +158,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findQuerySpecs(OperationAddress $addr): array
+    public function findQuerySpecs(OperationAddress $addr) : array
     {
         $spec = $this->findOperationSpec($addr);
 
@@ -187,7 +191,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findSecuritySpecs(OperationAddress $addr): array
+    public function findSecuritySpecs(OperationAddress $addr) : array
     {
         $opSpec = $this->findOperationSpec($addr);
 
@@ -206,7 +210,7 @@ final class SpecFinder
     /**
      * @return SecurityScheme[]
      */
-    public function findSecuritySchemesSpecs(): array
+    public function findSecuritySchemesSpecs() : array
     {
         return $this->openApi->components ? $this->openApi->components->securitySchemes : [];
     }
@@ -216,7 +220,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findBodySpec(OperationAddress $addr): array
+    public function findBodySpec(OperationAddress $addr) : array
     {
         if ($addr instanceof ResponseAddress || $addr instanceof CallbackResponseAddress) {
             return $this->findResponseSpec($addr)->content;
@@ -224,7 +228,7 @@ final class SpecFinder
 
         $requestBody = $this->findOperationSpec($addr)->requestBody;
 
-        if (!$requestBody) {
+        if (! $requestBody) {
             return [];
         }
 
@@ -238,23 +242,25 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findResponseSpec($addr): ResponseSpec
+    public function findResponseSpec($addr) : ResponseSpec
     {
-        Assert::isInstanceOfAny($addr,
-                                [
-                                    ResponseAddress::class,
-                                    CallbackResponseAddress::class,
-                                ]);
+        Assert::isInstanceOfAny(
+            $addr,
+            [
+                ResponseAddress::class,
+                CallbackResponseAddress::class,
+            ]
+        );
 
         $operation = $this->findOperationSpec($addr);
 
         $response = $operation->responses->getResponse($addr->responseCode());
 
-        if (!$response) {
+        if (! $response) {
             $response = $operation->responses->getResponse('default');
         }
 
-        if (!$response) {
+        if (! $response) {
             throw NoResponseCode::fromPathAndMethodAndResponseCode(
                 $addr->path(),
                 $addr->method(),
@@ -270,7 +276,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findHeaderSpecs(OperationAddress $addr): array
+    public function findHeaderSpecs(OperationAddress $addr) : array
     {
         // Response headers are specified differently from request headers
         if ($addr instanceof ResponseAddress || $addr instanceof CallbackResponseAddress) {
@@ -315,7 +321,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findCookieSpecs(OperationAddress $addr): array
+    public function findCookieSpecs(OperationAddress $addr) : array
     {
         $spec = $this->findOperationSpec($addr);
 

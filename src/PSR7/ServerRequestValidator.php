@@ -98,7 +98,7 @@ class ServerRequestValidator implements ReusableSchema
      */
     private function findMatchingOperations(ServerRequestInterface $request) : array
     {
-        $pathFinder = new PathFinder($this->openApi, (string)$request->getUri(), $request->getMethod());
+        $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
 
         return $pathFinder->search();
     }

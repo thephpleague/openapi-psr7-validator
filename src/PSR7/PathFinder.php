@@ -6,6 +6,7 @@ namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Server;
+use const PHP_URL_PATH;
 use function array_key_exists;
 use function ltrim;
 use function parse_url;
@@ -14,7 +15,6 @@ use function preg_replace;
 use function rtrim;
 use function sprintf;
 use function strtolower;
-use const PHP_URL_PATH;
 
 // This class finds operations matching the given URI+method
 // That would be a very simple operation if there were no "Servers" keyword.
@@ -35,7 +35,7 @@ class PathFinder
     public function __construct(OpenApi $openApiSpec, string $uri, string $method)
     {
         $this->openApiSpec = $openApiSpec;
-        $this->path        = (string)parse_url($uri, PHP_URL_PATH);
+        $this->path        = (string) parse_url($uri, PHP_URL_PATH);
         $this->method      = strtolower($method);
     }
 
@@ -44,7 +44,7 @@ class PathFinder
      *
      * @return OperationAddress[]
      */
-    public function search(): array
+    public function search() : array
     {
         $paths = [];
 
@@ -65,12 +65,12 @@ class PathFinder
             foreach ($opCandidate['servers'] as $server) {
                 $candidatePath = sprintf(
                     '%s/%s',
-                    rtrim((string)parse_url($server->url, PHP_URL_PATH), '/'),
+                    rtrim((string) parse_url($server->url, PHP_URL_PATH), '/'),
                     ltrim($opCandidate['addr']->path(), '/')
                 );
 
                 // 3.1 Compare this path against the real/given path
-                if (!OperationAddress::isPathMatchesSpec($candidatePath, $this->path)) {
+                if (! OperationAddress::isPathMatchesSpec($candidatePath, $this->path)) {
                     continue;
                 }
 
@@ -90,7 +90,7 @@ class PathFinder
      *
      * @return OperationAddress[]
      */
-    private function searchForCandidates(): array
+    private function searchForCandidates() : array
     {
         $matchedOperations = [];
 
@@ -102,7 +102,7 @@ class PathFinder
             // servers:     /v1
             $pattern = '#' . preg_replace('#{[^}]+}#', '[^/]+', $specPath) . '/?$#';
 
-            if (!(bool)preg_match($pattern, $this->path)) {
+            if (! (bool) preg_match($pattern, $this->path)) {
                 continue;
             }
 
@@ -125,23 +125,23 @@ class PathFinder
      *
      * @return Server[]
      */
-    private function findServersForOperation(OperationAddress $opAddress): array
+    private function findServersForOperation(OperationAddress $opAddress) : array
     {
         $path      = $this->openApiSpec->paths->getPath($opAddress->path());
         $operation = $path->getOperations()[$opAddress->method()];
 
         // 1. Check servers on operation level
-        if (array_key_exists('servers', (array)$operation->getSerializableData())) {
+        if (array_key_exists('servers', (array) $operation->getSerializableData())) {
             return $operation->servers;
         }
 
         // 2. Check servers on path level
-        if (array_key_exists('servers', (array)$path->getSerializableData())) {
+        if (array_key_exists('servers', (array) $path->getSerializableData())) {
             return $path->servers;
         }
 
         // 3. Check servers on root level
-        if (array_key_exists('servers', (array)$this->openApiSpec->getSerializableData())) {
+        if (array_key_exists('servers', (array) $this->openApiSpec->getSerializableData())) {
             return $this->openApiSpec->servers;
         }
 
