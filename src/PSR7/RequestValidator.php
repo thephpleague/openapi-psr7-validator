@@ -98,7 +98,7 @@ class RequestValidator implements ReusableSchema
      */
     private function findMatchingOperations(RequestInterface $request) : array
     {
-        $pathFinder = new PathFinder($this->openApi, $request->getUri(), $request->getMethod());
+        $pathFinder = new PathFinder($this->openApi, (string)$request->getUri(), $request->getMethod());
 
         return $pathFinder->search();
     }

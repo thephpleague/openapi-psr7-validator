@@ -17,14 +17,11 @@ use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Response as ResponseSpec;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
-use GuzzleHttp\Psr7\Uri;
 use League\OpenAPIValidation\PSR7\Exception\NoCallback;
 use League\OpenAPIValidation\PSR7\Exception\NoOperation;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
-use League\Uri\UriInterface;
-use Psr\Http\Message\UriFactoryInterface;
 use Webmozart\Assert\Assert;
 use function count;
 use function json_decode;
@@ -35,12 +32,43 @@ final class SpecFinder
 {
     /** @var OpenApi */
     private $openApi;
-    /** @var UriFactoryInterface  */
-    private $uriFactory;
-    public function __construct(OpenApi $openApi, UriFactoryInterface $uriFactory)
+
+    public function __construct(OpenApi $openApi)
     {
-        $this->uriFactory=$uriFactory;
-        $this->openApi = $openApi;
+        $this->openApi    = $openApi;
+    }
+
+    /**
+     * @return Parameter[]
+     *
+     * @throws NoPath
+     */
+    public function findPathSpecs(OperationAddress $addr): array
+    {
+        $spec = $this->findOperationSpec($addr);
+
+        // 1. Collect operation-level params
+        $pathSpecs = [];
+
+        foreach ($spec->parameters as $p) {
+            if ($p->in !== 'path') {
+                continue;
+            }
+
+            $pathSpecs[$p->name] = $p;
+        }
+
+        // 2. Collect path-level params
+        $pathSpec = $this->findPathSpec($addr);
+        foreach ($pathSpec->parameters as $p) {
+            if ($p->in !== 'path') {
+                continue;
+            }
+
+            $pathSpecs += [$p->name => $p]; // union won't override
+        }
+
+        return $pathSpecs;
     }
 
     /**
@@ -87,7 +115,7 @@ final class SpecFinder
 
     private function findPathUsingFinder(OperationAddress $addr): ?PathItem
     {
-        $finder = new PathFinder($this->openApi, $this->uriFactory->createUri($addr->path()), $addr->method());
+        $finder  = new PathFinder($this->openApi, $addr->path(), $addr->method());
         $results = $finder->search();
         if (count($results) === 1) {
             return $this->findPathSimple($results[0]);
@@ -97,36 +125,28 @@ final class SpecFinder
     }
 
     /**
-     * @return Parameter[]
-     *
-     * @throws NoPath
+     * @throws NoCallback
      */
-    public function findPathSpecs(OperationAddress $addr): array
+    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation): Operation
     {
-        $spec = $this->findOperationSpec($addr);
-
-        // 1. Collect operation-level params
-        $pathSpecs = [];
-
-        foreach ($spec->parameters as $p) {
-            if ($p->in !== 'path') {
-                continue;
-            }
-
-            $pathSpecs[$p->name] = $p;
+        $callbacks = $operation->callbacks;
+        if (!isset($callbacks[$addr->callbackName()])) {
+            throw NoCallback::fromCallbackPath($addr->path(),
+                                               $addr->method(),
+                                               $addr->callbackName(),
+                                               $addr->callbackMethod());
         }
 
-        // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr);
-        foreach ($pathSpec->parameters as $p) {
-            if ($p->in !== 'path') {
-                continue;
-            }
-
-            $pathSpecs += [$p->name => $p]; // union won't override
+        /** @var Callback $callback */
+        $callback = $callbacks[$addr->callbackName()];
+        if (!isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
+            throw NoCallback::fromCallbackPath($addr->path(),
+                                               $addr->method(),
+                                               $addr->callbackName(),
+                                               $addr->callbackMethod());
         }
 
-        return $pathSpecs;
+        return $callback->getRequest()->getOperations()[$addr->callbackMethod()];
     }
 
     /**
@@ -321,30 +341,5 @@ final class SpecFinder
         }
 
         return $cookieSpecs;
-    }
-
-    /**
-     * @throws NoCallback
-     */
-    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation): Operation
-    {
-        $callbacks = $operation->callbacks;
-        if (!isset($callbacks[$addr->callbackName()])) {
-            throw NoCallback::fromCallbackPath($addr->path(),
-                                               $addr->method(),
-                                               $addr->callbackName(),
-                                               $addr->callbackMethod());
-        }
-
-        /** @var Callback $callback */
-        $callback = $callbacks[$addr->callbackName()];
-        if (!isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
-            throw NoCallback::fromCallbackPath($addr->path(),
-                                               $addr->method(),
-                                               $addr->callbackName(),
-                                               $addr->callbackMethod());
-        }
-
-        return $callback->getRequest()->getOperations()[$addr->callbackMethod()];
     }
 }

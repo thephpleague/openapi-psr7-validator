@@ -30,7 +30,7 @@ paths:
       summary: Product Types
 SPEC;
 
-        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri('/v1/products/10'), 'get');
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), '/v1/products/10', 'get');
         $opAddrs    = $pathFinder->search();
 
         $this->assertCount(1, $opAddrs);
@@ -56,7 +56,7 @@ paths:
       summary: Product Types
 SPEC;
 
-        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri('/v1/2019-05-07/products/20'), 'get');
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), '/v1/2019-05-07/products/20', 'get');
         $opAddrs    = $pathFinder->search();
 
         $this->assertCount(1, $opAddrs);
@@ -83,7 +83,7 @@ paths:
       summary: Product Types
 SPEC;
 
-        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri('https://localhost/v1/products/10'), 'get');
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), 'https://localhost/v1/products/10', 'get');
         $opAddrs    = $pathFinder->search();
 
         $this->assertCount(1, $opAddrs);
@@ -111,7 +111,7 @@ paths:
       summary: Product Types
 SPEC;
 
-        $pathFinder = new PathFinder(Reader::readFromYaml($spec), new Uri('https://localhost/v1/products/10'), 'get');
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), 'https://localhost/v1/products/10', 'get');
         $opAddrs    = $pathFinder->search();
 
         $this->assertCount(1, $opAddrs);
