@@ -45,13 +45,16 @@ final class PathValidator implements MessageValidator
     private function validateRequest(OperationAddress $addr, RequestInterface $message) : void
     {
         $specs = $this->finder->findPathSpecs($addr);
-        if ($specs === []) {
-            throw NoParameter::fromPath($addr->path());
-        }
 
         $path             = $message->getUri()->getPath();
         $pathParsedParams = $addr->parseParams($path); // ['id'=>12]
-        $validator        = new SchemaValidator($this->detectValidationStrategy($message));
+        if ($pathParsedParams===[]) {
+            return;
+        }
+        if ($specs === []) {
+            throw NoParameter::fromPath($addr->path());
+        }
+        $validator = new SchemaValidator($this->detectValidationStrategy($message));
 
         foreach ($pathParsedParams as $name => $value) {
             try {
