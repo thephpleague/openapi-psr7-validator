@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info:
+  title: Products API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /products:
+    get:
+      parameters:
+        - in: query
+          name: filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  color:
+                    type: string
