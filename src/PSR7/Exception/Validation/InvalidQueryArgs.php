@@ -26,14 +26,6 @@ class InvalidQueryArgs extends AddressValidationFailed
         return $exception;
     }
 
-    public static function becauseValueIsNotValidJson(string $error, string $argumentName, OperationAddress $address) : self
-    {
-        $exception          = static::fromAddr($address);
-        $exception->message = sprintf('JSON parsing failed with "%s" for argument "%s" for %s', $error, $argumentName, $address);
-
-        return $exception;
-    }
-
     public static function becauseOfUnexpectedArgumentIsNotAllowed(string $argument, OperationAddress $address) : self
     {
         $exception          = static::fromAddr($address);

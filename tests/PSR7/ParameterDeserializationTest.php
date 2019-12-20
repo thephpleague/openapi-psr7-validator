@@ -10,10 +10,7 @@ use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use function http_build_query;
 
-/**
- * @see https://github.com/thephpleague/openapi-psr7-validator/issues/2
- */
-final class JsonQueryParameterValidationTest extends TestCase
+final class ParameterDeserializationTest extends TestCase
 {
     public function testGoodJsonQueryParameter() : void
     {
@@ -47,6 +44,7 @@ final class JsonQueryParameterValidationTest extends TestCase
             ->getServerRequestValidator();
 
         $this->expectException(ValidationFailed::class);
+        $this->expectExceptionMessage('Value "{"type":"t-shirt","color":false}" for argument "filter" is invalid for Request [get /products]');
 
         $validator->validate($psrRequest);
     }
@@ -65,6 +63,7 @@ final class JsonQueryParameterValidationTest extends TestCase
             ->getServerRequestValidator();
 
         $this->expectException(ValidationFailed::class);
+        $this->expectExceptionMessage('Value "type,t-shirt,color,blue" for argument "filter" is invalid for Request [get /products]');
 
         $validator->validate($psrRequest);
     }
