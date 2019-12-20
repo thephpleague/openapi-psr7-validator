@@ -39,12 +39,6 @@ paths:
           required: true
           schema:
             type: integer
-        - name: json
-          in: query
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas.yaml#/components/schemas/SchemaA'
       responses:
         200:
           description: good read
