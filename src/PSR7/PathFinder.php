@@ -9,6 +9,7 @@ use cebe\openapi\spec\Server;
 use Psr\Http\Message\UriInterface;
 use const PHP_URL_PATH;
 use function array_key_exists;
+use function count;
 use function ltrim;
 use function parse_url;
 use function preg_match;
@@ -133,17 +134,20 @@ class PathFinder
         $operation = $path->getOperations()[$opAddress->method()];
 
         // 1. Check servers on operation level
-        if (array_key_exists('servers', (array) $operation->getSerializableData())) {
+        if (array_key_exists('servers', (array) $operation->getSerializableData()) &&
+            count($operation->servers) > 0) {
             return $operation->servers;
         }
 
         // 2. Check servers on path level
-        if (array_key_exists('servers', (array) $path->getSerializableData())) {
+        if (array_key_exists('servers', (array) $path->getSerializableData()) &&
+            count($path->servers) > 0) {
             return $path->servers;
         }
 
         // 3. Check servers on root level
-        if (array_key_exists('servers', (array) $this->openApiSpec->getSerializableData())) {
+        if (array_key_exists('servers', (array) $this->openApiSpec->getSerializableData()) &&
+            count($this->openApiSpec->servers) > 0) {
             return $this->openApiSpec->servers;
         }
 
