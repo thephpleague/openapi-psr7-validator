@@ -1,0 +1,5 @@
+openapi: 3.0.2
+
+paths:
+  /foo:
+    $ref: './ref-as-individual-path-inc.yaml#/foo'
