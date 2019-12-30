@@ -75,20 +75,24 @@ final class QueryArgumentsValidator implements MessageValidator
     /**
      * @param mixed[]     $parsedQueryArguments [limit=>10]
      * @param Parameter[] $specs
+     *
+     * @throws InvalidQueryArgs
      */
     private function validateAgainstSchema(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy, array $specs) : void
     {
         // Note: By default, OpenAPI treats all request parameters as optional.
 
         foreach ($parsedQueryArguments as $name => $argumentValue) {
-            // skip if there are no schema for this argument
+            // skip if there is no spec for this argument
             if (! array_key_exists($name, $specs)) {
                 continue;
             }
 
+            $parameter = RequestParameter::fromSpec($specs[$name]);
+            $schema    = $parameter->getSchema();
             $validator = new SchemaValidator($validationStrategy);
             try {
-                $validator->validate($argumentValue, $specs[$name]->schema, new BreadCrumb($name));
+                $validator->validate($parameter->deserialize($argumentValue), $schema, new BreadCrumb($name));
             } catch (SchemaMismatch $e) {
                 throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($name, $argumentValue, $addr, $e);
             }
