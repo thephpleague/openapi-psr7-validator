@@ -7,8 +7,8 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 use cebe\openapi\spec\Schema as CebeSchema;
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
-use League\OpenAPIValidation\Schema\Exception\InvalidSchemaCombination;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use League\OpenAPIValidation\Schema\Exception\NotEnoughValidSchemas;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
@@ -65,7 +65,7 @@ class AnyOf extends BaseKeyword
             }
         }
 
-        throw InvalidSchemaCombination::fromKeywordWithInnerExceptions(
+        throw NotEnoughValidSchemas::fromKeywordWithInnerExceptions(
             'anyOf',
             $data,
             $innerExceptions,

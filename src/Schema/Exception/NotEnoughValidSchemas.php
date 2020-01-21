@@ -7,7 +7,7 @@ namespace League\OpenAPIValidation\Schema\Exception;
 use Throwable;
 
 // Indicates that data was not matched against a combination of schema keywords
-class InvalidSchemaCombination extends KeywordMismatch
+class NotEnoughValidSchemas extends KeywordMismatch
 {
     /** @var Throwable[] */
     protected $innerExceptions = [];
@@ -15,6 +15,8 @@ class InvalidSchemaCombination extends KeywordMismatch
     /**
      * @param mixed       $data
      * @param Throwable[] $innerExceptions
+     *
+     * @return self
      */
     public static function fromKeywordWithInnerExceptions(
         string $keyword,
