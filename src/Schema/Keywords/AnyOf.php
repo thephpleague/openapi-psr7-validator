@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 use cebe\openapi\spec\Schema as CebeSchema;
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
+use League\OpenAPIValidation\Schema\Exception\InvalidSchemaCombination;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
@@ -51,6 +52,8 @@ class AnyOf extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
+        $innerExceptions = [];
+
         foreach ($anyOf as $schema) {
             $schemaValidator = new SchemaValidator($this->validationDataType);
             try {
@@ -58,10 +61,15 @@ class AnyOf extends BaseKeyword
 
                 return;
             } catch (SchemaMismatch $e) {
-                // that did not match... its ok
+                $innerExceptions[] = $e;
             }
         }
 
-        throw KeywordMismatch::fromKeyword('anyOf', $data, 'Data must match at least one schema');
+        throw InvalidSchemaCombination::fromKeywordWithInnerExceptions(
+            'anyOf',
+            $data,
+            $innerExceptions,
+            'Data must match at least one schema'
+        );
     }
 }
