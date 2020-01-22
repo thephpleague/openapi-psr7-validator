@@ -8,10 +8,13 @@ use cebe\openapi\spec\Schema as CebeSchema;
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use League\OpenAPIValidation\Schema\Exception\NotEnoughValidSchemas;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use League\OpenAPIValidation\Schema\Exception\TooManyValidSchemas;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+use function count;
 use function sprintf;
 
 class OneOf extends BaseKeyword
@@ -53,19 +56,37 @@ class OneOf extends BaseKeyword
         }
 
         // Validate against all schemas
-        $matchedCount    = 0;
         $schemaValidator = new SchemaValidator($this->validationDataType);
+        $innerExceptions = [];
+        $validSchemas    = [];
+
         foreach ($oneOf as $schema) {
             try {
                 $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
-                $matchedCount++;
+                $validSchemas[] = $schema;
             } catch (SchemaMismatch $e) {
-                // that did not match... its ok
+                $innerExceptions[] = $e;
             }
         }
 
-        if ($matchedCount !== 1) {
-            throw KeywordMismatch::fromKeyword('oneOf', $data, sprintf('Data must match exactly one schema, but matched %d', $matchedCount));
+        if (count($validSchemas) === 1) {
+            return;
         }
+
+        if (count($validSchemas) < 1) {
+            throw NotEnoughValidSchemas::fromKeywordWithInnerExceptions(
+                'oneOf',
+                $data,
+                $innerExceptions,
+                'Data must match exactly one schema, but matched none'
+            );
+        }
+
+        throw TooManyValidSchemas::fromKeywordWithValidSchemas(
+            'oneOf',
+            $data,
+            $validSchemas,
+            sprintf('Data must match exactly one schema, but matched %d', count($validSchemas))
+        );
     }
 }
