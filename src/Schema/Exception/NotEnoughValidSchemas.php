@@ -6,7 +6,6 @@ namespace League\OpenAPIValidation\Schema\Exception;
 
 use Throwable;
 
-// Indicates that data was not matched against a combination of schema keywords
 class NotEnoughValidSchemas extends KeywordMismatch
 {
     /** @var Throwable[] */
@@ -22,10 +21,9 @@ class NotEnoughValidSchemas extends KeywordMismatch
         string $keyword,
         $data,
         array $innerExceptions,
-        ?string $message = null,
-        ?Throwable $prev = null
+        ?string $message = null
     ) : KeywordMismatch {
-        $instance                  = new self('Keyword validation failed: ' . $message, 0, $prev);
+        $instance                  = new self('Keyword validation failed: ' . $message, 0);
         $instance->keyword         = $keyword;
         $instance->data            = $data;
         $instance->innerExceptions = $innerExceptions;
