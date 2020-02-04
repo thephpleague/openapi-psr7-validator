@@ -125,9 +125,6 @@ $validator = (new \League\OpenAPIValidation\PSR7\ValidatorBuilder)->fromYamlFile
 $openApi = $validator->getSchema();
 ```
 
-### Request Message
-`\Psr\Http\Message\RequestInterface` validation is not implemented. 
-
 ### PSR-15 Middleware
 PSR-15 middleware can be used like this:
 
