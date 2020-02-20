@@ -81,6 +81,7 @@ final class QueryArgumentsValidator implements MessageValidator
     private function validateAgainstSchema(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy, array $specs) : void
     {
         // Note: By default, OpenAPI treats all request parameters as optional.
+        $validator = new SchemaValidator($validationStrategy);
 
         foreach ($parsedQueryArguments as $name => $argumentValue) {
             // skip if there is no spec for this argument
@@ -89,10 +90,8 @@ final class QueryArgumentsValidator implements MessageValidator
             }
 
             $parameter = RequestParameter::fromSpec($specs[$name]);
-            $schema    = $parameter->getSchema();
-            $validator = new SchemaValidator($validationStrategy);
             try {
-                $validator->validate($parameter->deserialize($argumentValue), $schema, new BreadCrumb($name));
+                $validator->validate($parameter->deserialize($argumentValue), $parameter->getSchema(), new BreadCrumb($name));
             } catch (SchemaMismatch $e) {
                 throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($name, $argumentValue, $addr, $e);
             }

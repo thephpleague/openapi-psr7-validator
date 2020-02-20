@@ -22,20 +22,9 @@ final class TypeTest extends SchemaValidatorTest
             ['array', null, ['a', 'b']],
             ['boolean', null, true],
             ['boolean', null, false],
-            ['boolean', null, 'True'],
-            ['boolean', null, 'false'],
             ['number', null, 12],
-            ['number', null, '12'],
-            ['number', 'float', '12'],
-            ['number', 'double', '12'],
             ['number', null, 0.123],
-            ['number', null, '0.123'],
-            ['number', null, '-0.123'],
-            ['number', 'float', '-0.123'],
-            ['number', 'double', '-0.123'],
             ['integer', null, 12],
-            ['integer', null, '12'],
-            ['integer', null, '-12'],
         ];
     }
 
@@ -90,8 +79,16 @@ SPEC;
             ['object', 'not object'],
             ['array', ['a' => 1, 'b' => 2]], // this is not a plain array (a-la JSON)
             ['boolean', [1, 2]],
+            ['boolean', 'True'],
+            ['boolean', ''],
+            ['boolean', 0],
             ['number', []],
+            ['number', '12'],
+            ['number', '0.123'],
+            ['number', '-0.123'],
             ['integer', 12.55],
+            ['integer', '12'],
+            ['integer', '-12'],
             ['integer', new stdClass()],
             ['integer', 1.0],
         ];

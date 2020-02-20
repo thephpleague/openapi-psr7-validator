@@ -10,6 +10,7 @@ use Dflydev\FigCookies\Cookies;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\Validators\RequestParameter;
 use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
@@ -60,15 +61,17 @@ class RequestCookieValidator implements MessageValidator
      */
     private function checkCookiesAgainstSchema(RequestInterface $request, OperationAddress $addr, Cookies $cookies) : void
     {
+        $validator = new SchemaValidator($this->detectValidationStrategy($request));
+
         foreach ($cookies->getAll() as $cookie) {
             /** @var Cookie $cookie */
             if (! isset($this->specs[$cookie->getName()])) {
                 continue;
             }
 
-            $validator = new SchemaValidator($this->detectValidationStrategy($request));
+            $parameter = RequestParameter::fromSpec($this->specs[$cookie->getName()]);
             try {
-                $validator->validate($cookie->getValue(), $this->specs[$cookie->getName()]->schema);
+                $validator->validate($parameter->deserialize($cookie->getValue()), $parameter->getSchema());
             } catch (SchemaMismatch $e) {
                 throw InvalidCookies::becauseValueDoesNotMatchSchema($cookie->getName(), $cookie->getValue(), $addr, $e);
             }
