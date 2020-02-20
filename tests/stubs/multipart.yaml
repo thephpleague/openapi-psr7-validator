@@ -116,6 +116,10 @@ paths:
                     description: This is a custom header
                     schema:
                       type: string
+                  X-Numeric-Header:
+                    description: This header must be numeric
+                    schema:
+                      type: number
       responses:
         204:
           description: good post

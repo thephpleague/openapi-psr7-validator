@@ -8,6 +8,7 @@ use cebe\openapi\spec\Parameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\Validators\SerializedParameter;
 use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
@@ -63,9 +64,10 @@ class ServerRequestCookieValidator implements MessageValidator
                 continue;
             }
 
-            $validator = new SchemaValidator($this->detectValidationStrategy($message));
+            $validator   = new SchemaValidator($this->detectValidationStrategy($message));
+            $cookieParam = SerializedParameter::fromSpec($this->specs[$cookieName]);
             try {
-                $validator->validate($cookieValue, $this->specs[$cookieName]->schema);
+                $validator->validate($cookieParam->deserialize($cookieValue), $cookieParam->getSchema());
             } catch (SchemaMismatch $e) {
                 throw InvalidCookies::becauseValueDoesNotMatchSchema($cookieName, $cookieValue, $addr, $e);
             }

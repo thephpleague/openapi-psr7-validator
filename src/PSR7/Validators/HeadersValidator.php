@@ -38,9 +38,11 @@ final class HeadersValidator implements MessageValidator
                 throw InvalidHeaders::becauseOfMissingRequiredHeader($header, $addr);
             }
 
+            $parameter = SerializedParameter::fromSpec($spec);
+
             foreach ($message->getHeader($header) as $headerValue) {
                 try {
-                    $validator->validate($headerValue, $spec->schema);
+                    $validator->validate($parameter->deserialize($headerValue), $spec->schema);
                 } catch (SchemaMismatch $exception) {
                     throw InvalidHeaders::becauseValueDoesNotMatchSchema($header, $headerValue, $addr, $exception);
                 }

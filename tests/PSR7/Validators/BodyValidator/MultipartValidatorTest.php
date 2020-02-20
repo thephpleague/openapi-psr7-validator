@@ -108,6 +108,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyE
 Content-Disposition: form-data; name="image"; filename="file1.txt"
 Content-Type: specific/type
 X-Custom-Header: string value goes here
+X-Numeric-Header: 1
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
@@ -197,6 +198,25 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyE
 Content-Disposition: form-data; name="image"; filename="file1.txt"
 Content-Type: specific/type
 X-Custom-Header-WRONG: string value goes here
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+                InvalidHeaders::class,
+            ],
+            // wrong header format for one part
+            [
+                <<<HTTP
+POST /multipart/headers HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="image"; filename="file1.txt"
+Content-Type: specific/type
+X-Custom-Header: string value goes here
+X-Numeric-Header: string value
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--

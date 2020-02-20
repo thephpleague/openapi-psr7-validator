@@ -25,7 +25,7 @@ use function key;
 use function preg_match;
 use function reset;
 
-final class RequestParameter
+final class SerializedParameter
 {
     /** @var CebeSchema */
     private $schema;

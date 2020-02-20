@@ -15,6 +15,7 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\Validators\SerializedParameter;
 use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
@@ -137,6 +138,7 @@ class MultipartValidator implements MessageValidator
                 }
 
                 // 2.2. parts headers
+                $validator = new SchemaValidator($this->detectValidationStrategy($message));
                 foreach ($encoding->headers as $headerName => $headerSpec) {
                     /** @var Header $headerSpec */
                     $headerSchema = $headerSpec->schema;
@@ -146,9 +148,9 @@ class MultipartValidator implements MessageValidator
                         throw InvalidHeaders::becauseOfMissingRequiredHeaderMupripart($partName, $headerName, $addr);
                     }
 
-                    $validator = new SchemaValidator($this->detectValidationStrategy($message));
+                    $header = SerializedParameter::fromSpec($headerSpec);
                     try {
-                        $validator->validate($headerValue, $headerSchema);
+                        $validator->validate($header->deserialize($headerValue), $headerSchema);
                     } catch (SchemaMismatch $e) {
                         throw InvalidHeaders::becauseValueDoesNotMatchSchemaMultipart($partName, $headerName, $headerValue, $addr, $e);
                     }

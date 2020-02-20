@@ -89,7 +89,7 @@ final class QueryArgumentsValidator implements MessageValidator
                 continue;
             }
 
-            $parameter = RequestParameter::fromSpec($specs[$name]);
+            $parameter = SerializedParameter::fromSpec($specs[$name]);
             try {
                 $validator->validate($parameter->deserialize($argumentValue), $parameter->getSchema(), new BreadCrumb($name));
             } catch (SchemaMismatch $e) {

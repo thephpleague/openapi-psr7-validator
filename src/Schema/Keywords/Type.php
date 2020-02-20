@@ -49,7 +49,7 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::BOOLEAN:
-                if (is_string($data) || ! is_bool($data)) {
+                if (! is_bool($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                 }
                 break;
@@ -59,7 +59,7 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::INTEGER:
-                if (is_string($data) || ! is_int($data)) {
+                if (! is_int($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;

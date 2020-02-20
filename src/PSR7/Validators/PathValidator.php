@@ -49,7 +49,7 @@ final class PathValidator implements MessageValidator
         $validator        = new SchemaValidator($this->detectValidationStrategy($message));
 
         foreach ($pathParsedParams as $name => $value) {
-            $parameter = RequestParameter::fromSpec($specs[$name]);
+            $parameter = SerializedParameter::fromSpec($specs[$name]);
             try {
                 $validator->validate($parameter->deserialize($value), $parameter->getSchema());
             } catch (SchemaMismatch $e) {

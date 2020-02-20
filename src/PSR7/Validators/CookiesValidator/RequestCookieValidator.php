@@ -10,7 +10,7 @@ use Dflydev\FigCookies\Cookies;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
-use League\OpenAPIValidation\PSR7\Validators\RequestParameter;
+use League\OpenAPIValidation\PSR7\Validators\SerializedParameter;
 use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
@@ -69,7 +69,7 @@ class RequestCookieValidator implements MessageValidator
                 continue;
             }
 
-            $parameter = RequestParameter::fromSpec($this->specs[$cookie->getName()]);
+            $parameter = SerializedParameter::fromSpec($this->specs[$cookie->getName()]);
             try {
                 $validator->validate($parameter->deserialize($cookie->getValue()), $parameter->getSchema());
             } catch (SchemaMismatch $e) {
