@@ -79,6 +79,9 @@ HTTP
         ];
     }
 
+    /**
+     * @return array<array<string,string>> of arguments
+     */
     public function dataProviderRed() : array
     {
         return [
