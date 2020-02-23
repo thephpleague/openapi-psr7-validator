@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7\Validators;
 
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
-use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 
@@ -42,19 +41,14 @@ final class PathValidator implements MessageValidator
      */
     private function validateRequest(OperationAddress $addr, RequestInterface $message) : void
     {
-        $specs = $this->finder->findPathSpecs($addr);
-
+        $validator        = new ArrayValidator($this->finder->findPathSpecs($addr));
         $path             = $message->getUri()->getPath();
         $pathParsedParams = $addr->parseParams($path); // ['id'=>12]
-        $validator        = new SchemaValidator($this->detectValidationStrategy($message));
 
-        foreach ($pathParsedParams as $name => $value) {
-            $parameter = SerializedParameter::fromSpec($specs[$name]);
-            try {
-                $validator->validate($parameter->deserialize($value), $parameter->getSchema());
-            } catch (SchemaMismatch $e) {
-                throw InvalidPath::becauseValueDoesNotMatchSchema($name, (string) $value, $addr, $e);
-            }
-        }
+        try {
+            $validator->validateArray($addr, $pathParsedParams, $this->detectValidationStrategy($message));
+        } catch (InvalidParameter $e) {
+            throw InvalidPath::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e->getPrevious());
+        } // RequiredParameterMissing will not be thrown, all parameters are checking in parseParams
     }
 }

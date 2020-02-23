@@ -131,6 +131,32 @@ Content-Type: image/whatever
 HTTP
 ,
             ],
+            // deserialized values
+            [
+                <<<HTTP
+POST /multipart-deserialization HTTP/1.1
+Content-Length: 428
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOmz20xyMCkE27rN7
+
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="id"
+Content-Type: text/plain
+
+123.0
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="secure"
+Content-Type: text/plain
+
+true
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="code"
+Content-Type: text/plain
+
+456
+------WebKitFormBoundaryOmz20xyMCkE27rN7--
+HTTP
+,
+            ],
         ];
     }
 
@@ -223,6 +249,33 @@ X-Numeric-Header: string value
 HTTP
 ,
                 InvalidHeaders::class,
+            ],
+            // wrong data in one of the parts
+            [
+                <<<HTTP
+POST /multipart-deserialization HTTP/1.1
+Content-Length: 428
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOmz20xyMCkE27rN7
+
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="id"
+Content-Type: text/plain
+
+123
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="secure"
+Content-Type: text/plain
+
+0
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="code"
+Content-Type: text/plain
+
+456
+------WebKitFormBoundaryOmz20xyMCkE27rN7--
+HTTP
+,
+                InvalidBody::class,
             ],
         ];
     }

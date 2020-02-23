@@ -41,6 +41,7 @@ use function strpos;
 class MultipartValidator implements MessageValidator
 {
     use ValidationStrategy;
+    use BodyDeserialization;
 
     private const HEADER_CONTENT_TYPE = 'Content-Type';
 
@@ -87,10 +88,9 @@ class MultipartValidator implements MessageValidator
         // 1. Parse message body
         $document = PSR7::convert($message);
 
-        $body = $this->parseMultipartData($addr, $document);
-
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
+            $body = $this->deserializeBody($this->parseMultipartData($addr, $document), $schema);
             $validator->validate($body, $schema);
         } catch (SchemaMismatch $e) {
             throw InvalidBody::becauseBodyDoesNotMatchSchema($this->contentType, $addr, $e);

@@ -32,3 +32,27 @@ paths:
       responses:
         204:
           description: good post
+  /urlencoded/scalar-deserialization:
+    post:
+      summary: Post form-url-encoded body
+      operationId: post-form-url-encoded-body-with-deserialization
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                secure:
+                  type: boolean
+                code:
+                  type: integer
+              required:
+                - id
+                - secure
+                - code
+
+      responses:
+        204:
+          description: good post

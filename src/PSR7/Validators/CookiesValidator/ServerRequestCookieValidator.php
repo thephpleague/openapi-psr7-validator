@@ -6,16 +6,15 @@ namespace League\OpenAPIValidation\PSR7\Validators\CookiesValidator;
 
 use cebe\openapi\spec\Parameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
+use League\OpenAPIValidation\PSR7\Exception\Validation\RequiredParameterMissing;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
-use League\OpenAPIValidation\PSR7\Validators\SerializedParameter;
+use League\OpenAPIValidation\PSR7\Validators\ArrayValidator;
 use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
-use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webmozart\Assert\Assert;
-use function array_key_exists;
 
 class ServerRequestCookieValidator implements MessageValidator
 {
@@ -38,39 +37,14 @@ class ServerRequestCookieValidator implements MessageValidator
     public function validate(OperationAddress $addr, MessageInterface $message) : void
     {
         Assert::isInstanceOf($message, ServerRequestInterface::class);
-        $this->checkRequiredCookies($addr, $message);
-        $this->checkCookiesAgainstSchema($addr, $message);
-    }
+        $validator = new ArrayValidator($this->specs);
 
-    /**
-     * @throws InvalidCookies
-     */
-    private function checkRequiredCookies(OperationAddress $addr, ServerRequestInterface $message) : void
-    {
-        foreach ($this->specs as $cookieName => $spec) {
-            if ($spec->required && ! array_key_exists($cookieName, $message->getCookieParams())) {
-                throw InvalidCookies::becauseOfMissingRequiredCookie($cookieName, $addr);
-            }
-        }
-    }
-
-    /**
-     * @throws InvalidCookies
-     */
-    private function checkCookiesAgainstSchema(OperationAddress $addr, ServerRequestInterface $message) : void
-    {
-        foreach ($message->getCookieParams() as $cookieName => $cookieValue) {
-            if (! isset($this->specs[$cookieName])) {
-                continue;
-            }
-
-            $validator   = new SchemaValidator($this->detectValidationStrategy($message));
-            $cookieParam = SerializedParameter::fromSpec($this->specs[$cookieName]);
-            try {
-                $validator->validate($cookieParam->deserialize($cookieValue), $cookieParam->getSchema());
-            } catch (SchemaMismatch $e) {
-                throw InvalidCookies::becauseValueDoesNotMatchSchema($cookieName, $cookieValue, $addr, $e);
-            }
+        try {
+            $validator->validateArray($addr, $message->getCookieParams(), $this->detectValidationStrategy($message));
+        } catch (RequiredParameterMissing $e) {
+            throw InvalidCookies::becauseOfMissingRequiredCookie($e->name(), $addr);
+        } catch (InvalidParameter $e) {
+            throw InvalidCookies::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e->getPrevious());
         }
     }
 }
