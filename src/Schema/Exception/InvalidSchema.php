@@ -27,8 +27,8 @@ final class InvalidSchema extends RuntimeException
         return new static(sprintf("Type '%s' is unexpected.", $type));
     }
 
-    public static function becauseBracketsAreNotBalanced(string $path) : self
+    public static function becauseBracesAreNotBalanced(string $path) : self
     {
-        return new static(sprintf("Brackets in path '%s' are not balanced.", $path));
+        return new static(sprintf("Braces in path '%s' are not balanced.", $path));
     }
 }

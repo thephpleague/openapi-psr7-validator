@@ -112,13 +112,13 @@ class OperationAddress
             switch ($part) {
                 case '{':
                     if ($inParameter) {
-                        throw InvalidSchema::becauseBracketsAreNotBalanced($url);
+                        throw InvalidSchema::becauseBracesAreNotBalanced($url);
                     }
                     $inParameter = true;
                     continue 2;
                 case '}':
                     if (! $inParameter) {
-                        throw InvalidSchema::becauseBracketsAreNotBalanced($url);
+                        throw InvalidSchema::becauseBracesAreNotBalanced($url);
                     }
                     $inParameter = false;
                     continue 2;
