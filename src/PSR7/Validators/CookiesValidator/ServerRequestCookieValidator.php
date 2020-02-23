@@ -40,7 +40,7 @@ class ServerRequestCookieValidator implements MessageValidator
         $validator = new ArrayValidator($this->specs);
 
         try {
-            $validator->validateArray($addr, $message->getCookieParams(), $this->detectValidationStrategy($message));
+            $validator->validateArray($message->getCookieParams(), $this->detectValidationStrategy($message));
         } catch (RequiredParameterMissing $e) {
             throw InvalidCookies::becauseOfMissingRequiredCookie($e->name(), $addr);
         } catch (InvalidParameter $e) {

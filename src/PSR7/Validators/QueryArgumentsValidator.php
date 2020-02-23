@@ -54,7 +54,7 @@ final class QueryArgumentsValidator implements MessageValidator
         $validator = new ArrayValidator($this->finder->findQuerySpecs($addr));
 
         try {
-            $validator->validateArray($addr, $parsedQueryArguments, $validationStrategy);
+            $validator->validateArray($parsedQueryArguments, $validationStrategy);
         } catch (RequiredParameterMissing $e) {
             throw InvalidQueryArgs::becauseOfMissingRequiredArgument($e->name(), $addr);
         } catch (InvalidParameter $e) {

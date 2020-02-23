@@ -7,9 +7,11 @@ namespace League\OpenAPIValidation\PSR7\Validators;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
+use League\OpenAPIValidation\PSR7\Exception\Validation\RequiredParameterMissing;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
+use LogicException;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 
@@ -46,9 +48,12 @@ final class PathValidator implements MessageValidator
         $pathParsedParams = $addr->parseParams($path); // ['id'=>12]
 
         try {
-            $validator->validateArray($addr, $pathParsedParams, $this->detectValidationStrategy($message));
+            $validator->validateArray($pathParsedParams, $this->detectValidationStrategy($message));
         } catch (InvalidParameter $e) {
             throw InvalidPath::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e->getPrevious());
-        } // RequiredParameterMissing will not be thrown, all parameters are checking in parseParams
+        } catch (RequiredParameterMissing $e) {
+            throw new LogicException('RequiredParameterMissing should not be thrown in PathValidator, ' .
+                'because presence of all parameters have to be checked before', 0, $e);
+        }
     }
 }

@@ -7,7 +7,6 @@ namespace League\OpenAPIValidation\PSR7\Validators;
 use cebe\openapi\spec\Parameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\RequiredParameterMissing;
-use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
@@ -35,11 +34,11 @@ class ArrayValidator
      * @throws InvalidParameter
      * @throws RequiredParameterMissing
      */
-    public function validateArray(OperationAddress $addr, array $params, int $validationStrategy) : void
+    public function validateArray(array $params, int $validationStrategy) : void
     {
         foreach ($this->specs as $name => $spec) {
             if ($spec->required && ! array_key_exists($name, $params)) {
-                throw RequiredParameterMissing::fromNameAndAddr($name, $addr);
+                throw RequiredParameterMissing::fromName($name);
             }
         }
 
@@ -56,7 +55,7 @@ class ArrayValidator
             try {
                 $validator->validate($parameter->deserialize($argumentValue), $parameter->getSchema(), new BreadCrumb($name));
             } catch (SchemaMismatch $e) {
-                throw InvalidParameter::becauseValueDidNotMatchSchema($name, $argumentValue, $addr, $e);
+                throw InvalidParameter::becauseValueDidNotMatchSchema($name, $argumentValue, $e);
             }
         }
     }

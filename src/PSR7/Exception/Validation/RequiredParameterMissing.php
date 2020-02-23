@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\PSR7\Exception\Validation;
 
-use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 
-class RequiredParameterMissing extends AddressValidationFailed
+class RequiredParameterMissing extends ValidationFailed
 {
     /** @var string */
     protected $name;
 
-    public static function fromNameAndAddr(string $name, OperationAddress $addr) : self
+    public static function fromName(string $name) : self
     {
-        $exception       = static::fromAddr($addr);
+        $exception       = new self();
         $exception->name = $name;
 
         return $exception;
