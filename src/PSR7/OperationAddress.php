@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7;
 
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
+use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
+use const PREG_SPLIT_DELIM_CAPTURE;
+use function implode;
 use function preg_match;
-use function preg_match_all;
+use function preg_quote;
 use function preg_replace;
+use function preg_split;
 use function sprintf;
-use function str_replace;
 use function strtok;
 
 class OperationAddress
@@ -76,13 +79,10 @@ class OperationAddress
         // 0. Filter URL, remove query string
         $url = strtok($url, '?');
 
-        // 1. Find param names
-        preg_match_all('#{([^}]+)}#', $this->path(), $m);
-        $parameterNames = $m[1];
+        // 1. Find param names and build pattern
+        $pattern = $this->buildPattern($this->path(), $parameterNames);
 
         // 2. Parse param values
-        $pattern = '#' . str_replace(['{', '}'], ['(?<', '>[^/]+)'], $this->path()) . '#';
-
         if (! preg_match($pattern, $url, $matches)) {
             throw InvalidPath::becausePathDoesNotMatchPattern($url, $this);
         }
@@ -94,5 +94,44 @@ class OperationAddress
         }
 
         return $parsedParams;
+    }
+
+    /**
+     * It builds PCRE pattern, which can be used to parse path. It also extract parameter names
+     *
+     * @param array<string>|null $parameterNames
+     */
+    protected function buildPattern(string $url, ?array &$parameterNames) : string
+    {
+        $parameterNames = [];
+        $pregParts      = [];
+        $inParameter    = false;
+
+        $parts = preg_split('#([{}])#', $url, -1, PREG_SPLIT_DELIM_CAPTURE);
+        foreach ($parts as $part) {
+            switch ($part) {
+                case '{':
+                    if ($inParameter) {
+                        throw InvalidSchema::becauseBracesAreNotBalanced($url);
+                    }
+                    $inParameter = true;
+                    continue 2;
+                case '}':
+                    if (! $inParameter) {
+                        throw InvalidSchema::becauseBracesAreNotBalanced($url);
+                    }
+                    $inParameter = false;
+                    continue 2;
+            }
+
+            if ($inParameter) {
+                $pregParts[]      = '(?<' . $part . '>[^/]+)';
+                $parameterNames[] = $part;
+            } else {
+                $pregParts[] = preg_quote($part, '#');
+            }
+        }
+
+        return '#' . implode($pregParts) . '#';
     }
 }

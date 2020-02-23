@@ -69,4 +69,15 @@ final class PathParametersTest extends TestCase
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
+
+    public function testParsesFormat() : void
+    {
+        // dot in path template must be handled with care
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/number/99.json');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
 }

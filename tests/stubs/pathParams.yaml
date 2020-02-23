@@ -61,3 +61,21 @@ paths:
       responses:
         204:
           description: No response
+  /number/{id}.{format}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: format
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Read data
+      operationId: read-int-format
+      responses:
+        204:
+          description: No response
