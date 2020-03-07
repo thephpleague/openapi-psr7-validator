@@ -56,9 +56,9 @@ final class QueryArgumentsValidator implements MessageValidator
         try {
             $validator->validateArray($parsedQueryArguments, $validationStrategy);
         } catch (RequiredParameterMissing $e) {
-            throw InvalidQueryArgs::becauseOfMissingRequiredArgument($e->name(), $addr);
+            throw InvalidQueryArgs::becauseOfMissingRequiredArgument($e->name(), $addr, $e);
         } catch (InvalidParameter $e) {
-            throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e->getPrevious());
+            throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e);
         }
     }
 

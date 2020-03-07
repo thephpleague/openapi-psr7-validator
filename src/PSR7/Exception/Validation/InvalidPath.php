@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7\Exception\Validation;
 
 use League\OpenAPIValidation\PSR7\OperationAddress;
-use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use Throwable;
 use function sprintf;
 
 class InvalidPath extends AddressValidationFailed
 {
-    public static function becauseValueDoesNotMatchSchema(string $parameterName, string $parameterValue, OperationAddress $address, SchemaMismatch $prev) : self
+    public static function becauseValueDoesNotMatchSchema(string $parameterName, string $parameterValue, OperationAddress $address, Throwable $prev) : self
     {
         $exception          = static::fromAddrAndPrev($address, $prev);
         $exception->message = sprintf('Value "%s" for parameter "%s" is invalid for %s', $parameterValue, $parameterName, $address);

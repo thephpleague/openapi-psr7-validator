@@ -50,7 +50,7 @@ final class PathValidator implements MessageValidator
         try {
             $validator->validateArray($pathParsedParams, $this->detectValidationStrategy($message));
         } catch (InvalidParameter $e) {
-            throw InvalidPath::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e->getPrevious());
+            throw InvalidPath::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e);
         } catch (RequiredParameterMissing $e) {
             throw new LogicException('RequiredParameterMissing should not be thrown in PathValidator, ' .
                 'because presence of all parameters have to be checked before', 0, $e);
