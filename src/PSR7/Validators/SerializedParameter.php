@@ -6,6 +6,7 @@ namespace League\OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter as CebeParameter;
 use cebe\openapi\spec\Schema as CebeSchema;
+use cebe\openapi\spec\Type as CebeType;
 use League\OpenAPIValidation\Schema\Exception\ContentTypeMismatch;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
@@ -13,6 +14,10 @@ use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use const JSON_ERROR_NONE;
+use function is_float;
+use function is_int;
+use function is_numeric;
+use function is_scalar;
 use function is_string;
 use function json_decode;
 use function json_last_error;
@@ -20,7 +25,7 @@ use function key;
 use function preg_match;
 use function reset;
 
-final class RequestParameter
+final class SerializedParameter
 {
     /** @var CebeSchema */
     private $schema;
@@ -78,6 +83,20 @@ final class RequestParameter
             }
 
             return $decodedValue;
+        }
+
+        if (($this->schema->type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
+            return (bool) $value;
+        }
+
+        if (($this->schema->type === CebeType::NUMBER)
+            && is_scalar($value) && is_numeric($value)) {
+            return is_int($value) ? (int) $value : (float) $value;
+        }
+
+        if (($this->schema->type === CebeType::INTEGER)
+            && is_scalar($value) && ! is_float($value) && preg_match('#^[-+]?\d+$#', (string) $value)) {
+            return (int) $value;
         }
 
         return $value;

@@ -116,6 +116,34 @@ paths:
                     description: This is a custom header
                     schema:
                       type: string
+                  X-Numeric-Header:
+                    description: This header must be numeric
+                    schema:
+                      type: number
+      responses:
+        204:
+          description: good post
+  /multipart-deserialization:
+    post:
+      summary: Post multipart body
+      operationId: post-multipart-body-deserializtion
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - id
+                - secure
+                - code
+              properties:
+                id:            # Part 1 (numeric value)
+                  type: number
+                secure:        # Part 2 (bool value)
+                  type: boolean
+                code:          # Part 3 (int value)
+                  type: integer
+
       responses:
         204:
           description: good post

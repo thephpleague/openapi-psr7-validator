@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\PSR7\Validators;
 
-use cebe\openapi\spec\Parameter;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
+use League\OpenAPIValidation\PSR7\Exception\Validation\RequiredParameterMissing;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
-use League\OpenAPIValidation\Schema\BreadCrumb;
-use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use function array_key_exists;
 use function parse_str;
 
 /**
@@ -54,48 +51,14 @@ final class QueryArgumentsValidator implements MessageValidator
      */
     private function validateQueryArguments(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy) : void
     {
-        $specs = $this->finder->findQuerySpecs($addr);
-        $this->checkMissingArguments($addr, $parsedQueryArguments, $specs);
-        $this->validateAgainstSchema($addr, $parsedQueryArguments, $validationStrategy, $specs);
-    }
+        $validator = new ArrayValidator($this->finder->findQuerySpecs($addr));
 
-    /**
-     * @param mixed[]     $parsedQueryArguments [limit=>10]
-     * @param Parameter[] $specs
-     */
-    private function checkMissingArguments(OperationAddress $addr, array $parsedQueryArguments, array $specs) : void
-    {
-        foreach ($specs as $name => $spec) {
-            if ($spec->required && ! array_key_exists($name, $parsedQueryArguments)) {
-                throw InvalidQueryArgs::becauseOfMissingRequiredArgument($name, $addr);
-            }
-        }
-    }
-
-    /**
-     * @param mixed[]     $parsedQueryArguments [limit=>10]
-     * @param Parameter[] $specs
-     *
-     * @throws InvalidQueryArgs
-     */
-    private function validateAgainstSchema(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy, array $specs) : void
-    {
-        // Note: By default, OpenAPI treats all request parameters as optional.
-
-        foreach ($parsedQueryArguments as $name => $argumentValue) {
-            // skip if there is no spec for this argument
-            if (! array_key_exists($name, $specs)) {
-                continue;
-            }
-
-            $parameter = RequestParameter::fromSpec($specs[$name]);
-            $schema    = $parameter->getSchema();
-            $validator = new SchemaValidator($validationStrategy);
-            try {
-                $validator->validate($parameter->deserialize($argumentValue), $schema, new BreadCrumb($name));
-            } catch (SchemaMismatch $e) {
-                throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($name, $argumentValue, $addr, $e);
-            }
+        try {
+            $validator->validateArray($parsedQueryArguments, $validationStrategy);
+        } catch (RequiredParameterMissing $e) {
+            throw InvalidQueryArgs::becauseOfMissingRequiredArgument($e->name(), $addr);
+        } catch (InvalidParameter $e) {
+            throw InvalidQueryArgs::becauseValueDoesNotMatchSchema($e->name(), $e->value(), $addr, $e->getPrevious());
         }
     }
 

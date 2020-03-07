@@ -189,3 +189,47 @@ paths:
                 properties:
                   result:
                     type: string
+  /deserialize-headers:
+    get:
+      parameters:
+        - in: header
+          name: num
+          schema:
+            type: number
+        - in: header
+          name: bool
+          schema:
+            type: boolean
+        - in: header
+          name: int
+          schema:
+            type: integer
+      description: Get with numeric/bool header
+      responses:
+        200:
+          description: fake endpoint
+          content:
+            application/json:
+              schema: {}
+  /deserialize-cookies:
+    get:
+      description: Get with numeric/bool cookies
+      parameters:
+        - in: cookie
+          name: num
+          schema:
+            type: number
+        - in: cookie
+          name: bool
+          schema:
+            type: boolean
+        - in: cookie
+          name: int
+          schema:
+            type: integer
+      responses:
+        200:
+          description: fake endpoint
+          content:
+            application/json:
+              schema: {}

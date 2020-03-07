@@ -108,6 +108,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyE
 Content-Disposition: form-data; name="image"; filename="file1.txt"
 Content-Type: specific/type
 X-Custom-Header: string value goes here
+X-Numeric-Header: 1
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
@@ -127,6 +128,32 @@ Content-Type: image/whatever
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
+            // deserialized values
+            [
+                <<<HTTP
+POST /multipart-deserialization HTTP/1.1
+Content-Length: 428
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOmz20xyMCkE27rN7
+
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="id"
+Content-Type: text/plain
+
+123.0
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="secure"
+Content-Type: text/plain
+
+true
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="code"
+Content-Type: text/plain
+
+456
+------WebKitFormBoundaryOmz20xyMCkE27rN7--
 HTTP
 ,
             ],
@@ -203,6 +230,52 @@ X-Custom-Header-WRONG: string value goes here
 HTTP
 ,
                 InvalidHeaders::class,
+            ],
+            // wrong header format for one part
+            [
+                <<<HTTP
+POST /multipart/headers HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="image"; filename="file1.txt"
+Content-Type: specific/type
+X-Custom-Header: string value goes here
+X-Numeric-Header: string value
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+                InvalidHeaders::class,
+            ],
+            // wrong data in one of the parts
+            [
+                <<<HTTP
+POST /multipart-deserialization HTTP/1.1
+Content-Length: 428
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOmz20xyMCkE27rN7
+
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="id"
+Content-Type: text/plain
+
+123
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="secure"
+Content-Type: text/plain
+
+0
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="code"
+Content-Type: text/plain
+
+456
+------WebKitFormBoundaryOmz20xyMCkE27rN7--
+HTTP
+,
+                InvalidBody::class,
             ],
         ];
     }

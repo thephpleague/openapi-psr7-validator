@@ -14,13 +14,10 @@ use RuntimeException;
 use function class_exists;
 use function is_array;
 use function is_bool;
-use function is_float;
 use function is_int;
 use function is_numeric;
 use function is_object;
-use function is_scalar;
 use function is_string;
-use function preg_match;
 use function sprintf;
 
 class Type extends BaseKeyword
@@ -52,19 +49,17 @@ class Type extends BaseKeyword
                 }
                 break;
             case CebeType::BOOLEAN:
-                $stringifiedBool = is_scalar($data) && preg_match('#^(true|false)$#i', (string) $data);
-                if (! is_bool($data) && ! $stringifiedBool) {
+                if (! is_bool($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                 }
                 break;
             case CebeType::NUMBER:
-                if (! is_numeric($data)) {
+                if (is_string($data) || ! is_numeric($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::NUMBER, $data);
                 }
                 break;
             case CebeType::INTEGER:
-                $stringifiedInt = is_scalar($data) && preg_match('#^[-+]?\d+$#', (string) $data) && ! is_float($data);
-                if (! is_int($data) && ! $stringifiedInt) {
+                if (! is_int($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
                 break;

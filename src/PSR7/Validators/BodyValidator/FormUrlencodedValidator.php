@@ -25,6 +25,7 @@ use function parse_str;
 class FormUrlencodedValidator implements MessageValidator
 {
     use ValidationStrategy;
+    use BodyDeserialization;
 
     /** @var MediaType */
     protected $mediaTypeSpec;
@@ -52,10 +53,10 @@ class FormUrlencodedValidator implements MessageValidator
         }
 
         // 1. Parse message body
-        $body = $this->parseUrlencodedData($message);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
+            $body = $this->deserializeBody($this->parseUrlencodedData($message), $schema);
             $validator->validate($body, $schema);
         } catch (SchemaMismatch $e) {
             throw InvalidBody::becauseBodyDoesNotMatchSchema($this->contentType, $addr, $e);
