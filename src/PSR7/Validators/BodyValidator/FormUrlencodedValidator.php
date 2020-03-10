@@ -81,7 +81,7 @@ class FormUrlencodedValidator implements MessageValidator
         $body = [];
 
         parse_str(
-            $message->getBody()->getContents(),
+            (string) $message->getBody(),
             $body
         );
 
