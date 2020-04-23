@@ -24,6 +24,9 @@ abstract class SchemaValidatorTest extends TestCase
     {
         $spec = Reader::readFromYaml($rawSchema);
 
-        return new Schema($spec->schema);
+        $schema = new Schema($spec->schema);
+        $schema->resolveReferences(new ReferenceContext($spec, '/'));
+
+        return $schema;
     }
 }
