@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Tests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -76,7 +77,7 @@ JSON;
             ->withQueryParams([
                 'fields' => ['array1'],
             ]);
-        $this->expectException('\League\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs');
+        $this->expectException(InvalidQueryArgs::class);
         $validator->validate($psrRequest);
     }
 }
