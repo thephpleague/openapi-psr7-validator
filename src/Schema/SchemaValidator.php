@@ -115,7 +115,7 @@ final class SchemaValidator implements Validator
             }
 
             if (isset($schema->required)) {
-                (new Required($schema, $this->validationStrategy))->validate($data, $schema->required);
+                (new Required($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->required);
             }
 
             if (isset($schema->enum)) {
