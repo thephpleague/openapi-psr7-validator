@@ -28,6 +28,13 @@ class SchemaMismatch extends Exception
         $this->dataBreadCrumb = $dataBreadCrumb;
     }
 
+    public function withBreadCrumb(BreadCrumb $breadCrumb) : self
+    {
+        $this->dataBreadCrumb = $breadCrumb;
+
+        return $this;
+    }
+
     /**
      * @return mixed
      */

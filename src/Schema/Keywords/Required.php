@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Schema\Keywords;
 
 use cebe\openapi\spec\Schema as CebeSchema;
+use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
@@ -18,11 +19,14 @@ class Required extends BaseKeyword
 {
     /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
     protected $validationDataType;
+    /** @var BreadCrumb */
+    private $breadCrumb;
 
-    public function __construct(CebeSchema $parentSchema, int $type)
+    public function __construct(CebeSchema $parentSchema, int $type, BreadCrumb $breadCrumb)
     {
         parent::__construct($parentSchema);
         $this->validationDataType = $type;
+        $this->breadCrumb         = $breadCrumb;
     }
 
     /**
@@ -77,7 +81,7 @@ class Required extends BaseKeyword
                     'required',
                     $data,
                     sprintf("Required property '%s' must be present in the object", $reqProperty)
-                );
+                )->withBreadCrumb($this->breadCrumb->addCrumb($reqProperty));
             }
         }
     }
