@@ -86,7 +86,7 @@ final class BodyValidator implements MessageValidator
         // ContentType can contain multiple statements (type/subtype + parameters), ie: 'multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__'
         // OpenAPI Spec only defines the first part of the header value (type/subtype)
         // Other parameters SHOULD be skipped
-        $contentType = strtok($contentType, ';');
+        $contentType = (string) strtok($contentType, ';');
 
         return $contentType;
     }
