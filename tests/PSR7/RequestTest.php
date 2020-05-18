@@ -65,6 +65,21 @@ final class RequestTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
+	public function testItValidatesBodyHasEmptyTypeRed() : void
+	{
+		$addr    = new OperationAddress('/request-body', 'post');
+		$request = $this->makeGoodRequest($addr->path(), $addr->method())
+			->withHeader('Content-Type', '');
+
+		$this->expectException(InvalidHeaders::class);
+		$this->expectExceptionMessage(
+			'Missing required header "Content-Type" for Request [post /request-body]'
+		);
+
+		$validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRequestValidator();
+		$validator->validate($request);
+	}
+
     public function testItValidatesMessageWrongHeaderValueRed() : void
     {
         $addr    = new OperationAddress('/path1', 'get');
