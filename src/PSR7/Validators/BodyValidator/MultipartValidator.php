@@ -9,6 +9,7 @@ use cebe\openapi\spec\Header;
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Type as CebeType;
+use InvalidArgumentException;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
@@ -22,11 +23,14 @@ use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
 use const JSON_ERROR_NONE;
+use function array_replace;
 use function in_array;
+use function is_array;
 use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
@@ -222,19 +226,17 @@ class MultipartValidator implements MessageValidator
     /**
      * ServerRequest does not have a plain HTTP body which we can parse. Instead, it has a parsed values in
      * getParsedBody() (POST data) and getUploadedFiles (FILES data)
-     *
-     * @param MediaType[] $mediaTypeSpecs
      */
     private function validateServerRequestMultipart(
         OperationAddress $addr,
         ServerRequestInterface $message,
         Schema $schema
     ) : void {
-        $body = $message->getParsedBody();
+        $body = (array) $message->getParsedBody();
 
-        foreach ($message->getUploadedFiles() as $name => $file) {
-            $body[$name] = '~~~binary~~~';
-        }
+        $files = $this->normalizeFiles($message->getUploadedFiles());
+
+        $body = array_replace($body, $files);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
@@ -262,5 +264,27 @@ class MultipartValidator implements MessageValidator
             // 2.2. parts headers
             // ...headers are parsed already by webserver...
         }
+    }
+
+    /**
+     * @param UploadedFileInterface[]|array[] $files
+     *
+     * @return mixed[]
+     */
+    private function normalizeFiles(array $files) : array
+    {
+        $normalized = [];
+
+        foreach ($files as $name => $file) {
+            if ($file instanceof UploadedFileInterface) {
+                $normalized[$name] = '~~~binary~~~';
+            } elseif (is_array($file)) {
+                $normalized[$name] = $this->normalizeFiles($file);
+            } else {
+                throw new InvalidArgumentException('Invalid file tree in request');
+            }
+        }
+
+        return $normalized;
     }
 }
