@@ -11,6 +11,10 @@ class StringURI
 {
     public function __invoke(string $value) : bool
     {
+        if ($value === 'about:blank') {
+            return true;
+        }
+
         return filter_var($value, FILTER_VALIDATE_URL) !== false;
     }
 }
