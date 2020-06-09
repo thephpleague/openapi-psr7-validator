@@ -29,7 +29,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: "#^[a-z]{4}$#"
+          pattern: "^[a-z]{4}$"
       - in: cookie
         name: session_id
         required: true

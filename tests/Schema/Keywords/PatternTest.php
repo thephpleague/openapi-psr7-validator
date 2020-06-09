@@ -10,16 +10,33 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class PatternTest extends SchemaValidatorTest
 {
-    public function testItValidatesPatternGreen() : void
+    /**
+     * @return array<array<string, string>>
+     */
+    public function validDataProvider() : array
+    {
+        return [
+            ['^[a|b]+$', 'abba'],
+            ['foo', 'foo'], // Tests adding anchors
+            ['foof', 'foof'], // Tests adding anchors when first and last character is same
+            ['1foo1', '1foo1'], // Tests adding anchors when first and last character is same with numbers
+            ['^#\d+$', '#123'], // Tests adding anchors to string which has #
+            ['^#(\d+)#$', '#123#'], // Tests adding anchors to string which has multiple#
+        ];
+    }
+
+    /**
+     * @dataProvider validDataProvider
+     */
+    public function testItValidatesPatternGreen(string $pattern, string $data) : void
     {
         $spec = <<<SPEC
 schema:
   type: string
-  pattern: "#^[a|b]+$#"
+  pattern: $pattern
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = 'abba';
 
         (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
@@ -30,7 +47,7 @@ SPEC;
         $spec = <<<SPEC
 schema:
   type: string
-  pattern: "#^[a|b]+$#"
+  pattern: "^[a|b]+$"
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
