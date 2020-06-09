@@ -10,7 +10,7 @@ use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use function preg_match;
 use function sprintf;
-use function strlen;
+use function str_replace;
 
 class Pattern extends BaseKeyword
 {
@@ -36,10 +36,7 @@ class Pattern extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        // add anchors
-        if ($pattern[0] !== $pattern[strlen($pattern) - 1]) {
-            $pattern = sprintf('#%s#', $pattern);
-        }
+        $pattern = sprintf('#%s#', str_replace('#', '\#', $pattern));
 
         if (! preg_match($pattern, $data)) {
             throw KeywordMismatch::fromKeyword('pattern', $data, sprintf('Data does not match pattern \'%s\'', $pattern));
