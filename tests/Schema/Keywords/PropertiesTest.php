@@ -103,4 +103,21 @@ SPEC;
         $this->expectException(KeywordMismatch::class);
         (new SchemaValidator())->validate($data, $schema);
     }
+
+    public function testItInfersObjectTypeGreen() : void
+    {
+        $spec = <<<SPEC
+schema:
+  properties:
+    date:
+      type: string
+      format: date
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = ['date' => 'not-a-date'];
+
+        $this->expectException(KeywordMismatch::class);
+        (new SchemaValidator())->validate($data, $schema);
+    }
 }

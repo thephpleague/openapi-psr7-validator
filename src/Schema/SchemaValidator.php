@@ -29,6 +29,7 @@ use League\OpenAPIValidation\Schema\Keywords\Required;
 use League\OpenAPIValidation\Schema\Keywords\Type;
 use League\OpenAPIValidation\Schema\Keywords\UniqueItems;
 use function count;
+use function is_array;
 
 // This will load a whole schema and data to validate if one matches another
 final class SchemaValidator implements Validator
@@ -126,7 +127,7 @@ final class SchemaValidator implements Validator
                 (new Items($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->items);
             }
 
-            if ($schema->type === CebeType::OBJECT) {
+            if ($schema->type === CebeType::OBJECT || (isset($schema->properties) && is_array($data))) {
                 $additionalProperties = $schema->additionalProperties ?? null; // defaults to true
                 if ((isset($schema->properties) && count($schema->properties)) || $additionalProperties) {
                     (new Properties($schema, $this->validationStrategy, $breadCrumb))->validate(
