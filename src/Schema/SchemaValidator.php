@@ -6,6 +6,7 @@ namespace League\OpenAPIValidation\Schema;
 
 use cebe\openapi\spec\Schema as CebeSchema;
 use cebe\openapi\spec\Type as CebeType;
+use League\OpenAPIValidation\Foundation\ArrayHelper;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Keywords\AllOf;
 use League\OpenAPIValidation\Schema\Keywords\AnyOf;
@@ -127,7 +128,9 @@ final class SchemaValidator implements Validator
                 (new Items($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->items);
             }
 
-            if ($schema->type === CebeType::OBJECT || (isset($schema->properties) && is_array($data))) {
+            if ($schema->type === CebeType::OBJECT
+                || (isset($schema->properties) && is_array($data) && ArrayHelper::isAssoc($data))
+            ) {
                 $additionalProperties = $schema->additionalProperties ?? null; // defaults to true
                 if ((isset($schema->properties) && count($schema->properties)) || $additionalProperties) {
                     (new Properties($schema, $this->validationStrategy, $breadCrumb))->validate(
