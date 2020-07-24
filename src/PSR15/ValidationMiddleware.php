@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\PSR15;
 
+use League\OpenAPIValidation\PSR15\Exception\InvalidResponseMessage;
+use League\OpenAPIValidation\PSR15\Exception\InvalidServerRequestMessage;
+use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\ResponseValidator;
 use League\OpenAPIValidation\PSR7\ServerRequestValidator;
 use Psr\Http\Message\ResponseInterface;
@@ -34,13 +37,21 @@ final class ValidationMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         // 1. Validate request
-        $matchedOASOperation = $this->requestValidator->validate($request);
+        try {
+            $matchedOASOperation = $this->requestValidator->validate($request);
+        } catch (ValidationFailed $e) {
+            throw InvalidServerRequestMessage::because($e);
+        }
 
         // 2. Process request
         $response = $handler->handle($request);
 
         // 3. Validate response
-        $this->responseValidator->validate($matchedOASOperation, $response);
+        try {
+            $this->responseValidator->validate($matchedOASOperation, $response);
+        } catch (ValidationFailed $e) {
+            throw InvalidResponseMessage::because($e);
+        }
 
         return $response;
     }
