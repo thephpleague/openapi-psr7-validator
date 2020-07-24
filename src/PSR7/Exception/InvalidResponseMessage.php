@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\PSR7\Exception;
 
-use Exception;
-use Throwable;
-
-class InvalidResponseMessage extends Exception
+class InvalidResponseMessage extends ValidationFailed
 {
-    public static function fromOriginal(Throwable $e) : self
+    public static function fromOriginal(ValidationFailed $e) : self
     {
         return new static('Response message failed validation', 0, $e);
     }
