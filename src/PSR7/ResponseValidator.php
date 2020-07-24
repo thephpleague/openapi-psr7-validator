@@ -11,7 +11,6 @@ use League\OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
 use League\OpenAPIValidation\PSR7\Validators\HeadersValidator;
 use League\OpenAPIValidation\PSR7\Validators\ValidatorChain;
 use Psr\Http\Message\ResponseInterface;
-use Throwable;
 
 class ResponseValidator implements ReusableSchema
 {
@@ -45,7 +44,7 @@ class ResponseValidator implements ReusableSchema
                 new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode()),
                 $response
             );
-        } catch (Throwable $e) {
+        } catch (ValidationFailed $e) {
             throw InvalidResponseMessage::fromOriginal($e);
         }
     }
