@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
+use League\OpenAPIValidation\PSR7\Exception\InvalidRequestMessage;
 use League\OpenAPIValidation\PSR7\Exception\MultipleOperationsMismatchForRequest;
 use League\OpenAPIValidation\PSR7\Exception\NoOperation;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
@@ -53,40 +54,44 @@ class RequestValidator implements ReusableSchema
      */
     public function validate(RequestInterface $request) : OperationAddress
     {
-        $path   = $request->getUri()->getPath();
-        $method = strtolower($request->getMethod());
+        try {
+            $path   = $request->getUri()->getPath();
+            $method = strtolower($request->getMethod());
 
-        // 0. Find matching operations
-        // If there is only one - then proceed with checking
-        // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
-        // "This request matched operations A,B and C, but mismatched its schemas."
-        $matchingOperationsAddrs = $this->findMatchingOperations($request);
+            // 0. Find matching operations
+            // If there is only one - then proceed with checking
+            // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
+            // "This request matched operations A,B and C, but mismatched its schemas."
+            $matchingOperationsAddrs = $this->findMatchingOperations($request);
 
-        if (! $matchingOperationsAddrs) {
-            throw NoOperation::fromPathAndMethod($path, $method);
-        }
-
-        // Single match is the most desirable variant, because we reduce ambiguity down to zero
-        if (count($matchingOperationsAddrs) === 1) {
-            $this->validator->validate($matchingOperationsAddrs[0], $request);
-
-            return $matchingOperationsAddrs[0];
-        }
-
-        // there are multiple matching operations, this is bad, because if none of them match the message
-        // then we cannot say reliably which one intended to match
-        foreach ($matchingOperationsAddrs as $matchedAddr) {
-            try {
-                $this->validator->validate($matchedAddr, $request);
-
-                return $matchedAddr; // Good, operation matched and request is valid against it, stop here
-            } catch (Throwable $e) {
-                // that operation did not match
+            if (! $matchingOperationsAddrs) {
+                throw NoOperation::fromPathAndMethod($path, $method);
             }
-        }
 
-        // no operation matched at all...
-        throw MultipleOperationsMismatchForRequest::fromMatchedAddrs($matchingOperationsAddrs);
+            // Single match is the most desirable variant, because we reduce ambiguity down to zero
+            if (count($matchingOperationsAddrs) === 1) {
+                $this->validator->validate($matchingOperationsAddrs[0], $request);
+
+                return $matchingOperationsAddrs[0];
+            }
+
+            // there are multiple matching operations, this is bad, because if none of them match the message
+            // then we cannot say reliably which one intended to match
+            foreach ($matchingOperationsAddrs as $matchedAddr) {
+                try {
+                    $this->validator->validate($matchedAddr, $request);
+
+                    return $matchedAddr; // Good, operation matched and request is valid against it, stop here
+                } catch (Throwable $e) {
+                    // that operation did not match
+                }
+            }
+
+            // no operation matched at all...
+            throw MultipleOperationsMismatchForRequest::fromMatchedAddrs($matchingOperationsAddrs);
+        } catch (Throwable $e) {
+            throw InvalidRequestMessage::fromOriginal($e);
+        }
     }
 
     /**
