@@ -90,7 +90,7 @@ class ServerRequestValidator implements ReusableSchema
             // no operation matched at all...
             throw MultipleOperationsMismatchForRequest::fromMatchedAddrs($matchingOperationsAddrs);
         } catch (ValidationFailed $e) {
-            throw InvalidServerRequestMessage::fromOriginal($e);
+            throw InvalidServerRequestMessage::because($e);
         }
     }
 

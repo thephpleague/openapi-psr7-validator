@@ -45,7 +45,7 @@ class ResponseValidator implements ReusableSchema
                 $response
             );
         } catch (ValidationFailed $e) {
-            throw InvalidResponseMessage::fromOriginal($e);
+            throw InvalidResponseMessage::because($e);
         }
     }
 }
