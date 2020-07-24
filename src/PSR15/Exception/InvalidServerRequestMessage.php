@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace League\OpenAPIValidation\PSR7\Exception;
+namespace League\OpenAPIValidation\PSR15\Exception;
+
+use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 
 class InvalidServerRequestMessage extends ValidationFailed
 {

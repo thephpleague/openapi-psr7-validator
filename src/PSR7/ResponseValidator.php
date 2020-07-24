@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
-use League\OpenAPIValidation\PSR7\Exception\InvalidResponseMessage;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
 use League\OpenAPIValidation\PSR7\Validators\HeadersValidator;
@@ -39,13 +38,9 @@ class ResponseValidator implements ReusableSchema
      */
     public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
     {
-        try {
-            $this->validator->validate(
-                new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode()),
-                $response
-            );
-        } catch (ValidationFailed $e) {
-            throw InvalidResponseMessage::because($e);
-        }
+        $this->validator->validate(
+            new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode()),
+            $response
+        );
     }
 }
