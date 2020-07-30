@@ -34,7 +34,7 @@ final class SerializedParameter
     private $contentType;
     /** @var string|null */
     private $style;
-    /** @var boolean|null */
+    /** @var bool|null */
     private $explode;
 
     public function __construct(CebeSchema $schema, ?string $contentType = null, ?string $style = null, ?bool $explode = null)
