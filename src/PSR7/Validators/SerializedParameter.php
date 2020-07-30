@@ -24,6 +24,7 @@ use function json_last_error;
 use function key;
 use function preg_match;
 use function reset;
+use function explode;
 
 final class SerializedParameter
 {
