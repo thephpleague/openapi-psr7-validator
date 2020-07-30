@@ -14,6 +14,7 @@ use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use const JSON_ERROR_NONE;
+use function explode;
 use function is_float;
 use function is_int;
 use function is_numeric;
@@ -24,7 +25,6 @@ use function json_last_error;
 use function key;
 use function preg_match;
 use function reset;
-use function explode;
 
 final class SerializedParameter
 {
@@ -41,8 +41,8 @@ final class SerializedParameter
     {
         $this->schema      = $schema;
         $this->contentType = $contentType;
-        $this->style = $style;
-        $this->explode = $explode;
+        $this->style       = $style;
+        $this->explode     = $explode;
     }
 
     public static function fromSpec(CebeParameter $parameter) : self
