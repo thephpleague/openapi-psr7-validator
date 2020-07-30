@@ -40,6 +40,8 @@ final class SerializedParameter
     {
         $this->schema      = $schema;
         $this->contentType = $contentType;
+        $this->style = $style;
+        $this->explode = $explode;
     }
 
     public static function fromSpec(CebeParameter $parameter) : self
