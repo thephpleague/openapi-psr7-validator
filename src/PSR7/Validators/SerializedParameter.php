@@ -31,8 +31,12 @@ final class SerializedParameter
     private $schema;
     /** @var string|null */
     private $contentType;
+    /** @var string|null */
+    private $style;
+    /** @var boolean|null */
+    private $explode;
 
-    public function __construct(CebeSchema $schema, ?string $contentType = null)
+    public function __construct(CebeSchema $schema, ?string $contentType = null, ?string $style = null, ?bool $explode = null)
     {
         $this->schema      = $schema;
         $this->contentType = $contentType;
@@ -45,7 +49,7 @@ final class SerializedParameter
             if ($parameter->schema !== null) {
                 Validator::not(Validator::notEmpty())->assert($content);
 
-                return new self($parameter->schema);
+                return new self($parameter->schema, null, $parameter->style, $parameter->explode);
             }
 
             Validator::length(1, 1)->assert($content);
@@ -59,7 +63,7 @@ final class SerializedParameter
         $schema      = reset($content)->schema;
         $contentType = key($content);
 
-        return new self($schema, $contentType);
+        return new self($schema, $contentType, $parameter->style, $parameter->explode);
     }
 
     /**
@@ -97,6 +101,12 @@ final class SerializedParameter
         if (($this->schema->type === CebeType::INTEGER)
             && is_scalar($value) && ! is_float($value) && preg_match('#^[-+]?\d+$#', (string) $value)) {
             return (int) $value;
+        }
+
+        if (($this->schema->type === CebeType::ARRAY)
+            && ($this->style === 'form' && $this->explode === false)
+            && is_string($value)) {
+            return explode(',', $value);
         }
 
         return $value;
