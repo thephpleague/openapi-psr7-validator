@@ -89,7 +89,7 @@ YAML;
             'number' => '1.00,2.00,3.00',
         ];
         $request = new ServerRequest('GET', 'http://localhost:8000/api/v1/users');
-        $request->withQueryParams(['id' => $map[$type]]);
+        $request = $request->withQueryParams(['id' => $map[$type]]);
 
         return $request;
     }
