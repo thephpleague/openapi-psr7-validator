@@ -7,7 +7,6 @@ namespace League\OpenAPIValidation\Tests\FromCommunity;
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
-use function GuzzleHttp\Psr7\stream_for;
 
 final class IssueWithQueryArrayTest extends TestCase
 {
@@ -54,7 +53,7 @@ final class IssueWithQueryArrayTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    protected function makeYaml($type, $format)
+    protected function makeYaml(string $type, string $format)
     {
         return $yaml = /** @lang yaml */
             <<<YAML
@@ -81,7 +80,7 @@ paths:
 YAML;
     }
 
-    protected function makeRequest($type) : ServerRequest
+    protected function makeRequest(string $type) : ServerRequest
     {
         $map = [
             'integer' => '1,2,3',
@@ -89,9 +88,11 @@ YAML;
             'boolean' => 'true,false',
             'number' => '1.00,2.00,3.00',
         ];
+
         return (new ServerRequest(
             'GET',
             'http://localhost:8000/api/v1/users'
         ))->withQueryParams(['id' => $map[$type]]);
+
     }
 }
