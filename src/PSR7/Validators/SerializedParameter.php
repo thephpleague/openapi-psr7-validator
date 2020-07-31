@@ -122,7 +122,7 @@ final class SerializedParameter
     private function convertScalar($value, ?string $type = '')
     {
         if (($type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
-            return strtolower((string) $value) === 'true';
+            return is_string($value) ? $value === 'true' : (bool) $value;
         }
 
         if (($type === CebeType::NUMBER)
