@@ -33,6 +33,8 @@ final class SerializedParameter
     /** @var string|null */
     private $contentType;
     /** @var string|null */
+    private $in;
+    /** @var string|null */
     private $style;
     /** @var bool|null */
     private $explode;
@@ -92,24 +94,16 @@ final class SerializedParameter
             return $decodedValue;
         }
 
-        if (($this->schema->type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
-            return (bool) $value;
-        }
-
-        if (($this->schema->type === CebeType::NUMBER)
-            && is_scalar($value) && is_numeric($value)) {
-            return is_int($value) ? (int) $value : (float) $value;
-        }
-
-        if (($this->schema->type === CebeType::INTEGER)
-            && is_scalar($value) && ! is_float($value) && preg_match('#^[-+]?\d+$#', (string) $value)) {
-            return (int) $value;
-        }
+        $value = $this->convertScalar($value, $this->schema->type);
 
         if (($this->schema->type === CebeType::ARRAY)
             && ($this->style === 'form' && $this->explode === false)
             && is_string($value)) {
-            return explode(',', $value);
+            $value = explode(',', $value);
+            foreach ($value as &$val) {
+                $val = $this->convertScalar($val, $this->schema->items->type);
+            }
+            return $value;
         }
 
         return $value;
@@ -118,6 +112,25 @@ final class SerializedParameter
     private function isJsonContentType() : bool
     {
         return $this->contentType !== null && preg_match('#^application/.*json$#', $this->contentType) !== false;
+    }
+
+    private function convertScalar($value, string $type)
+    {
+        if (($type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
+            return strtolower($value) === 'true';
+        }
+
+        if (($type === CebeType::NUMBER)
+            && is_scalar($value) && is_numeric($value)) {
+            return is_int($value) ? (int) $value : (float) $value;
+        }
+
+        if (($type === CebeType::INTEGER)
+            && is_scalar($value) && ! is_float($value) && preg_match('#^[-+]?\d+$#', (string) $value)) {
+            return (int) $value;
+        }
+
+        return $value;
     }
 
     public function getSchema() : CebeSchema
