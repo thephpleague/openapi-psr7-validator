@@ -82,7 +82,7 @@ YAML;
 
     protected function makeRequest(string $type) : ServerRequest
     {
-        $map = ['integer' => '1,2,3', 'string' => 'id1,id2,id3', 'boolean' => 'true,false', 'number' => '1.00,2.00,3.00'];
+        $map     = ['integer' => '1,2,3', 'string' => 'id1,id2,id3', 'boolean' => 'true,false', 'number' => '1.00,2.00,3.00'];
         $request = new ServerRequest('GET', 'http://localhost:8000/api/v1/users');
         $request = $request->withQueryParams(['id' => $map[$type]]);
 

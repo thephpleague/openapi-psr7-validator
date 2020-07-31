@@ -115,12 +115,11 @@ final class SerializedParameter
     }
 
     /**
-     * @param mixed  $value
-     * @param string $type
+     * @param mixed $value
      *
      * @return mixed
      */
-    private function convertScalar($value, $type)
+    private function convertScalar($value, ?string $type = '')
     {
         if (($type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
             return strtolower((string) $value) === 'true';
