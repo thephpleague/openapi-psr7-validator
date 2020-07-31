@@ -25,6 +25,7 @@ use function json_last_error;
 use function key;
 use function preg_match;
 use function reset;
+use function strtolower;
 
 final class SerializedParameter
 {
@@ -32,8 +33,6 @@ final class SerializedParameter
     private $schema;
     /** @var string|null */
     private $contentType;
-    /** @var string|null */
-    private $in;
     /** @var string|null */
     private $style;
     /** @var bool|null */
@@ -103,6 +102,7 @@ final class SerializedParameter
             foreach ($value as &$val) {
                 $val = $this->convertScalar($val, $this->schema->items->type);
             }
+
             return $value;
         }
 
@@ -114,10 +114,17 @@ final class SerializedParameter
         return $this->contentType !== null && preg_match('#^application/.*json$#', $this->contentType) !== false;
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @param string $type
+     *
+     * @return mixed
+     */
     private function convertScalar($value, string $type)
     {
         if (($type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
-            return strtolower($value) === 'true';
+            return strtolower((string) $value) === 'true';
         }
 
         if (($type === CebeType::NUMBER)
