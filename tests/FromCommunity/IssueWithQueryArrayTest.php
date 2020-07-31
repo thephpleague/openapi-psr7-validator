@@ -53,7 +53,7 @@ final class IssueWithQueryArrayTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    protected function makeYaml(string $type, string $format)
+    protected function makeYaml(string $type, string $format): string
     {
         return $yaml = /** @lang yaml */
             <<<YAML
@@ -88,11 +88,9 @@ YAML;
             'boolean' => 'true,false',
             'number' => '1.00,2.00,3.00',
         ];
+        $request = new ServerRequest('GET', 'http://localhost:8000/api/v1/users');
+        $request->withQueryParams(['id' => $map[$type]]);
 
-        return (new ServerRequest(
-            'GET',
-            'http://localhost:8000/api/v1/users'
-        ))->withQueryParams(['id' => $map[$type]]);
-
+        return $request;
     }
 }

@@ -116,7 +116,6 @@ final class SerializedParameter
 
     /**
      * @param mixed $value
-     *
      * @param string $type
      *
      * @return mixed
