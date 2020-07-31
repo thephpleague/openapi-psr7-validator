@@ -100,7 +100,7 @@ final class SerializedParameter
             && is_string($value)) {
             $value = explode(',', $value);
             foreach ($value as &$val) {
-                $val = $this->convertScalar($val, $this->schema->items->type);
+                $val = $this->convertScalar($val, $this->schema->items->type ?? '');
             }
 
             return $value;
@@ -120,7 +120,7 @@ final class SerializedParameter
      *
      * @return mixed
      */
-    private function convertScalar($value, string $type)
+    private function convertScalar($value, $type)
     {
         if (($type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
             return strtolower((string) $value) === 'true';
