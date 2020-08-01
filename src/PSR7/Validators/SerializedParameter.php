@@ -29,6 +29,15 @@ use function strtolower;
 
 final class SerializedParameter
 {
+    private const STYLE_FORM            = 'form';
+    private const STYLE_SPACE_DELIMITED = 'spaceDelimited';
+    private const STYLE_PIPE_DELIMITED  = 'pipeDelimited';
+    private const STYLE_DELIMITER_MAP   = [
+        self::STYLE_FORM => ',',
+        self::STYLE_SPACE_DELIMITED => '%20',
+        self::STYLE_PIPE_DELIMITED => '|',
+    ];
+
     /** @var CebeSchema */
     private $schema;
     /** @var string|null */
@@ -93,18 +102,7 @@ final class SerializedParameter
             return $decodedValue;
         }
 
-        $value = $this->convertScalar($value, $this->schema->type);
-
-        if (($this->schema->type === CebeType::ARRAY)
-            && ($this->style === 'form' && $this->explode === false)
-            && is_string($value)) {
-            $value = explode(',', $value);
-            foreach ($value as &$val) {
-                $val = $this->convertScalar($val, $this->schema->items->type ?? '');
-            }
-
-            return $value;
-        }
+        $value = $this->castToSchemaType($value, $this->schema->type);
 
         return $value;
     }
@@ -119,7 +117,7 @@ final class SerializedParameter
      *
      * @return mixed
      */
-    private function convertScalar($value, ?string $type = '')
+    private function castToSchemaType($value, ?string $type)
     {
         if (($type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
             return is_string($value) ? strtolower($value) === 'true' : (bool) $value;
@@ -133,6 +131,30 @@ final class SerializedParameter
         if (($type === CebeType::INTEGER)
             && is_scalar($value) && ! is_float($value) && preg_match('#^[-+]?\d+$#', (string) $value)) {
             return (int) $value;
+        }
+
+        if (($type === CebeType::ARRAY) && is_string($value)) {
+            return $this->convertToSerializationStyle($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function convertToSerializationStyle($value)
+    {
+        if ($this->explode === false
+            && in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
+            $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
+            foreach ($value as &$val) {
+                $val = $this->castToSchemaType($val, $this->schema->items->type ?? null);
+            }
+
+            return $value;
         }
 
         return $value;
