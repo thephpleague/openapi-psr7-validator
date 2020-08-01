@@ -19,28 +19,28 @@ final class IssueWithQueryArrayTest extends TestCase
 
     public function testConvertFormNumberArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form','number', 'float'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'number', 'float'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'number'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertFormIntegerArrayToStringArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form','string', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'string', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'integer'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertFormStringArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form','string', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'string', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'string'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertFormBooleanArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form','boolean', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'boolean', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'boolean'));
         $this->addToAssertionCount(1);
     }

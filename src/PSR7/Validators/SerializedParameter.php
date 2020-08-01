@@ -15,6 +15,7 @@ use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 use const JSON_ERROR_NONE;
 use function explode;
+use function in_array;
 use function is_float;
 use function is_int;
 use function is_numeric;
