@@ -101,7 +101,7 @@ YAML;
     {
         $map     = [
             'form' => ['integer' => '1,2,3', 'string' => 'id1,id2,id3', 'boolean' => 'true,false', 'number' => '1.00,2.00,3.00'],
-            'spaceDelimited' => ['integer' => '1%202%203', 'string' => 'id1%20id2%20id3', 'boolean' => 'true%20false', 'number' => '1.00%202.00%203.00'],
+            'spaceDelimited' => ['integer' => '1 2 3', 'string' => 'id1 id2 id3', 'boolean' => 'true false', 'number' => '1.00 2.00 3.00'],
             'pipeDelimited' => ['integer' => '1|2|3', 'string' => 'id1|id2|id3', 'boolean' => 'true|false', 'number' => '1.00|2.00|3.00'],
         ];
         $request = new ServerRequest('GET', 'http://localhost:8000/api/v1/users');

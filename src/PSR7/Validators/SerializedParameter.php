@@ -35,7 +35,7 @@ final class SerializedParameter
     private const STYLE_PIPE_DELIMITED  = 'pipeDelimited';
     private const STYLE_DELIMITER_MAP   = [
         self::STYLE_FORM => ',',
-        self::STYLE_SPACE_DELIMITED => '%20',
+        self::STYLE_SPACE_DELIMITED => ' ',
         self::STYLE_PIPE_DELIMITED => '|',
     ];
 
