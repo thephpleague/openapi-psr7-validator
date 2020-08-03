@@ -16,6 +16,7 @@ use Respect\Validation\Validator;
 use const JSON_ERROR_NONE;
 use function explode;
 use function in_array;
+use function is_array;
 use function is_float;
 use function is_int;
 use function is_numeric;
@@ -33,6 +34,7 @@ final class SerializedParameter
     private const STYLE_FORM            = 'form';
     private const STYLE_SPACE_DELIMITED = 'spaceDelimited';
     private const STYLE_PIPE_DELIMITED  = 'pipeDelimited';
+    private const STYLE_DEEP_OBJECT     = 'deepObject';
     private const STYLE_DELIMITER_MAP   = [
         self::STYLE_FORM => ',',
         self::STYLE_SPACE_DELIMITED => ' ',
@@ -138,6 +140,10 @@ final class SerializedParameter
             return $this->convertToSerializationStyle($value);
         }
 
+        if (($type === CebeType::OBJECT) && is_array($value)) {
+            return $this->convertToSerializationStyle($value);
+        }
+
         return $value;
     }
 
@@ -153,6 +159,14 @@ final class SerializedParameter
             $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             foreach ($value as &$val) {
                 $val = $this->castToSchemaType($val, $this->schema->items->type ?? null);
+            }
+
+            return $value;
+        }
+
+        if ($this->explode === true && $this->style === self::STYLE_DEEP_OBJECT) {
+            foreach ($value as $key => &$val) {
+                $val = $this->castToSchemaType($val, $this->schema->properties[$key]->type ?? null);
             }
 
             return $value;
