@@ -12,35 +12,35 @@ final class IssueWithQueryArrayTest extends TestCase
 {
     public function testConvertFormIntegerArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'integer', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'integer'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertFormNumberArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'number', 'float'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'number', 'float'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'number'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertFormIntegerArrayToStringArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'string', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'string', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'integer'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertFormStringArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'string', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'string', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'string'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertFormBooleanArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'boolean', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'boolean', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'boolean'));
         $this->addToAssertionCount(1);
     }
@@ -48,21 +48,21 @@ final class IssueWithQueryArrayTest extends TestCase
     public function testConvertFormIntegerArrayError() : void
     {
         $this->expectExceptionMessage('Value "id1,id2,id3" for argument "id" is invalid for Request [get /users]');
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('form', 'integer', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'string'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertSpaceIntegerArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('spaceDelimited', 'integer', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('spaceDelimited', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('spaceDelimited', 'integer'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertPipeIntegerArray() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeYaml('pipeDelimited', 'integer', 'int32'))->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('pipeDelimited', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('pipeDelimited', 'integer'));
         $this->addToAssertionCount(1);
     }
