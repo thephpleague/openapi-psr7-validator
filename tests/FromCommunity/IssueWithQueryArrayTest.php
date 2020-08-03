@@ -115,7 +115,7 @@ paths:
 YAML;
     }
 
-    protected function makeDeepObjectYaml()
+    protected function makeDeepObjectYaml() : string
     {
         return $yaml = /** @lang yaml */
             <<<YAML
