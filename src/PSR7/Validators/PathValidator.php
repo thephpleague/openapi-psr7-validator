@@ -43,7 +43,7 @@ final class PathValidator implements MessageValidator
      */
     private function validateRequest(OperationAddress $addr, RequestInterface $message) : void
     {
-        $validator        = new ArrayValidator($this->finder->findPathSpecs($addr));
+        $validator        = new ArrayValidator($this->finder->findOperationAndPathLevelSpecs($addr));
         $path             = $message->getUri()->getPath();
         $pathParsedParams = $addr->parseParams($path); // ['id'=>12]
 

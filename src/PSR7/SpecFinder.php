@@ -43,7 +43,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findPathSpecs(OperationAddress $addr) : array
+    public function findOperationAndPathLevelSpecs(OperationAddress $addr) : array
     {
         $spec = $this->findOperationSpec($addr);
 
