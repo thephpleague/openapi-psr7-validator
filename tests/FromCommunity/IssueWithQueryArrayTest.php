@@ -67,20 +67,123 @@ final class IssueWithQueryArrayTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertDeepObject() : void
+    public function testConvertSingleLayerDeepObject() : void
     {
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeDeepObjectYaml())->getServerRequestValidator();
+        $yaml = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              before:
+                type: integer
+                format: int32
+              after:
+                type: integer
+                format: int32
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
         $validator->validate($this->makeRequest('deepObject', 'integer'));
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConvertMultiLayerDeepObject() : void
+    {
+        $yaml = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              before:
+                type: object
+                properties:
+                  first:
+                    type: object
+                    properties:
+                      second:
+                        type: integer
+                        format: int32
+              after:
+                type: integer
+                format: int32
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        $validator->validate($this->makeRequest('deepObject', 'deep'));
         $this->addToAssertionCount(1);
     }
 
     public function testConvertDeepObjectError() : void
     {
+        $yaml = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              before:
+                type: integer
+                format: int32
+              after:
+                type: integer
+                format: int32
+      responses:
+        '200':
+          description: A list of users
+YAML;
         $this->expectExceptionMessage('Value "{
     "before": "ten",
     "after": "one"
 }" for argument "id" is invalid for Request [get /users]');
-        $validator = (new ValidatorBuilder())->fromYaml($this->makeDeepObjectYaml())->getServerRequestValidator();
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
         $validator->validate($this->makeRequest('deepObject', 'error'));
         $this->addToAssertionCount(1);
     }
@@ -115,47 +218,13 @@ paths:
 YAML;
     }
 
-    protected function makeDeepObjectYaml() : string
-    {
-        return $yaml = /** @lang yaml */
-            <<<YAML
-openapi: 3.0.0
-info:
-  title: Product import API
-  version: '1.0'
-servers:
-  - url: 'http://localhost:8000/api/v1'
-paths:
-  /users:
-    get:
-      parameters:
-        - in: query
-          name: id
-          required: true
-          style: deepObject
-          explode: true
-          schema:
-            type: object
-            properties:
-              before:
-                type: integer
-                format: int32
-              after:
-                type: integer
-                format: int32
-      responses:
-        '200':
-          description: A list of users
-YAML;
-    }
-
     protected function makeRequest(string $style, string $type) : ServerRequest
     {
         $map     = [
             'form' => ['integer' => '1,2,3', 'string' => 'id1,id2,id3', 'boolean' => 'true,false', 'number' => '1.00,2.00,3.00'],
             'spaceDelimited' => ['integer' => '1 2 3', 'string' => 'id1 id2 id3', 'boolean' => 'true false', 'number' => '1.00 2.00 3.00'],
             'pipeDelimited' => ['integer' => '1|2|3', 'string' => 'id1|id2|id3', 'boolean' => 'true|false', 'number' => '1.00|2.00|3.00'],
-            'deepObject' => ['integer' => ['before' => 10, 'after' => 1], 'string' => ['before' => '10', 'after' => '1'], 'error' => ['before' => 'ten', 'after' => 'one']],
+            'deepObject' => ['integer' => ['before' => 10, 'after' => 1], 'deep' => ['before' => ['first' => ['second' => '10']], 'after' => 1], 'error' => ['before' => 'ten', 'after' => 'one']],
         ];
         $request = new ServerRequest('GET', 'http://localhost:8000/api/v1/users');
         $request = $request->withQueryParams(['id' => $map[$style][$type]]);
