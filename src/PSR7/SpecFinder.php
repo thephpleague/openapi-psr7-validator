@@ -23,7 +23,6 @@ use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Webmozart\Assert\Assert;
-use function count;
 use function json_decode;
 use function json_encode;
 use function property_exists;
@@ -99,58 +98,14 @@ final class SpecFinder
      */
     public function findPathSpec(OperationAddress $addr) : PathItem
     {
-        $pathSpec = $this->findPathSimple($addr) ?? $this->findPathUsingFinder($addr);
+        $finder    = new PathFinder($this->openApi, $addr->path(), $addr->method());
+        $pathSpecs = $finder->getPathMatches();
 
-        if (! $pathSpec) {
+        if (empty($pathSpecs) === true) {
             throw NoPath::fromPath($addr->path());
         }
 
-        return $pathSpec;
-    }
-
-    private function findPathSimple(OperationAddress $addr) : ?PathItem
-    {
-        return $this->openApi->paths->getPath($addr->path());
-    }
-
-    private function findPathUsingFinder(OperationAddress $addr) : ?PathItem
-    {
-        $finder  = new PathFinder($this->openApi, $addr->path(), $addr->method());
-        $results = $finder->search();
-        if (count($results) === 1) {
-            return $this->findPathSimple($results[0]);
-        }
-
-        return null;
-    }
-
-    /**
-     * @throws NoCallback
-     */
-    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation) : Operation
-    {
-        $callbacks = $operation->callbacks;
-        if (! isset($callbacks[$addr->callbackName()])) {
-            throw NoCallback::fromCallbackPath(
-                $addr->path(),
-                $addr->method(),
-                $addr->callbackName(),
-                $addr->callbackMethod()
-            );
-        }
-
-        /** @var Callback $callback */
-        $callback = $callbacks[$addr->callbackName()];
-        if (! isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
-            throw NoCallback::fromCallbackPath(
-                $addr->path(),
-                $addr->method(),
-                $addr->callbackName(),
-                $addr->callbackMethod()
-            );
-        }
-
-        return $callback->getRequest()->getOperations()[$addr->callbackMethod()];
+        return $pathSpecs[0];
     }
 
     /**
@@ -286,7 +241,8 @@ final class SpecFinder
         $spec = $this->findOperationSpec($addr);
 
         // 1. Collect operation level headers from "parameters" keyword
-        // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
+        // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom
+        // request headers as in: header parameters.
         $headerSpecs = [];
         foreach ($spec->parameters as $p) {
             if ($p->in !== 'header') {
@@ -347,5 +303,34 @@ final class SpecFinder
         }
 
         return $cookieSpecs;
+    }
+
+    /**
+     * @throws NoCallback
+     */
+    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation) : Operation
+    {
+        $callbacks = $operation->callbacks;
+        if (! isset($callbacks[$addr->callbackName()])) {
+            throw NoCallback::fromCallbackPath(
+                $addr->path(),
+                $addr->method(),
+                $addr->callbackName(),
+                $addr->callbackMethod()
+            );
+        }
+
+        /** @var Callback $callback */
+        $callback = $callbacks[$addr->callbackName()];
+        if (! isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
+            throw NoCallback::fromCallbackPath(
+                $addr->path(),
+                $addr->method(),
+                $addr->callbackName(),
+                $addr->callbackMethod()
+            );
+        }
+
+        return $callback->getRequest()->getOperations()[$addr->callbackMethod()];
     }
 }

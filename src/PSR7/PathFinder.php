@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Server;
 use const PHP_URL_PATH;
 use function array_key_exists;
@@ -38,6 +39,27 @@ class PathFinder
         $this->openApiSpec = $openApiSpec;
         $this->path        = (string) parse_url($uri, PHP_URL_PATH);
         $this->method      = strtolower($method);
+    }
+
+    /**
+     * Determine matching paths.
+     *
+     * @return PathItem[]
+     */
+    public function getPathMatches() : array
+    {
+        // Determine if path matches exactly.
+        $match = $this->openApiSpec->paths->getPath($this->path);
+        if ($match !== null) {
+            return [$match];
+        }
+        // Probably path is parametrized or matches partially. Determine candidates and try to match path.
+        $matches = [];
+        foreach ($this->search() as $result) {
+            $matches[] = $this->openApiSpec->paths->getPath($result->path());
+        }
+
+        return $matches;
     }
 
     /**
