@@ -69,7 +69,7 @@ final class IssueWithQueryArrayTest extends TestCase
 
     public function testConvertSingleLayerDeepObject() : void
     {
-        $yaml = /** @lang yaml */
+        $yaml      = /** @lang yaml */
             <<<YAML
 openapi: 3.0.0
 info:
@@ -106,7 +106,7 @@ YAML;
 
     public function testConvertMultiLayerDeepObject() : void
     {
-        $yaml = /** @lang yaml */
+        $yaml      = /** @lang yaml */
             <<<YAML
 openapi: 3.0.0
 info:
