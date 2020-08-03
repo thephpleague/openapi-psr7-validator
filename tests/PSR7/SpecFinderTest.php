@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Tests\PSR7;
 
 use League\OpenAPIValidation\PSR7\CallbackAddress;
+use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
@@ -65,7 +66,59 @@ YAML;
         $operation = $specFinder->findOperationSpec($address);
 
         // Some assertions to ensure we have the right operation
-        $this->assertEquals('boolean', $operation->requestBody->content['application/json']->schema->properties['success']->type);
+        $this->assertEquals(
+            'boolean',
+            $operation->requestBody->content['application/json']->schema->properties['success']->type
+        );
         $this->assertEquals(['200'], array_keys(iterator_to_array($operation->responses->getIterator())));
+    }
+
+    public function testHandleParameters() : void
+    {
+        $json       = /** @lang JSON */
+            <<<'JSON'
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/1.0/order/{orderId}": {
+            "get": {
+                "operationId": "get_order",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "The order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The order object",
+                        "content": {
+                            "application/json": {
+                                "properties": {
+                                  "value": true
+                                }
+                            }
+                        }
+                    }                    
+                }
+            }
+        }
+    }
+}
+JSON;
+        $schema     = (new ValidatorBuilder())->fromJson($json)->getServerRequestValidator()->getSchema();
+        $specFinder = new SpecFinder($schema);
+        $pathItem   = $specFinder->findPathSpec(new OperationAddress('/api/1.0/order/123', 'get'));
+        self::assertSame('The order object', $pathItem->get->responses[200]->description);
     }
 }
