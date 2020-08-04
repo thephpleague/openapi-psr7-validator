@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Tests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use League\OpenAPIValidation\PSR15\Exception\InvalidRequestMessage;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
+use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use PHPUnit\Framework\TestCase;
 
 final class IssueWithQueryArrayTest extends TestCase
@@ -50,7 +55,6 @@ final class IssueWithQueryArrayTest extends TestCase
         $this->expectExceptionMessage('Value "id1,id2,id3" for argument "id" is invalid for Request [get /users]');
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'string'));
-        $this->addToAssertionCount(1);
     }
 
     public function testConvertSpaceIntegerArray() : void
@@ -104,6 +108,51 @@ YAML;
         $this->addToAssertionCount(1);
     }
 
+    public function testConvertSingleLayerDeepObjectError() : void
+    {
+        $yaml = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              before:
+                type: integer
+                format: int32
+              after:
+                type: integer
+                format: int32
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        try {
+            $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+            $validator->validate($this->makeRequest('deepObject', 'error'));
+        } catch (InvalidQueryArgs $exception) {
+            /** @var InvalidParameter $previous */
+            $previous = $exception->getPrevious();
+            /** @var TypeMismatch $previous */
+            $previous = $previous->getPrevious();
+            self::assertInstanceOf(TypeMismatch::class, $previous);
+            self::assertEquals(['id', 'before'], $previous->dataBreadCrumb()->buildChain());
+        }
+    }
+
     public function testConvertMultiLayerDeepObject() : void
     {
         $yaml      = /** @lang yaml */
@@ -147,9 +196,9 @@ YAML;
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertDeepObjectError() : void
+    public function testConvertMultiLayerDeepObjectError() : void
     {
-        $yaml = /** @lang yaml */
+        $yaml      = /** @lang yaml */
             <<<YAML
 openapi: 3.0.0
 info:
@@ -170,8 +219,14 @@ paths:
             type: object
             properties:
               before:
-                type: integer
-                format: int32
+                type: object
+                properties:
+                  first:
+                    type: object
+                    properties:
+                      second:
+                        type: string
+                        format: date-time
               after:
                 type: integer
                 format: int32
@@ -179,13 +234,18 @@ paths:
         '200':
           description: A list of users
 YAML;
-        $this->expectExceptionMessage('Value "{
-    "before": "ten",
-    "after": "one"
-}" for argument "id" is invalid for Request [get /users]');
-        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
-        $validator->validate($this->makeRequest('deepObject', 'error'));
-        $this->addToAssertionCount(1);
+        try {
+            $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+            $validator->validate($this->makeRequest('deepObject', 'deep'));
+        } catch (InvalidQueryArgs $exception) {
+            /** @var InvalidParameter $previous */
+            $previous = $exception->getPrevious();
+            /** @var TypeMismatch $previous */
+            $previous = $previous->getPrevious();
+            self::assertInstanceOf(TypeMismatch::class, $previous);
+            self::assertEquals(['id', 'before', 'first', 'second'], $previous->dataBreadCrumb()->buildChain());
+        }
+
     }
 
     protected function makeArrayYaml(string $style, string $type, string $format) : string
