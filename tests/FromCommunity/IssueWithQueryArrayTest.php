@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Tests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use League\OpenAPIValidation\PSR15\Exception\InvalidRequestMessage;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidQueryArgs;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
-use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use PHPUnit\Framework\TestCase;
 
@@ -198,7 +196,7 @@ YAML;
 
     public function testConvertMultiLayerDeepObjectError() : void
     {
-        $yaml      = /** @lang yaml */
+        $yaml = /** @lang yaml */
             <<<YAML
 openapi: 3.0.0
 info:
@@ -245,7 +243,6 @@ YAML;
             self::assertInstanceOf(TypeMismatch::class, $previous);
             self::assertEquals(['id', 'before', 'first', 'second'], $previous->dataBreadCrumb()->buildChain());
         }
-
     }
 
     protected function makeArrayYaml(string $style, string $type, string $format) : string
