@@ -38,6 +38,39 @@ final class SpecFinder
     }
 
     /**
+     * @return Parameter[]
+     *
+     * @throws NoPath
+     */
+    public function findOperationAndPathLevelSpecs(OperationAddress $addr) : array
+    {
+        $spec = $this->findOperationSpec($addr);
+
+        // 1. Collect operation-level params
+        $pathSpecs = [];
+
+        foreach ($spec->parameters as $p) {
+            if ($p->in !== 'path') {
+                continue;
+            }
+
+            $pathSpecs[$p->name] = $p;
+        }
+
+        // 2. Collect path-level params
+        $pathSpec = $this->findPathSpec($addr);
+        foreach ($pathSpec->parameters as $p) {
+            if ($p->in !== 'path') {
+                continue;
+            }
+
+            $pathSpecs += [$p->name => $p]; // union won't override
+        }
+
+        return $pathSpecs;
+    }
+
+    /**
      * Find a particular operation (path + method) in the spec
      *
      * @throws NoPath
@@ -65,46 +98,14 @@ final class SpecFinder
      */
     public function findPathSpec(OperationAddress $addr) : PathItem
     {
-        $pathSpec = $this->openApi->paths->getPath($addr->path());
+        $finder    = new PathFinder($this->openApi, $addr->path(), $addr->method());
+        $pathSpecs = $finder->getPathMatches();
 
-        if (! $pathSpec) {
+        if (empty($pathSpecs) === true) {
             throw NoPath::fromPath($addr->path());
         }
 
-        return $pathSpec;
-    }
-
-    /**
-     * @return Parameter[]
-     *
-     * @throws NoPath
-     */
-    public function findPathSpecs(OperationAddress $addr) : array
-    {
-        $spec = $this->findOperationSpec($addr);
-
-        // 1. Collect operation-level params
-        $pathSpecs = [];
-
-        foreach ($spec->parameters as $p) {
-            if ($p->in !== 'path') {
-                continue;
-            }
-
-            $pathSpecs[$p->name] = $p;
-        }
-
-        // 2. Collect path-level params
-        $pathSpec = $this->findPathSpec($addr);
-        foreach ($pathSpec->parameters as $p) {
-            if ($p->in !== 'path') {
-                continue;
-            }
-
-            $pathSpecs += [$p->name => $p]; // union won't override
-        }
-
-        return $pathSpecs;
+        return $pathSpecs[0];
     }
 
     /**
@@ -198,10 +199,13 @@ final class SpecFinder
      */
     public function findResponseSpec($addr) : ResponseSpec
     {
-        Assert::isInstanceOfAny($addr, [
-            ResponseAddress::class,
-            CallbackResponseAddress::class,
-        ]);
+        Assert::isInstanceOfAny(
+            $addr,
+            [
+                ResponseAddress::class,
+                CallbackResponseAddress::class,
+            ]
+        );
 
         $operation = $this->findOperationSpec($addr);
 
@@ -237,7 +241,8 @@ final class SpecFinder
         $spec = $this->findOperationSpec($addr);
 
         // 1. Collect operation level headers from "parameters" keyword
-        // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom request headers as in: header parameters.
+        // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom
+        // request headers as in: header parameters.
         $headerSpecs = [];
         foreach ($spec->parameters as $p) {
             if ($p->in !== 'header') {
@@ -307,13 +312,23 @@ final class SpecFinder
     {
         $callbacks = $operation->callbacks;
         if (! isset($callbacks[$addr->callbackName()])) {
-            throw NoCallback::fromCallbackPath($addr->path(), $addr->method(), $addr->callbackName(), $addr->callbackMethod());
+            throw NoCallback::fromCallbackPath(
+                $addr->path(),
+                $addr->method(),
+                $addr->callbackName(),
+                $addr->callbackMethod()
+            );
         }
 
         /** @var Callback $callback */
         $callback = $callbacks[$addr->callbackName()];
         if (! isset($callback->getRequest()->getOperations()[$addr->callbackMethod()])) {
-            throw NoCallback::fromCallbackPath($addr->path(), $addr->method(), $addr->callbackName(), $addr->callbackMethod());
+            throw NoCallback::fromCallbackPath(
+                $addr->path(),
+                $addr->method(),
+                $addr->callbackName(),
+                $addr->callbackMethod()
+            );
         }
 
         return $callback->getRequest()->getOperations()[$addr->callbackMethod()];

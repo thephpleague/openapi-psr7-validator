@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Server;
-use Psr\Http\Message\UriInterface;
 use const PHP_URL_PATH;
 use function array_key_exists;
 use function count;
@@ -29,16 +29,37 @@ class PathFinder
 {
     /** @var OpenApi */
     protected $openApiSpec;
-    /** @var UriInterface */
-    protected $uri;
+    /** @var string */
+    protected $path;
     /** @var string $method like "get" */
     protected $method;
 
-    public function __construct(OpenApi $openApiSpec, UriInterface $uri, string $method)
+    public function __construct(OpenApi $openApiSpec, string $uri, string $method)
     {
         $this->openApiSpec = $openApiSpec;
-        $this->uri         = $uri;
+        $this->path        = (string) parse_url($uri, PHP_URL_PATH);
         $this->method      = strtolower($method);
+    }
+
+    /**
+     * Determine matching paths.
+     *
+     * @return PathItem[]
+     */
+    public function getPathMatches() : array
+    {
+        // Determine if path matches exactly.
+        $match = $this->openApiSpec->paths->getPath($this->path);
+        if ($match !== null) {
+            return [$match];
+        }
+        // Probably path is parametrized or matches partially. Determine candidates and try to match path.
+        $matches = [];
+        foreach ($this->search() as $result) {
+            $matches[] = $this->openApiSpec->paths->getPath($result->path());
+        }
+
+        return $matches;
     }
 
     /**
@@ -72,8 +93,7 @@ class PathFinder
                 );
 
                 // 3.1 Compare this path against the real/given path
-                $searchPath = (string) parse_url((string) $this->uri, PHP_URL_PATH);
-                if (! OperationAddress::isPathMatchesSpec($candidatePath, $searchPath)) {
+                if (! OperationAddress::isPathMatchesSpec($candidatePath, $this->path)) {
                     continue;
                 }
 
@@ -105,7 +125,7 @@ class PathFinder
             // servers:     /v1
             $pattern = '#' . preg_replace('#{[^}]+}#', '[^/]+', $specPath) . '/?$#';
 
-            if (! (bool) preg_match($pattern, $this->uri->getPath())) {
+            if (! (bool) preg_match($pattern, $this->path)) {
                 continue;
             }
 
