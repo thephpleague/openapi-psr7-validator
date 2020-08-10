@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter as CebeParameter;
+use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Schema as CebeSchema;
 use cebe\openapi\spec\Type as CebeType;
 use League\OpenAPIValidation\Schema\Exception\ContentTypeMismatch;
@@ -16,6 +17,7 @@ use Respect\Validation\Validator;
 use const JSON_ERROR_NONE;
 use function explode;
 use function in_array;
+use function is_array;
 use function is_float;
 use function is_int;
 use function is_numeric;
@@ -33,6 +35,7 @@ final class SerializedParameter
     private const STYLE_FORM            = 'form';
     private const STYLE_SPACE_DELIMITED = 'spaceDelimited';
     private const STYLE_PIPE_DELIMITED  = 'pipeDelimited';
+    private const STYLE_DEEP_OBJECT     = 'deepObject';
     private const STYLE_DELIMITER_MAP   = [
         self::STYLE_FORM => ',',
         self::STYLE_SPACE_DELIMITED => ' ',
@@ -135,7 +138,11 @@ final class SerializedParameter
         }
 
         if (($type === CebeType::ARRAY) && is_string($value)) {
-            return $this->convertToSerializationStyle($value);
+            return $this->convertToSerializationStyle($value, $this->schema);
+        }
+
+        if (($type === CebeType::OBJECT) && is_array($value)) {
+            return $this->convertToSerializationStyle($value, $this->schema);
         }
 
         return $value;
@@ -146,13 +153,25 @@ final class SerializedParameter
      *
      * @return mixed
      */
-    protected function convertToSerializationStyle($value)
+    protected function convertToSerializationStyle($value, ?Schema $schema)
     {
         if ($this->explode === false
             && in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
             $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             foreach ($value as &$val) {
-                $val = $this->castToSchemaType($val, $this->schema->items->type ?? null);
+                $val = $this->castToSchemaType($val, $schema->items->type ?? null);
+            }
+
+            return $value;
+        }
+
+        if ($schema && $this->explode === true && $this->style === self::STYLE_DEEP_OBJECT) {
+            foreach ($value as $key => &$val) {
+                if (is_array($val)) {
+                    $val = $this->convertToSerializationStyle($val, $schema->properties[$key] ?? null);
+                } else {
+                    $val = $this->castToSchemaType($val, $schema->properties[$key]->type ?? null);
+                }
             }
 
             return $value;
