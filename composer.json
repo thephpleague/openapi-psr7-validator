@@ -36,7 +36,7 @@
         "cache/array-adapter": "^1.0",
         "doctrine/coding-standard": "^6.0",
         "guzzlehttp/psr7": "^1.5",
-        "phpunit/phpunit": "^7|^8"
+        "phpunit/phpunit": "^7|^8|^9"
     },
     "config": {
         "sort-packages": true
