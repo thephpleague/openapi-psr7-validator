@@ -35,8 +35,7 @@ final class Issue79Test extends TestCase
     public function provideSpecAndOperationToMatch() : iterable
     {
         yield 'Server override on the operation level' => [
-            <<<SPEC
-openapi: "3.0.0"
+            'openapi: "3.0.0"
 info:
   title: Uber API
   description: Move your app forward with the Uber API
@@ -50,16 +49,14 @@ paths:
     get:
       summary: Product Types
       servers:
-        - url: /v3
-SPEC,
+        - url: /v3',
             '/v3/products/10',
             'get',
             '/products/{id}',
         ];
 
         yield 'Server override on the path level' => [
-            <<<SPEC
-openapi: "3.0.0"
+            'openapi: "3.0.0"
 info:
   title: Uber API
   description: Move your app forward with the Uber API
@@ -71,16 +68,14 @@ paths:
     servers:
       - url: /v2
     get:
-      summary: Product Types
-SPEC,
+      summary: Product Types',
             '/v2/products/10',
             'get',
             '/products/{id}',
         ];
 
         yield 'Server from the root level' => [
-            <<<SPEC
-openapi: "3.0.0"
+            'openapi: "3.0.0"
 info:
   title: Uber API
   description: Move your app forward with the Uber API
@@ -90,16 +85,14 @@ servers:
 paths:
   /products/{id}:
     get:
-      summary: Product Types
-SPEC,
+      summary: Product Types',
             '/v1/products/10',
             'get',
             '/products/{id}',
         ];
 
         yield 'Default server' => [
-            <<<SPEC
-openapi: "3.0.0"
+            'openapi: "3.0.0"
 info:
   title: Uber API
   description: Move your app forward with the Uber API
@@ -107,8 +100,7 @@ info:
 paths:
   /products/{id}:
     get:
-      summary: Product Types
-SPEC,
+      summary: Product Types',
             '/products/10',
             'get',
             '/products/{id}',
@@ -135,8 +127,7 @@ SPEC,
     public function provideSpecAndOperationToNotMatch() : iterable
     {
         yield 'Server override on the operation level' => [
-            <<<SPEC
-openapi: "3.0.0"
+            'openapi: "3.0.0"
 info:
   title: Uber API
   description: Move your app forward with the Uber API
@@ -150,15 +141,13 @@ paths:
     get:
       summary: Product Types
       servers:
-        - url: /v3
-SPEC,
+        - url: /v3',
             '/v2/products/10',
             'get',
         ];
 
         yield 'Server override on the path level' => [
-            <<<SPEC
-openapi: "3.0.0"
+            'openapi: "3.0.0"
 info:
   title: Uber API
   description: Move your app forward with the Uber API
@@ -170,15 +159,13 @@ paths:
     servers:
       - url: /v2
     get:
-      summary: Product Types
-SPEC,
+      summary: Product Types',
             '/v1/products/10',
             'get',
         ];
 
         yield 'Server from the root level' => [
-            <<<SPEC
-openapi: "3.0.0"
+            'openapi: "3.0.0"
 info:
   title: Uber API
   description: Move your app forward with the Uber API
@@ -188,8 +175,7 @@ servers:
 paths:
   /products/{id}:
     get:
-      summary: Product Types
-SPEC,
+      summary: Product Types',
             '/products/10',
             'get',
         ];
