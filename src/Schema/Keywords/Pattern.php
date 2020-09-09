@@ -8,6 +8,8 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+use function function_exists;
+use function mb_check_encoding;
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -24,7 +26,6 @@ class Pattern extends BaseKeyword
      * not implicitly anchored.
      *
      * @param mixed $data
-     * @param string $pattern
      *
      * @throws KeywordMismatch
      */
@@ -39,8 +40,7 @@ class Pattern extends BaseKeyword
 
         $pattern = sprintf('#%s#', str_replace('#', '\#', $pattern));
 
-        if (
-            function_exists('mb_check_encoding') &&
+        if (function_exists('mb_check_encoding') &&
             (mb_check_encoding($data, 'UTF-8') || mb_check_encoding($pattern, 'UTF-8'))
         ) {
             $pattern .= 'u';
