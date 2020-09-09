@@ -38,6 +38,13 @@ class Pattern extends BaseKeyword
 
         $pattern = sprintf('#%s#', str_replace('#', '\#', $pattern));
 
+        if (
+            function_exists('mb_check_encoding') &&
+            (mb_check_encoding($data, 'UTF-8') || mb_check_encoding($pattern, 'UTF-8'))
+        ) {
+            $pattern .= 'u';
+        }
+
         if (! preg_match($pattern, $data)) {
             throw KeywordMismatch::fromKeyword('pattern', $data, sprintf('Data does not match pattern \'%s\'', $pattern));
         }
