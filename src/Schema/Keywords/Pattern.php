@@ -24,6 +24,7 @@ class Pattern extends BaseKeyword
      * not implicitly anchored.
      *
      * @param mixed $data
+     * @param string $pattern
      *
      * @throws KeywordMismatch
      */
