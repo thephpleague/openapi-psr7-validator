@@ -68,11 +68,11 @@ final class ValidateResponseTest extends BaseValidatorTest
     {
         $addr = new OperationAddress('/path1', 'get');
 
-        $response = $this->makeGoodResponse('/path1', 'get')->withHeader('Header-B', 'wrong value');
+        $response = $this->makeGoodResponse('/path1', 'get')->withHeader('Header-C', 'wrong value');
 
         $this->expectException(InvalidHeaders::class);
         $this->expectExceptionMessage(
-            'Value "wrong value" for header "Header-B" is invalid for Response [get /path1 200]'
+            'Value "wrong value" for header "Header-C" is invalid for Response [get /path1 200]'
         );
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
