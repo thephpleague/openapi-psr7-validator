@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\PSR7\Validators;
 
-use GuzzleHttp\Psr7\Response;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
@@ -34,7 +33,7 @@ final class HeadersValidator implements MessageValidator
 
         // Check if message misses required headers
         foreach ($headerSpecs as $header => $spec) {
-            if (($message instanceof Response || $spec->required) && ! $message->hasHeader($header)) {
+            if ($spec->required && ! $message->hasHeader($header)) {
                 throw InvalidHeaders::becauseOfMissingRequiredHeader($header, $addr);
             }
 

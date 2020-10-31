@@ -89,6 +89,7 @@ paths:
           description: posted
           headers:
             Set-Cookie:
+              required: true
               schema:
                 type: string
           content:
@@ -106,6 +107,13 @@ paths:
           description: fake endpoint
           headers:
             Header-B:
+              required: true
+              schema:
+                type: string
+                enum:
+                  - good value
+                  - another good value
+            Header-C:
               schema:
                 type: string
                 enum:
