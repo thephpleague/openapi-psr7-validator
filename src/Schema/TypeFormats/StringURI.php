@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Schema\TypeFormats;
 
-use League\Uri\UriString;
 use League\Uri\Exceptions\SyntaxError;
+use League\Uri\UriString;
 
 class StringURI
 {
@@ -13,6 +13,7 @@ class StringURI
     {
         try {
             UriString::parse($value);
+
             return true;
         } catch (SyntaxError $error) {
             return false;
