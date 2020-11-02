@@ -16,6 +16,9 @@ class StringURITest extends TestCase
     public function greenURIDataProvider() : array
     {
         return [
+            'about:blank' => [
+                'about:blank'
+            ],
             'scheme with non-leading digit' => [
                 's3://somebucket/somefile.txt',
             ],
@@ -165,17 +168,6 @@ class StringURITest extends TestCase
             ],
             'scheme with hyphen' => [
                 'android-app://org.wikipedia/http/en.m.wikipedia.org/wiki/The_Hitchhiker%27s_Guide_to_the_Galaxy',
-            ],
-            'URI is a scalar value' => [
-                1234,
-            ],
-            'URI is a object with __toString' => [
-                new class() {
-                    public function __toString()
-                    {
-                        return 'http://example.org/hello:12?foo=bar#test';
-                    }
-                },
             ],
             'Authority is the colon' => [
                 'ftp://:/p?q#f',
