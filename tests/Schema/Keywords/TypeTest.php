@@ -20,6 +20,7 @@ final class TypeTest extends SchemaValidatorTest
             ['string', null, 'string value'],
             ['object', null, ['a' => 1]],
             ['array', null, ['a', 'b']],
+            ['array', null, ['0' => 'a', '2' => 'b']], // this triggers: "Value expected to be 'array', 'array' given."
             ['boolean', null, true],
             ['boolean', null, false],
             ['number', null, 12],
@@ -78,6 +79,7 @@ SPEC;
             ['string', 12],
             ['object', 'not object'],
             ['array', ['a' => 1, 'b' => 2]], // this is not a plain array (a-la JSON)
+            ['array', ['0' => 'a', '2' => 'b']], // this is not an array anymore
             ['boolean', [1, 2]],
             ['boolean', 'True'],
             ['boolean', ''],
