@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Schema\TypeFormats;
 
-use const FILTER_VALIDATE_URL;
-use function filter_var;
+use League\Uri\Exceptions\SyntaxError;
+use League\Uri\UriString;
 
 class StringURI
 {
     public function __invoke(string $value) : bool
     {
-        if ($value === 'about:blank') {
-            return true;
-        }
+        try {
+            UriString::parse($value);
 
-        return filter_var($value, FILTER_VALIDATE_URL) !== false;
+            return true;
+        } catch (SyntaxError $error) {
+            return false;
+        }
     }
 }
