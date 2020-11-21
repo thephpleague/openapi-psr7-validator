@@ -57,14 +57,16 @@ class RequestValidator implements ReusableSchema
         $path   = $request->getUri()->getPath();
         $method = strtolower($request->getMethod());
 
+        $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
+
         // 0. Find matching operations
         // If there is only one - then proceed with checking
         // If there are multiple candidates, then check each one, if all fail - we don't know which one supposed to be the one, so we need to throw an exception like
         // "This request matched operations A,B and C, but mismatched its schemas."
-        $matchingOperationsAddrs = $this->findMatchingOperations($request);
+        $matchingOperationsAddrs = $pathFinder->search();
 
         if (! $matchingOperationsAddrs) {
-            if ($this->hasMatchingPaths($request)) {
+            if ($pathFinder->getPathMatches() !== []) {
                 throw NoOperation::fromPathAndMethod($path, $method);
             }
 
@@ -92,29 +94,5 @@ class RequestValidator implements ReusableSchema
 
         // no operation matched at all...
         throw MultipleOperationsMismatchForRequest::fromMatchedAddrs($matchingOperationsAddrs);
-    }
-
-    /**
-     * Check the openapi spec and find matching operations(path+method)
-     * This should consider path parameters as well
-     * "/users/12" should match both ["/users/{id}", "/users/{group}"]
-     *
-     * @return OperationAddress[]
-     */
-    private function findMatchingOperations(RequestInterface $request) : array
-    {
-        $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
-
-        return $pathFinder->search();
-    }
-
-    /**
-     * Checks whether request matches any path in schema
-     */
-    private function hasMatchingPaths(RequestInterface $request) : bool
-    {
-        $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
-
-        return $pathFinder->getPathMatches() !== [];
     }
 }
