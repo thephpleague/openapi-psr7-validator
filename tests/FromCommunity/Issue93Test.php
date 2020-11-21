@@ -16,16 +16,6 @@ use Psr\Http\Message\RequestInterface;
  */
 final class Issue93Test extends BaseValidatorTest
 {
-    protected function makeBadMethodRequest() : RequestInterface
-    {
-        return new Request('get', '/empty');
-    }
-
-    protected function makeBadPathRequest() : RequestInterface
-    {
-        return new Request('get', '/no-such-path');
-    }
-
     public function testBadMethodRequest() : void
     {
         $request = $this->makeBadMethodRequest();
@@ -44,16 +34,22 @@ final class Issue93Test extends BaseValidatorTest
         $request = $this->makeBadPathRequest();
 
         $this->expectException(NoPath::class);
+        $this->expectExceptionMessage(
+            'OpenAPI spec contains no such operation [/no-such-path]'
+        );
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRequestValidator();
-        try {
-            $validator->validate($request);
-        } catch (NoPath $e) {
-            $this->assertEquals(
-                NoPath::class,
-                get_class($e)
-            );
-            throw $e;
-        }
+
+        $validator->validate($request);
+    }
+
+    protected function makeBadMethodRequest() : RequestInterface
+    {
+        return new Request('get', '/empty');
+    }
+
+    protected function makeBadPathRequest() : RequestInterface
+    {
+        return new Request('get', '/no-such-path');
     }
 }
