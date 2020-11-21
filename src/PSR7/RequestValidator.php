@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\PSR7;
 use cebe\openapi\spec\OpenApi;
 use League\OpenAPIValidation\PSR7\Exception\MultipleOperationsMismatchForRequest;
 use League\OpenAPIValidation\PSR7\Exception\NoOperation;
+use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\Validators\BodyValidator\BodyValidator;
 use League\OpenAPIValidation\PSR7\Validators\CookiesValidator\CookiesValidator;
@@ -63,7 +64,11 @@ class RequestValidator implements ReusableSchema
         $matchingOperationsAddrs = $this->findMatchingOperations($request);
 
         if (! $matchingOperationsAddrs) {
-            throw NoOperation::fromPathAndMethod($path, $method);
+            if ($this->hasMatchingPaths($request)) {
+                throw NoOperation::fromPathAndMethod($path, $method);
+            }
+
+            throw NoPath::fromPath($path);
         }
 
         // Single match is the most desirable variant, because we reduce ambiguity down to zero
@@ -101,5 +106,15 @@ class RequestValidator implements ReusableSchema
         $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
 
         return $pathFinder->search();
+    }
+
+    /**
+     * Checks whether request matches any path in schema
+     */
+    private function hasMatchingPaths(RequestInterface $request) : bool
+    {
+        $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
+
+        return $pathFinder->getPathMatches() !== [];
     }
 }
