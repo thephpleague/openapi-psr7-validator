@@ -32,6 +32,8 @@ class PathFinder
     protected $path;
     /** @var string $method like "get" */
     protected $method;
+    /** @var OperationAddress[] */
+    protected $searchResult;
 
     public function __construct(OpenApi $openApiSpec, string $uri, string $method)
     {
@@ -62,11 +64,21 @@ class PathFinder
     }
 
     /**
-     * Make search
-     *
      * @return OperationAddress[]
      */
     public function search() : array
+    {
+        if ($this->searchResult === null) {
+            $this->searchResult = $this->doSearch();
+        }
+
+        return $this->searchResult;
+    }
+
+    /**
+     * @return OperationAddress[]
+     */
+    private function doSearch() : array
     {
         $paths = [];
 
