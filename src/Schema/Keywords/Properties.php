@@ -12,6 +12,7 @@ use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function array_diff;
 use function array_key_exists;
 use function array_keys;
@@ -62,7 +63,7 @@ class Properties extends BaseKeyword
      *
      * @throws SchemaMismatch
      */
-    public function validate($data, array $properties, $additionalProperties) : void
+    public function validate($data, array $properties, $additionalProperties): void
     {
         try {
             Validator::arrayType()->assert($data);

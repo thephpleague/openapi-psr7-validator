@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -27,7 +28,7 @@ class Pattern extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, string $pattern) : void
+    public function validate($data, string $pattern): void
     {
         try {
             Validator::stringType()->assert($data);

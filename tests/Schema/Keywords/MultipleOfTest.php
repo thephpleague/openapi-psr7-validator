@@ -13,7 +13,7 @@ final class MultipleOfTest extends SchemaValidatorTest
     /**
      * @return number[][] of arguments
      */
-    public function validDatasets() : array
+    public function validDatasets(): array
     {
         return [
             [4, 2],
@@ -26,7 +26,7 @@ final class MultipleOfTest extends SchemaValidatorTest
     /**
      * @return number[][] of arguments
      */
-    public function invalidDatasets() : array
+    public function invalidDatasets(): array
     {
         return [
             [4, 3],
@@ -42,7 +42,7 @@ final class MultipleOfTest extends SchemaValidatorTest
      *
      * @dataProvider validDatasets
      */
-    public function testItValidatesMultipleofGreen($number, $multipleOf) : void
+    public function testItValidatesMultipleofGreen($number, $multipleOf): void
     {
         $spec = <<<SPEC
 schema:
@@ -62,7 +62,7 @@ SPEC;
      *
      * @dataProvider invalidDatasets
      */
-    public function testItValidatesMultipleofRed($number, $multipleOf) : void
+    public function testItValidatesMultipleofRed($number, $multipleOf): void
     {
         $spec = <<<SPEC
 schema:

@@ -20,7 +20,7 @@ final class ArrayHelper
      *
      * @param mixed[] $arr
      */
-    public static function isAssoc(array $arr) : bool
+    public static function isAssoc(array $arr): bool
     {
         if ($arr === []) {
             return false;

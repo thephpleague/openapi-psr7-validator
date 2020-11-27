@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class SchemaValidatorTest extends TestCase
 {
-    protected function loadSchema(string $specFile) : Schema
+    protected function loadSchema(string $specFile): Schema
     {
         $spec   = Reader::readFromYamlFile($specFile);
         $schema = new Schema($spec->schema);
@@ -20,7 +20,7 @@ abstract class SchemaValidatorTest extends TestCase
         return $schema;
     }
 
-    protected function loadRawSchema(string $rawSchema) : Schema
+    protected function loadRawSchema(string $rawSchema): Schema
     {
         $spec = Reader::readFromYaml($rawSchema);
 

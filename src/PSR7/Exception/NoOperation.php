@@ -11,7 +11,7 @@ class NoOperation extends NoPath
     /** @var string */
     protected $method;
 
-    public static function fromPathAndMethod(string $path, string $method) : self
+    public static function fromPathAndMethod(string $path, string $method): self
     {
         $i         = new self(sprintf('OpenAPI spec contains no such operation [%s,%s]', $path, $method));
         $i->path   = $path;
@@ -20,7 +20,7 @@ class NoOperation extends NoPath
         return $i;
     }
 
-    public function method() : string
+    public function method(): string
     {
         return $this->method;
     }

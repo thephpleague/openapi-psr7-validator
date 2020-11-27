@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PathParametersTest extends TestCase
 {
-    public function testItValidatesRequestQueryArgumentsGreen() : void
+    public function testItValidatesRequestQueryArgumentsGreen(): void
     {
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/admin');
@@ -21,7 +21,7 @@ final class PathParametersTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesRequestMissedQueryArgumentsGreen() : void
+    public function testItValidatesRequestMissedQueryArgumentsGreen(): void
     {
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/wrong');
@@ -33,7 +33,7 @@ final class PathParametersTest extends TestCase
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestMissedQueryArgumentsForInvalidTypeGreen() : void
+    public function testItValidatesRequestMissedQueryArgumentsForInvalidTypeGreen(): void
     {
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/users/12');
@@ -45,7 +45,7 @@ final class PathParametersTest extends TestCase
         $validator->validate($request);
     }
 
-    public function testItAllowsOptionalParametersGreen() : void
+    public function testItAllowsOptionalParametersGreen(): void
     {
         // Schema allows optional header,cookie, and query parameters
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
@@ -57,7 +57,7 @@ final class PathParametersTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesParsedIntegersGreen() : void
+    public function testItValidatesParsedIntegersGreen(): void
     {
         // In "number/12" an id(12) parsed as a string
         // The implementation should validate this against `type: integer`
@@ -70,7 +70,7 @@ final class PathParametersTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testParsesFormat() : void
+    public function testParsesFormat(): void
     {
         // dot in path template must be handled with care
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';

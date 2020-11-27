@@ -6,6 +6,7 @@ namespace League\OpenAPIValidation\Tests\Schema\TypeFormats;
 
 use League\OpenAPIValidation\Schema\TypeFormats\StringURI;
 use PHPUnit\Framework\TestCase;
+
 use function rawurlencode;
 
 class StringURITest extends TestCase
@@ -13,7 +14,7 @@ class StringURITest extends TestCase
     /**
      * @return array<array<string>>
      */
-    public function greenURIDataProvider() : array
+    public function greenURIDataProvider(): array
     {
         return [
             'about:blank' => ['about:blank'],
@@ -75,7 +76,7 @@ class StringURITest extends TestCase
     /**
      * @return array<array<string>>
      */
-    public function redURIDataProvider() : array
+    public function redURIDataProvider(): array
     {
         return [
             'invalid scheme' => ['0scheme://host/path?query#fragment'],
@@ -107,7 +108,7 @@ class StringURITest extends TestCase
     /**
      * @dataProvider greenURIDataProvider
      */
-    public function testGreenURIFormat(string $uri) : void
+    public function testGreenURIFormat(string $uri): void
     {
         $this->assertTrue((new StringURI())($uri));
     }
@@ -115,7 +116,7 @@ class StringURITest extends TestCase
     /**
      * @dataProvider redURIDataProvider
      */
-    public function testRedURIFormat(string $uri) : void
+    public function testRedURIFormat(string $uri): void
     {
         $this->assertFalse((new StringURI())($uri));
     }

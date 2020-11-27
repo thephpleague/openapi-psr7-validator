@@ -11,7 +11,7 @@ class NoPath extends ValidationFailed
     /** @var string */
     protected $path;
 
-    public static function fromPath(string $path) : self
+    public static function fromPath(string $path): self
     {
         $i       = new self(sprintf('OpenAPI spec contains no such operation [%s]', $path));
         $i->path = $path;
@@ -19,7 +19,7 @@ class NoPath extends ValidationFailed
         return $i;
     }
 
-    public function path() : string
+    public function path(): string
     {
         return $this->path;
     }

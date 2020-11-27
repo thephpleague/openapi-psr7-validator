@@ -17,12 +17,12 @@ class CallbackResponseAddress extends CallbackAddress
         $this->responseCode = $responseCode;
     }
 
-    public function responseCode() : int
+    public function responseCode(): int
     {
         return $this->responseCode;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return sprintf('Callback [%s %s %s %s %d]', $this->method, $this->path, $this->callbackName, $this->callbackMethod, $this->responseCode);
     }

@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function sprintf;
 
 class Items extends BaseKeyword
@@ -36,7 +37,7 @@ class Items extends BaseKeyword
      *
      * @throws SchemaMismatch
      */
-    public function validate($data, CebeSchema $itemsSchema) : void
+    public function validate($data, CebeSchema $itemsSchema): void
     {
         try {
             Validator::arrayVal()->assert($data);

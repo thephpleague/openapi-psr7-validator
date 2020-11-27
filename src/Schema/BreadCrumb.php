@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Schema;
 
 use RuntimeException;
+
 use function array_unshift;
 use function is_scalar;
 use function sprintf;
@@ -35,7 +36,7 @@ class BreadCrumb
      *
      * @return BreadCrumb
      */
-    public function addCrumb($index) : self
+    public function addCrumb($index): self
     {
         $i            = new self($index);
         $i->prevCrumb = $this;
@@ -48,7 +49,7 @@ class BreadCrumb
      *
      * @return mixed[] - string/int values are allowed
      */
-    public function buildChain() : array
+    public function buildChain(): array
     {
         $keys = [];
 

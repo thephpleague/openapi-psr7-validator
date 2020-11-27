@@ -8,7 +8,7 @@ use function preg_match;
 
 class StringUUID
 {
-    public function __invoke(string $value) : bool
+    public function __invoke(string $value): bool
     {
         $pattern = '/^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}$/i';
 

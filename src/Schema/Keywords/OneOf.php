@@ -14,6 +14,7 @@ use League\OpenAPIValidation\Schema\Exception\TooManyValidSchemas;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function count;
 use function sprintf;
 
@@ -46,7 +47,7 @@ class OneOf extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, array $oneOf) : void
+    public function validate($data, array $oneOf): void
     {
         try {
             Validator::arrayVal()->assert($oneOf);

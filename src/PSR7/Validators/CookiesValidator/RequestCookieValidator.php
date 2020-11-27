@@ -36,7 +36,7 @@ class RequestCookieValidator implements MessageValidator
     /**
      * @throws InvalidCookies
      */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         Assert::isInstanceOf($message, RequestInterface::class);
         $cookies = Cookies::fromRequest($message);
@@ -47,7 +47,7 @@ class RequestCookieValidator implements MessageValidator
     /**
      * @throws InvalidCookies
      */
-    private function checkRequiredCookies(Cookies $cookies, OperationAddress $addr) : void
+    private function checkRequiredCookies(Cookies $cookies, OperationAddress $addr): void
     {
         foreach ($this->specs as $cookieName => $spec) {
             if ($spec->required && ! $cookies->has($cookieName)) {
@@ -59,7 +59,7 @@ class RequestCookieValidator implements MessageValidator
     /**
      * @throws InvalidCookies
      */
-    private function checkCookiesAgainstSchema(RequestInterface $request, OperationAddress $addr, Cookies $cookies) : void
+    private function checkCookiesAgainstSchema(RequestInterface $request, OperationAddress $addr, Cookies $cookies): void
     {
         $validator = new SchemaValidator($this->detectValidationStrategy($request));
 

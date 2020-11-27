@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 final class IssueWithRefTest extends TestCase
 {
-    public function testIssueWithRef() : void
+    public function testIssueWithRef(): void
     {
         $yamlFile  = __DIR__ . '/../stubs/ref-as-individual-path.yaml';
         $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServerRequestValidator();
@@ -19,7 +19,7 @@ final class IssueWithRefTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    protected function makeRequest() : ServerRequest
+    protected function makeRequest(): ServerRequest
     {
         return new ServerRequest(
             'GET',

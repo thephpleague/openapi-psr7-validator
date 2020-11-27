@@ -6,5 +6,5 @@ namespace League\OpenAPIValidation\PSR7;
 
 interface CacheableSchemaFactory extends SchemaFactory
 {
-    public function getCacheKey() : string;
+    public function getCacheKey(): string;
 }

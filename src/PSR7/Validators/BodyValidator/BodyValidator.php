@@ -12,6 +12,7 @@ use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
 use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use Psr\Http\Message\MessageInterface;
+
 use function explode;
 use function preg_match;
 use function strtok;
@@ -34,7 +35,7 @@ final class BodyValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         $mediaTypeSpecs = $this->finder->findBodySpec($addr);
 
@@ -73,7 +74,7 @@ final class BodyValidator implements MessageValidator
         }
     }
 
-    private function messageContentType(MessageInterface $message) : ?string
+    private function messageContentType(MessageInterface $message): ?string
     {
         $contentTypes = $message->getHeader(self::HEADER_CONTENT_TYPE);
         if (! $contentTypes) {

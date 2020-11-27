@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class MinLengthTest extends SchemaValidatorTest
 {
-    public function testItValidatesMinLengthGreen() : void
+    public function testItValidatesMinLengthGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesMinLengthRed() : void
+    public function testItValidatesMinLengthRed(): void
     {
         $spec = <<<SPEC
 schema:

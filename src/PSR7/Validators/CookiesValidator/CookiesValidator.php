@@ -25,7 +25,7 @@ final class CookiesValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         $specs = $this->finder->findCookieSpecs($addr);
 

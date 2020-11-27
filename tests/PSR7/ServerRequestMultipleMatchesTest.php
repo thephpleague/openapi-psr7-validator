@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ServerRequestMultipleMatchesTest extends TestCase
 {
-    public function testItMatchesSingleOperationRed() : void
+    public function testItMatchesSingleOperationRed(): void
     {
         // This matches at least two paths
         $specFile = __DIR__ . '/../stubs/multipleMatches.yaml';
@@ -22,7 +22,7 @@ final class ServerRequestMultipleMatchesTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItChecksAgainstMultipleMatchedOperationsRed() : void
+    public function testItChecksAgainstMultipleMatchedOperationsRed(): void
     {
         // This matches at least two paths
         $specFile = __DIR__ . '/../stubs/multipleMatches.yaml';

@@ -14,6 +14,7 @@ use League\OpenAPIValidation\PSR7\SpecFinder;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 use function parse_str;
 
 /**
@@ -32,7 +33,7 @@ final class QueryArgumentsValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         if (! $message instanceof RequestInterface) {
             return;
@@ -49,7 +50,7 @@ final class QueryArgumentsValidator implements MessageValidator
      * @throws InvalidQueryArgs
      * @throws NoPath
      */
-    private function validateQueryArguments(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy) : void
+    private function validateQueryArguments(OperationAddress $addr, array $parsedQueryArguments, int $validationStrategy): void
     {
         $validator = new ArrayValidator($this->finder->findQuerySpecs($addr));
 
@@ -65,7 +66,7 @@ final class QueryArgumentsValidator implements MessageValidator
     /**
      * @return mixed[] like [offset => 10]
      */
-    private function parseQueryArguments(RequestInterface $message) : array
+    private function parseQueryArguments(RequestInterface $message): array
     {
         if ($message instanceof ServerRequestInterface) {
             $parsedQueryArguments = $message->getQueryParams();

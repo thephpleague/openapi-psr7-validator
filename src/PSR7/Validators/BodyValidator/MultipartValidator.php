@@ -27,7 +27,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
-use const JSON_ERROR_NONE;
+
 use function array_replace;
 use function in_array;
 use function is_array;
@@ -38,6 +38,8 @@ use function preg_match;
 use function sprintf;
 use function str_replace;
 use function strpos;
+
+use const JSON_ERROR_NONE;
 
 /**
  * Should validate multipart/* body types
@@ -64,7 +66,7 @@ class MultipartValidator implements MessageValidator
      * @throws NoPath
      * @throws ValidationFailed
      */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         /** @var Schema $schema */
         $schema = $this->mediaTypeSpec->schema;
@@ -88,7 +90,7 @@ class MultipartValidator implements MessageValidator
         OperationAddress $addr,
         MessageInterface $message,
         Schema $schema
-    ) : void {
+    ): void {
         // 1. Parse message body
         $document = PSR7::convert($message);
 
@@ -174,7 +176,7 @@ class MultipartValidator implements MessageValidator
      * @throws InvalidBody
      * @throws TypeMismatch
      */
-    private function parseMultipartData(OperationAddress $addr, StreamedPart $document) : array
+    private function parseMultipartData(OperationAddress $addr, StreamedPart $document): array
     {
         $multipartData = []; // a buffer to fill up with message parts
         foreach ($document->getParts() as $i => $part) {
@@ -196,7 +198,7 @@ class MultipartValidator implements MessageValidator
         return $multipartData;
     }
 
-    private function detectEncondingContentType(Encoding $encoding, StreamedPart $part, Schema $partSchema) : ?string
+    private function detectEncondingContentType(Encoding $encoding, StreamedPart $part, Schema $partSchema): ?string
     {
         $contentType = $encoding->contentType;
 
@@ -231,7 +233,7 @@ class MultipartValidator implements MessageValidator
         OperationAddress $addr,
         ServerRequestInterface $message,
         Schema $schema
-    ) : void {
+    ): void {
         $body = (array) $message->getParsedBody();
 
         $files = $this->normalizeFiles($message->getUploadedFiles());
@@ -256,6 +258,7 @@ class MultipartValidator implements MessageValidator
             if (! isset($body[$partName])) {
                 throw new RuntimeException(sprintf('Specified body part %s is not found', $partName));
             }
+
             $part = $body[$partName];
 
             // 2.1 parts encoding
@@ -271,7 +274,7 @@ class MultipartValidator implements MessageValidator
      *
      * @return mixed[]
      */
-    private function normalizeFiles(array $files) : array
+    private function normalizeFiles(array $files): array
     {
         $normalized = [];
 

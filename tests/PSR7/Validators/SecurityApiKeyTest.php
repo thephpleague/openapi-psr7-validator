@@ -83,7 +83,7 @@ AND;
      *
      * @var string
      */
-    private $specSecurityAND_OR_COMBINED = <<<AND
+    private $specSecurityANDORCombined = <<<AND
 openapi: "3.0.0"
 info:
   title: Uber API
@@ -114,7 +114,7 @@ components:
       in: cookie
 AND;
 
-    public function testItAppliesSecurityRulesORGreen() : void
+    public function testItAppliesSecurityRulesORGreen(): void
     {
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['server_token1' => 'key value']);
 
@@ -123,7 +123,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesMissedApiKeyRed() : void
+    public function testItValidatesMissedApiKeyRed(): void
     {
         $request = (new ServerRequest('get', '/products'))->withQueryParams(['wrongToken' => 'key value']);
 
@@ -134,7 +134,7 @@ AND;
         $validator->validate($request);
     }
 
-    public function testItAppliesSecurityRulesANDGreen() : void
+    public function testItAppliesSecurityRulesANDGreen(): void
     {
         $request = (new ServerRequest('get', '/products'))
             ->withQueryParams(['server_token1' => 'key value'])
@@ -145,7 +145,7 @@ AND;
         $this->addToAssertionCount(1);
     }
 
-    public function testItAppliesSecurityRulesANDRed() : void
+    public function testItAppliesSecurityRulesANDRed(): void
     {
         // request has no security header
         $request = (new ServerRequest('get', '/products'))
@@ -158,19 +158,19 @@ AND;
         $validator->validate($request);
     }
 
-    public function testItAppliesSecurityRulesANDORCombinedGreen() : void
+    public function testItAppliesSecurityRulesANDORCombinedGreen(): void
     {
         // request has one of allowed security cookies
         $request = (new ServerRequest('get', '/products'))
             ->withCookieParams(['server_token3' => 'key value']);
 
-        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityAND_OR_COMBINED)
+        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityANDORCombined)
             ->getServerRequestValidator();
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
 
-    public function testItAppliesSecurityRulesANDORCombinedRed() : void
+    public function testItAppliesSecurityRulesANDORCombinedRed(): void
     {
         // request has one security query argument, but misses the second one (required one)
         $request = (new ServerRequest('get', '/products'))
@@ -179,7 +179,7 @@ AND;
         $this->expectException(InvalidSecurity::class);
         $this->expectExceptionMessage('None of security schemas did match for Request [get /products]');
 
-        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityAND_OR_COMBINED)
+        $validator = (new ValidatorBuilder())->fromYaml($this->specSecurityANDORCombined)
             ->getServerRequestValidator();
         $validator->validate($request);
     }

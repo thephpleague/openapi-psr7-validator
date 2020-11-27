@@ -9,7 +9,7 @@ use Psr\Http\Server\MiddlewareInterface;
 
 class ValidationMiddlewareBuilder extends ValidatorBuilder
 {
-    public function getValidationMiddleware() : MiddlewareInterface
+    public function getValidationMiddleware(): MiddlewareInterface
     {
         return new ValidationMiddleware(
             $this->getServerRequestValidator(),

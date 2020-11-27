@@ -14,5 +14,5 @@ interface Validator
      *
      * @throws SchemaMismatch if data does not match given schema.
      */
-    public function validate($data, Schema $schema, ?BreadCrumb $breadCrumb = null) : void;
+    public function validate($data, Schema $schema, ?BreadCrumb $breadCrumb = null): void;
 }

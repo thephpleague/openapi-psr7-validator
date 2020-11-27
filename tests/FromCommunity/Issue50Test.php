@@ -9,6 +9,7 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use PHPUnit\Framework\TestCase;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
@@ -17,7 +18,7 @@ final class Issue50Test extends TestCase
     /**
      * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/50
      */
-    public function testIssue50() : void
+    public function testIssue50(): void
     {
         $yaml = /** @lang yaml */
             <<<YAML

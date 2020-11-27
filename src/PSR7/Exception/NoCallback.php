@@ -14,7 +14,7 @@ class NoCallback extends NoOperation
     /** @var string */
     protected $callbackMethod;
 
-    public static function fromCallbackPath(string $path, string $method, string $callbackName, string $callbackMethod) : self
+    public static function fromCallbackPath(string $path, string $method, string $callbackName, string $callbackMethod): self
     {
         $i                 = new self(sprintf('OpenAPI spec contains no such callback [%s,%s,%s,%s]', $path, $method, $callbackName, $callbackMethod));
         $i->path           = $path;
@@ -25,7 +25,7 @@ class NoCallback extends NoOperation
         return $i;
     }
 
-    public function method() : string
+    public function method(): string
     {
         return $this->method;
     }

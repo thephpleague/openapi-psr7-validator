@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\Tests\FromCommunity;
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
@@ -15,7 +16,7 @@ final class Issue3Test extends TestCase
     /**
      * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/3
      */
-    public function testIssue3() : void
+    public function testIssue3(): void
     {
         $yaml = /** @lang yaml */
             <<<YAML

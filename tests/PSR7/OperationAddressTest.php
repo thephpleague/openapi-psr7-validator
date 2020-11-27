@@ -13,7 +13,7 @@ final class OperationAddressTest extends TestCase
     /**
      * @return mixed[][]
      */
-    public function dataProviderParseGreen() : array
+    public function dataProviderParseGreen(): array
     {
         return [
             ['/users/{id}/group/{group}', '/users/12/group/admin?a=2', ['id' => '12', 'group' => 'admin']],
@@ -29,7 +29,7 @@ final class OperationAddressTest extends TestCase
      *
      * @dataProvider dataProviderParseGreen
      */
-    public function testItParsesParams(string $spec, string $url, array $result) : void
+    public function testItParsesParams(string $spec, string $url, array $result): void
     {
         $addr = new OperationAddress($spec, 'post');
 
@@ -41,7 +41,7 @@ final class OperationAddressTest extends TestCase
     /**
      * @return mixed[][]
      */
-    public function dataProviderParseRed() : array
+    public function dataProviderParseRed(): array
     {
         return [
             ['/users/{id}/', '/users/'],
@@ -54,7 +54,7 @@ final class OperationAddressTest extends TestCase
      *
      * @dataProvider dataProviderParseRed
      */
-    public function testItThrowsIfParsingNotPossible(string $spec, string $url) : void
+    public function testItThrowsIfParsingNotPossible(string $spec, string $url): void
     {
         $this->expectException(InvalidPath::class);
         $addr   = new OperationAddress($spec, 'post');
@@ -64,7 +64,7 @@ final class OperationAddressTest extends TestCase
     /**
      * @return mixed[][]
      */
-    public function dataProviderMatch() : array
+    public function dataProviderMatch(): array
     {
         return [
             ['/users/{id}', '/users/12?data=extended', true],
@@ -83,7 +83,7 @@ final class OperationAddressTest extends TestCase
     /**
      * @dataProvider dataProviderMatch
      */
-    public function testItMatchesPathAgainstSpec(string $spec, string $path, bool $result) : void
+    public function testItMatchesPathAgainstSpec(string $spec, string $path, bool $result): void
     {
         $this->assertEquals($result, OperationAddress::isPathMatchesSpec($spec, $path));
     }

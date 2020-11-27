@@ -17,7 +17,7 @@ class FormatMismatch extends TypeMismatch
      *
      * @return FormatMismatch
      */
-    public static function fromFormat(string $format, $value, string $type) : self
+    public static function fromFormat(string $format, $value, string $type): self
     {
         $i          = new static(sprintf("Value '%s' does not match format %s of type %s", $value, $format, $type));
         $i->format  = $format;
@@ -27,7 +27,7 @@ class FormatMismatch extends TypeMismatch
         return $i;
     }
 
-    public function format() : string
+    public function format(): string
     {
         return $this->format;
     }

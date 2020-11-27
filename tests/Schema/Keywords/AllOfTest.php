@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class AllOfTest extends SchemaValidatorTest
 {
-    public function testItValidatesAllOfGreen() : void
+    public function testItValidatesAllOfGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -32,7 +32,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesAllOfRed() : void
+    public function testItValidatesAllOfRed(): void
     {
         $spec = <<<SPEC
 schema:

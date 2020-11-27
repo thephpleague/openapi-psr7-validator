@@ -21,7 +21,7 @@ final class Issue79Test extends TestCase
         string $path,
         string $method,
         string $expectedPath
-    ) : void {
+    ): void {
         $pathFinder = new PathFinder(Reader::readFromYaml($spec), $path, $method);
         $opAddrs    = $pathFinder->search();
 
@@ -32,7 +32,7 @@ final class Issue79Test extends TestCase
     /**
      * @return string[]
      */
-    public function provideSpecAndOperationToMatch() : iterable
+    public function provideSpecAndOperationToMatch(): iterable
     {
         yield 'Server override on the operation level' => [
             <<<YAML
@@ -126,7 +126,7 @@ YAML
         string $spec,
         string $path,
         string $method
-    ) : void {
+    ): void {
         $pathFinder = new PathFinder(Reader::readFromYaml($spec), $path, $method);
         $opAddrs    = $pathFinder->search();
 
@@ -136,7 +136,7 @@ YAML
     /**
      * @return string[]
      */
-    public function provideSpecAndOperationToNotMatch() : iterable
+    public function provideSpecAndOperationToNotMatch(): iterable
     {
         yield 'Server override on the operation level' => [
             <<<YAML

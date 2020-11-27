@@ -25,7 +25,7 @@ final class HeadersValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         $headerSpecs = $this->finder->findHeaderSpecs($addr);
 

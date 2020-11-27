@@ -10,7 +10,7 @@ use cebe\openapi\spec\OpenApi;
 
 final class JsonFactory extends StringFactory
 {
-    public function createSchema() : OpenApi
+    public function createSchema(): OpenApi
     {
         $schema = Reader::readFromJson($this->getContent());
 

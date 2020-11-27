@@ -18,7 +18,7 @@ trait BodyDeserialization
      *
      * @throws SchemaMismatch
      */
-    protected function deserializeBody(array $body, Schema $schema) : array
+    protected function deserializeBody(array $body, Schema $schema): array
     {
         if ($schema->type !== CebeType::OBJECT) {
             return $body;

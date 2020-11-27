@@ -16,7 +16,7 @@ use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
 final class MessageCookiesTest extends BaseValidatorTest
 {
-    public function testItValidatesRequestWithCookiesForServerRequestGreen() : void
+    public function testItValidatesRequestWithCookiesForServerRequestGreen(): void
     {
         $request = $this->makeGoodServerRequest('/cookies', 'post');
 
@@ -25,7 +25,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesRequestWithCookiesForRequestGreen() : void
+    public function testItValidatesRequestWithCookiesForRequestGreen(): void
     {
         $request = $this->makeGoodRequest('/cookies', 'post');
 
@@ -34,7 +34,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesResponseWithCookiesForResponseGreen() : void
+    public function testItValidatesResponseWithCookiesForResponseGreen(): void
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method());
@@ -44,7 +44,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesResponseMissesSetCookieHeaderGreen() : void
+    public function testItValidatesResponseMissesSetCookieHeaderGreen(): void
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method())->withoutHeader('Set-Cookie');
@@ -56,7 +56,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $validator->validate($addr, $response);
     }
 
-    public function testItValidatesRequestWithMissedCookieForServerRequestRed() : void
+    public function testItValidatesRequestWithMissedCookieForServerRequestRed(): void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -69,7 +69,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestWithMissedCookieForRequestRed() : void
+    public function testItValidatesRequestWithMissedCookieForRequestRed(): void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodRequest($addr->path(), $addr->method())
@@ -82,7 +82,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestWithInvalidCookieValueForServerRequestRed() : void
+    public function testItValidatesRequestWithInvalidCookieValueForServerRequestRed(): void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -95,7 +95,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestWithInvalidCookieValueForRequestRed() : void
+    public function testItValidatesRequestWithInvalidCookieValueForRequestRed(): void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodRequest($addr->path(), $addr->method())
@@ -110,7 +110,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestWithExtraCookieForServerRequestGreen() : void
+    public function testItValidatesRequestWithExtraCookieForServerRequestGreen(): void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -125,7 +125,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesRequestWithExtraCookieForRequestGreen() : void
+    public function testItValidatesRequestWithExtraCookieForRequestGreen(): void
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodRequest($addr->path(), $addr->method());
@@ -136,7 +136,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesRequestWithExtraCookieForResponseGreen() : void
+    public function testItValidatesRequestWithExtraCookieForResponseGreen(): void
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method());

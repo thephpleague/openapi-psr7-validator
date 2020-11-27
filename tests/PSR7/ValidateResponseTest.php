@@ -9,12 +9,13 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
 final class ValidateResponseTest extends BaseValidatorTest
 {
-    public function testItValidatesMessageGreen() : void
+    public function testItValidatesMessageGreen(): void
     {
         $response = $this->makeGoodResponse('/path1', 'get');
 
@@ -23,7 +24,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesMessageWithReferencesGreen() : void
+    public function testItValidatesMessageWithReferencesGreen(): void
     {
         $body     = [
             'name' => 'good name',
@@ -38,7 +39,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesBinaryResponseGreen() : void
+    public function testItValidatesBinaryResponseGreen(): void
     {
         $response = $this->makeGoodResponse('/path1', 'get')
                          ->withHeader('Content-Type', 'image/jpeg')
@@ -49,7 +50,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesMessageWrongBodyValueRed() : void
+    public function testItValidatesMessageWrongBodyValueRed(): void
     {
         $addr     = new OperationAddress('/path1', 'get');
         $body     = [];
@@ -64,7 +65,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $validator->validate($addr, $response);
     }
 
-    public function testItValidatesMessageWrongHeaderValueRed() : void
+    public function testItValidatesMessageWrongHeaderValueRed(): void
     {
         $addr = new OperationAddress('/path1', 'get');
 
@@ -79,7 +80,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $validator->validate($addr, $response);
     }
 
-    public function testItValidatesMessageMissesHeaderRed() : void
+    public function testItValidatesMessageMissesHeaderRed(): void
     {
         $addr = new OperationAddress('/path1', 'get');
 
@@ -92,7 +93,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $validator->validate($addr, $response);
     }
 
-    public function testItValidatesEmptyBodyResponseGreen() : void
+    public function testItValidatesEmptyBodyResponseGreen(): void
     {
         $addr     = new OperationAddress('/empty', 'post');
         $response = new Response(204); // no body response
@@ -102,7 +103,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesDefaultBodyResponseGreen() : void
+    public function testItValidatesDefaultBodyResponseGreen(): void
     {
         $addr     = new OperationAddress('/empty', 'patch'); // "patch" contains "default" response definition
         $response = new Response(404); // dummy any status code

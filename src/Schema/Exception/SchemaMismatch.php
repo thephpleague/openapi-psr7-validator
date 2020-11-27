@@ -14,12 +14,12 @@ class SchemaMismatch extends Exception
     /** @var mixed */
     protected $data;
 
-    public function dataBreadCrumb() : ?BreadCrumb
+    public function dataBreadCrumb(): ?BreadCrumb
     {
         return $this->dataBreadCrumb;
     }
 
-    public function hydrateDataBreadCrumb(BreadCrumb $dataBreadCrumb) : void
+    public function hydrateDataBreadCrumb(BreadCrumb $dataBreadCrumb): void
     {
         if ($this->dataBreadCrumb !== null) {
             return;
@@ -28,7 +28,7 @@ class SchemaMismatch extends Exception
         $this->dataBreadCrumb = $dataBreadCrumb;
     }
 
-    public function withBreadCrumb(BreadCrumb $breadCrumb) : self
+    public function withBreadCrumb(BreadCrumb $breadCrumb): self
     {
         $this->dataBreadCrumb = $breadCrumb;
 

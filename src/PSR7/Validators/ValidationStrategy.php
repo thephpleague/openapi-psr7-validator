@@ -13,7 +13,7 @@ trait ValidationStrategy
     /**
      * Distinguish requests and responses, so we can treat them differently (writeOnly/readOnly OAS keywords)
      */
-    protected function detectValidationStrategy(MessageInterface $message) : int
+    protected function detectValidationStrategy(MessageInterface $message): int
     {
         if ($message instanceof ResponseInterface) {
             return SchemaValidator::VALIDATE_AS_RESPONSE;

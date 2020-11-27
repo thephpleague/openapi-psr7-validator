@@ -12,7 +12,7 @@ final class StringDateTimeTest extends TestCase
     /**
      * @dataProvider dateTimeGreenDataProvider
      */
-    public function testGreenDateTimeTypeFormat(string $dateTime) : void
+    public function testGreenDateTimeTypeFormat(string $dateTime): void
     {
         $this->assertTrue((new StringDateTime())($dateTime));
     }
@@ -20,7 +20,7 @@ final class StringDateTimeTest extends TestCase
     /**
      * @return array<string>
      */
-    public function dateTimeGreenDataProvider() : array
+    public function dateTimeGreenDataProvider(): array
     {
         return [
             ['1985-04-12T23:20:50.52Z'],
@@ -37,7 +37,7 @@ final class StringDateTimeTest extends TestCase
     /**
      * @dataProvider dateTimeRedDataProvider
      */
-    public function testRedDateTimeTypeFormat(string $dateTime) : void
+    public function testRedDateTimeTypeFormat(string $dateTime): void
     {
         $this->assertFalse((new StringDateTime())($dateTime));
     }
@@ -45,7 +45,7 @@ final class StringDateTimeTest extends TestCase
     /**
      * @return array<string>
      */
-    public function dateTimeRedDataProvider() : array
+    public function dateTimeRedDataProvider(): array
     {
         return [
             ['1985-04-12'],

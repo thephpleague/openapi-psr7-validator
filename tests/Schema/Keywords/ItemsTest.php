@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class ItemsTest extends SchemaValidatorTest
 {
-    public function testItValidatesItemsGreen() : void
+    public function testItValidatesItemsGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -26,7 +26,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesItemsNestedGreen() : void
+    public function testItValidatesItemsNestedGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -45,7 +45,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesItemsRed() : void
+    public function testItValidatesItemsRed(): void
     {
         $spec = <<<SPEC
 schema:
@@ -61,7 +61,7 @@ SPEC;
         (new SchemaValidator())->validate($data, $schema);
     }
 
-    public function testItValidatesItemsNestedRed() : void
+    public function testItValidatesItemsNestedRed(): void
     {
         $spec = <<<SPEC
 schema:

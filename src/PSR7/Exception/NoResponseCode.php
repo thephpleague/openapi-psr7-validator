@@ -11,7 +11,7 @@ class NoResponseCode extends NoOperation
     /** @var int */
     protected $responseCode;
 
-    public static function fromPathAndMethodAndResponseCode(string $path, string $method, int $responseCode) : self
+    public static function fromPathAndMethodAndResponseCode(string $path, string $method, int $responseCode): self
     {
         $i               = new self(sprintf('OpenAPI spec contains no such operation [%s,%s,%d]', $path, $method, $responseCode));
         $i->path         = $path;
@@ -21,7 +21,7 @@ class NoResponseCode extends NoOperation
         return $i;
     }
 
-    public function responseCode() : int
+    public function responseCode(): int
     {
         return $this->responseCode;
     }

@@ -14,7 +14,7 @@ final class TypeTest extends SchemaValidatorTest
     /**
      * @return array<array<string, mixed>>
      */
-    public function validDataProvider() : array
+    public function validDataProvider(): array
     {
         return [
             ['string', null, 'string value'],
@@ -33,7 +33,7 @@ final class TypeTest extends SchemaValidatorTest
      *
      * @dataProvider validDataProvider
      */
-    public function testItValidatesTypeGreen(string $type, ?string $format, $validValue) : void
+    public function testItValidatesTypeGreen(string $type, ?string $format, $validValue): void
     {
         $spec = <<<SPEC
 schema:
@@ -56,7 +56,7 @@ SPEC;
      *
      * @dataProvider invalidDataProvider
      */
-    public function testItValidatesTypeRed(string $type, $invalidValue) : void
+    public function testItValidatesTypeRed(string $type, $invalidValue): void
     {
         $spec = <<<SPEC
 schema:
@@ -72,7 +72,7 @@ SPEC;
     /**
      * @return array<array<string, mixed>>
      */
-    public function invalidDataProvider() : array
+    public function invalidDataProvider(): array
     {
         return [
             ['string', 12],

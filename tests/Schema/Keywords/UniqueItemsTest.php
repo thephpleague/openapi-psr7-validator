@@ -13,7 +13,7 @@ final class UniqueItemsTest extends SchemaValidatorTest
     /**
      * @return array<array<string, array<mixed>>>>
      */
-    public function dataProviderGreen() : array
+    public function dataProviderGreen(): array
     {
         return [
             [
@@ -124,7 +124,7 @@ SPEC
     /**
      * @return array<array<string, array<mixed>>>>
      */
-    public function dataProviderRed() : array
+    public function dataProviderRed(): array
     {
         return [
             [
@@ -206,7 +206,7 @@ SPEC
      *
      * @dataProvider dataProviderGreen
      */
-    public function testsGreen(string $spec, array $data) : void
+    public function testsGreen(string $spec, array $data): void
     {
         $schema = $this->loadRawSchema($spec);
 
@@ -219,7 +219,7 @@ SPEC
      *
      * @dataProvider dataProviderRed
      */
-    public function testsRed(string $spec, array $data) : void
+    public function testsRed(string $spec, array $data): void
     {
         $schema = $this->loadRawSchema($spec);
 

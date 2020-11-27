@@ -9,6 +9,7 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function GuzzleHttp\Psr7\parse_request;
 
 class BodyValidatorTest extends TestCase
@@ -16,7 +17,7 @@ class BodyValidatorTest extends TestCase
     /**
      * @return array<array<string,string>> of arguments
      */
-    public function dataProviderGreen() : array
+    public function dataProviderGreen(): array
     {
         return [
             // Normal message
@@ -82,7 +83,7 @@ HTTP
     /**
      * @return array<array<string,string>> of arguments
      */
-    public function dataProviderRed() : array
+    public function dataProviderRed(): array
     {
         return [
             // invalid int
@@ -139,7 +140,7 @@ HTTP
     /**
      * @dataProvider dataProviderGreen
      */
-    public function testValidateGreen(string $specFile, string $message) : void
+    public function testValidateGreen(string $specFile, string $message): void
     {
         $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
         $serverRequest = new ServerRequest(
@@ -157,7 +158,7 @@ HTTP
     /**
      * @dataProvider dataProviderRed
      */
-    public function testValidateRed(string $specFile, string $message) : void
+    public function testValidateRed(string $specFile, string $message): void
     {
         $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
         $serverRequest = new ServerRequest(

@@ -28,7 +28,7 @@ final class CallbackResponseValidator implements ReusableSchema
         );
     }
 
-    public function getSchema() : OpenApi
+    public function getSchema(): OpenApi
     {
         return $this->openApi;
     }
@@ -36,7 +36,7 @@ final class CallbackResponseValidator implements ReusableSchema
     /**
      * @throws ValidationFailed
      */
-    public function validate(CallbackAddress $opAddr, ResponseInterface $serverRequest) : void
+    public function validate(CallbackAddress $opAddr, ResponseInterface $serverRequest): void
     {
         $opAddr = new CallbackResponseAddress(
             $opAddr->path(),

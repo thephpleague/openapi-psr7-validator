@@ -29,7 +29,7 @@ class FormatsContainer
     /**
      * Empty the list
      */
-    public static function flush() : void
+    public static function flush(): void
     {
         self::$list = [];
     }
@@ -37,7 +37,7 @@ class FormatsContainer
     /**
      * Put default formats (shipped with the package)
      */
-    public static function addDefaults() : void
+    public static function addDefaults(): void
     {
         // string
         self::registerFormat('string', 'byte', StringByte::class);
@@ -60,7 +60,7 @@ class FormatsContainer
      *
      * @param string|callable $fqcn
      */
-    public static function registerFormat(string $type, string $format, $fqcn) : void
+    public static function registerFormat(string $type, string $format, $fqcn): void
     {
         self::$list[$type][$format] = $fqcn;
     }

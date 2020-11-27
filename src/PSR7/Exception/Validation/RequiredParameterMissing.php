@@ -11,7 +11,7 @@ class RequiredParameterMissing extends ValidationFailed
     /** @var string */
     protected $name;
 
-    public static function fromName(string $name) : self
+    public static function fromName(string $name): self
     {
         $exception       = new self();
         $exception->name = $name;
@@ -19,7 +19,7 @@ class RequiredParameterMissing extends ValidationFailed
         return $exception;
     }
 
-    public function name() : string
+    public function name(): string
     {
         return $this->name;
     }

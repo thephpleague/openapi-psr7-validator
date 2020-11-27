@@ -11,7 +11,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class TypeFormatTest extends SchemaValidatorTest
 {
-    public function testItValidatesTypeFormatGreen() : void
+    public function testItValidatesTypeFormatGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -24,7 +24,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesTypeInvalidFormatRed() : void
+    public function testItValidatesTypeInvalidFormatRed(): void
     {
         $spec = <<<SPEC
 schema:
@@ -42,7 +42,7 @@ SPEC;
         }
     }
 
-    public function testItUnexpectedFormatIgnoredGreen() : void
+    public function testItUnexpectedFormatIgnoredGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -55,7 +55,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItAllowsCustomFormatGreen() : void
+    public function testItAllowsCustomFormatGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -63,12 +63,12 @@ schema:
   format: unexpected
 SPEC;
 
-        $unexpectedFormat = new class()
+        $unexpectedFormat = new class ()
         {
             /**
              * @param mixed $value
              */
-            public function __invoke($value) : bool
+            public function __invoke($value): bool
             {
                 return $value === 'good value';
             }
@@ -80,7 +80,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItAllowsCustomFormatRed() : void
+    public function testItAllowsCustomFormatRed(): void
     {
         $spec = <<<SPEC
 schema:
@@ -88,7 +88,7 @@ schema:
   format: unexpected
 SPEC;
 
-        $customFormat = static function ($value) : bool {
+        $customFormat = static function ($value): bool {
             return $value === 'good value';
         };
         FormatsContainer::registerFormat('string', 'unexpected', $customFormat);

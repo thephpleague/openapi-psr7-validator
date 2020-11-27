@@ -28,7 +28,7 @@ final class PathValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         if (! ($message instanceof RequestInterface)) {
             return;
@@ -41,7 +41,7 @@ final class PathValidator implements MessageValidator
      * @throws InvalidPath
      * @throws NoPath
      */
-    private function validateRequest(OperationAddress $addr, RequestInterface $message) : void
+    private function validateRequest(OperationAddress $addr, RequestInterface $message): void
     {
         $validator        = new ArrayValidator($this->finder->findOperationAndPathLevelSpecs($addr));
         $path             = $message->getUri()->getPath();

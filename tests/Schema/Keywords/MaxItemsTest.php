@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class MaxItemsTest extends SchemaValidatorTest
 {
-    public function testItValidatesMaxItemsGreen() : void
+    public function testItValidatesMaxItemsGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -27,7 +27,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesMaxItemsRed() : void
+    public function testItValidatesMaxItemsRed(): void
     {
         $spec = <<<SPEC
 schema:

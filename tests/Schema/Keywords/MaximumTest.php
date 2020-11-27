@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class MaximumTest extends SchemaValidatorTest
 {
-    public function testMaximumNonexclusiveKeywordGreen() : void
+    public function testMaximumNonexclusiveKeywordGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testMaximumExclusiveKeywordGreen() : void
+    public function testMaximumExclusiveKeywordGreen(): void
     {
         $spec = <<<SPEC
 schema:

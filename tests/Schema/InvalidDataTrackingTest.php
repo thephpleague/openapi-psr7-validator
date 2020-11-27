@@ -9,7 +9,7 @@ use League\OpenAPIValidation\Schema\SchemaValidator;
 
 final class InvalidDataTrackingTest extends SchemaValidatorTest
 {
-    public function testItShowsInvalidDataAddress() : void
+    public function testItShowsInvalidDataAddress(): void
     {
         $spec = <<<SPEC
 schema:
@@ -29,7 +29,7 @@ SPEC;
         }
     }
 
-    public function testItShowsInvalidDataAddressNested() : void
+    public function testItShowsInvalidDataAddressNested(): void
     {
         $spec = <<<SPEC
 schema:

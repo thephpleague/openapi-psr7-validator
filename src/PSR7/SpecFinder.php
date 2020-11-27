@@ -23,6 +23,7 @@ use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Webmozart\Assert\Assert;
+
 use function json_decode;
 use function json_encode;
 use function property_exists;
@@ -42,7 +43,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findOperationAndPathLevelSpecs(OperationAddress $addr) : array
+    public function findOperationAndPathLevelSpecs(OperationAddress $addr): array
     {
         $spec = $this->findOperationSpec($addr);
 
@@ -75,7 +76,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findOperationSpec(OperationAddress $addr) : Operation
+    public function findOperationSpec(OperationAddress $addr): Operation
     {
         $pathSpec = $this->findPathSpec($addr);
 
@@ -96,7 +97,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findPathSpec(OperationAddress $addr) : PathItem
+    public function findPathSpec(OperationAddress $addr): PathItem
     {
         $finder    = new PathFinder($this->openApi, $addr->path(), $addr->method());
         $pathSpecs = $finder->getPathMatches();
@@ -113,7 +114,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findQuerySpecs(OperationAddress $addr) : array
+    public function findQuerySpecs(OperationAddress $addr): array
     {
         $spec = $this->findOperationSpec($addr);
 
@@ -146,7 +147,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findSecuritySpecs(OperationAddress $addr) : array
+    public function findSecuritySpecs(OperationAddress $addr): array
     {
         $opSpec = $this->findOperationSpec($addr);
 
@@ -165,7 +166,7 @@ final class SpecFinder
     /**
      * @return SecurityScheme[]
      */
-    public function findSecuritySchemesSpecs() : array
+    public function findSecuritySchemesSpecs(): array
     {
         return $this->openApi->components ? $this->openApi->components->securitySchemes : [];
     }
@@ -175,7 +176,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findBodySpec(OperationAddress $addr) : array
+    public function findBodySpec(OperationAddress $addr): array
     {
         if ($addr instanceof ResponseAddress || $addr instanceof CallbackResponseAddress) {
             return $this->findResponseSpec($addr)->content;
@@ -197,7 +198,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findResponseSpec($addr) : ResponseSpec
+    public function findResponseSpec($addr): ResponseSpec
     {
         Assert::isInstanceOfAny(
             $addr,
@@ -231,7 +232,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findHeaderSpecs(OperationAddress $addr) : array
+    public function findHeaderSpecs(OperationAddress $addr): array
     {
         // Response headers are specified differently from request headers
         if ($addr instanceof ResponseAddress || $addr instanceof CallbackResponseAddress) {
@@ -277,7 +278,7 @@ final class SpecFinder
      *
      * @throws NoPath
      */
-    public function findCookieSpecs(OperationAddress $addr) : array
+    public function findCookieSpecs(OperationAddress $addr): array
     {
         $spec = $this->findOperationSpec($addr);
 
@@ -308,7 +309,7 @@ final class SpecFinder
     /**
      * @throws NoCallback
      */
-    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation) : Operation
+    private function findCallbackInOperation(CallbackAddress $addr, Operation $operation): Operation
     {
         $callbacks = $operation->callbacks;
         if (! isset($callbacks[$addr->callbackName()])) {

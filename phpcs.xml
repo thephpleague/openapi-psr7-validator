@@ -13,5 +13,11 @@
     <file>tests</file>
 
     <!-- Include full Doctrine Coding Standard -->
-    <rule ref="Doctrine"/>
+    <rule ref="Doctrine">
+        <exclude name="SlevomatCodingStandard.PHP.RequireExplicitAssertion"/>
+
+        // This is only for PHP 7.4 and up
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator.RequiredNullCoalesceEqualOperator"/>
+    </rule>
 </ruleset>

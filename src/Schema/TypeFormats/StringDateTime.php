@@ -16,7 +16,7 @@ class StringDateTime
      */
     private static $dateTimeFormats = ['Y-m-d\TH:i:sP', 'Y-m-d H:i:sP', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:s.uP'];
 
-    public function __invoke(string $value) : bool
+    public function __invoke(string $value): bool
     {
         foreach (self::$dateTimeFormats as $dateTimeFormat) {
             if (DateTime::createFromFormat($dateTimeFormat, $value) !== false) {

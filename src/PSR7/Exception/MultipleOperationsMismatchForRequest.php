@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7\Exception;
 
 use League\OpenAPIValidation\PSR7\OperationAddress;
+
 use function array_map;
 use function implode;
 use function sprintf;
@@ -17,7 +18,7 @@ class MultipleOperationsMismatchForRequest extends ValidationFailed
     /**
      * @param OperationAddress[] $addrs
      */
-    public static function fromMatchedAddrs(array $addrs) : self
+    public static function fromMatchedAddrs(array $addrs): self
     {
         $addrsStrings = array_map(static function (OperationAddress $addr) {
             return sprintf('[%s,%s]', $addr->path(), $addr->method());
@@ -33,7 +34,7 @@ class MultipleOperationsMismatchForRequest extends ValidationFailed
     /**
      * @return OperationAddress[]
      */
-    public function matchedAddrs() : array
+    public function matchedAddrs(): array
     {
         return $this->matchedAddrs;
     }

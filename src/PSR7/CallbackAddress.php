@@ -21,17 +21,17 @@ class CallbackAddress extends OperationAddress
         $this->callbackMethod = $callbackMethod;
     }
 
-    public function callbackName() : string
+    public function callbackName(): string
     {
         return $this->callbackName;
     }
 
-    public function callbackMethod() : string
+    public function callbackMethod(): string
     {
         return $this->callbackMethod;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return sprintf('Callback [%s %s %s %s]', $this->method, $this->path, $this->callbackName, $this->callbackMethod);
     }

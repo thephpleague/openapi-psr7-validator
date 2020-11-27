@@ -13,63 +13,63 @@ use PHPUnit\Framework\TestCase;
 
 final class IssueWithQueryArrayTest extends TestCase
 {
-    public function testConvertFormIntegerArray() : void
+    public function testConvertFormIntegerArray(): void
     {
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'integer'));
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertFormNumberArray() : void
+    public function testConvertFormNumberArray(): void
     {
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'number', 'float'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'number'));
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertFormIntegerArrayToStringArray() : void
+    public function testConvertFormIntegerArrayToStringArray(): void
     {
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'string', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'integer'));
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertFormStringArray() : void
+    public function testConvertFormStringArray(): void
     {
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'string', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'string'));
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertFormBooleanArray() : void
+    public function testConvertFormBooleanArray(): void
     {
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'boolean', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'boolean'));
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertFormIntegerArrayError() : void
+    public function testConvertFormIntegerArrayError(): void
     {
         $this->expectExceptionMessage('Value "id1,id2,id3" for argument "id" is invalid for Request [get /users]');
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('form', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('form', 'string'));
     }
 
-    public function testConvertSpaceIntegerArray() : void
+    public function testConvertSpaceIntegerArray(): void
     {
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('spaceDelimited', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('spaceDelimited', 'integer'));
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertPipeIntegerArray() : void
+    public function testConvertPipeIntegerArray(): void
     {
         $validator = (new ValidatorBuilder())->fromYaml($this->makeArrayYaml('pipeDelimited', 'integer', 'int32'))->getServerRequestValidator();
         $validator->validate($this->makeRequest('pipeDelimited', 'integer'));
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertSingleLayerDeepObject() : void
+    public function testConvertSingleLayerDeepObject(): void
     {
         $yaml      = /** @lang yaml */
             <<<YAML
@@ -106,7 +106,7 @@ YAML;
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertSingleLayerDeepObjectError() : void
+    public function testConvertSingleLayerDeepObjectError(): void
     {
         $yaml = /** @lang yaml */
             <<<YAML
@@ -151,7 +151,7 @@ YAML;
         }
     }
 
-    public function testConvertMultiLayerDeepObject() : void
+    public function testConvertMultiLayerDeepObject(): void
     {
         $yaml      = /** @lang yaml */
             <<<YAML
@@ -194,7 +194,7 @@ YAML;
         $this->addToAssertionCount(1);
     }
 
-    public function testConvertMultiLayerDeepObjectError() : void
+    public function testConvertMultiLayerDeepObjectError(): void
     {
         $yaml = /** @lang yaml */
             <<<YAML
@@ -245,7 +245,7 @@ YAML;
         }
     }
 
-    protected function makeArrayYaml(string $style, string $type, string $format) : string
+    protected function makeArrayYaml(string $style, string $type, string $format): string
     {
         return $yaml = /** @lang yaml */
             <<<YAML
@@ -275,7 +275,7 @@ paths:
 YAML;
     }
 
-    protected function makeRequest(string $style, string $type) : ServerRequest
+    protected function makeRequest(string $style, string $type): ServerRequest
     {
         $map     = [
             'form' => ['integer' => '1,2,3', 'string' => 'id1,id2,id3', 'boolean' => 'true,false', 'number' => '1.00,2.00,3.00'],

@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class MinPropertiesTest extends SchemaValidatorTest
 {
-    public function testItValidatesMinPropertiesGreen() : void
+    public function testItValidatesMinPropertiesGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -24,7 +24,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesMinPropertiesRed() : void
+    public function testItValidatesMinPropertiesRed(): void
     {
         $spec = <<<SPEC
 schema:

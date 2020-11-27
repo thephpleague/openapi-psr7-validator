@@ -8,11 +8,12 @@ use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function http_build_query;
 
 final class ParameterDeserializationTest extends TestCase
 {
-    public function testGoodJsonQueryParameter() : void
+    public function testGoodJsonQueryParameter(): void
     {
         $queryParams = ['filter' => '{"type":"t-shirt","color":"blue"}'];
         $psrRequest  = (new ServerRequest(
@@ -30,7 +31,7 @@ final class ParameterDeserializationTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testBadJsonQueryParameter() : void
+    public function testBadJsonQueryParameter(): void
     {
         $queryParams = ['filter' => '{"type":"t-shirt","color":false}'];
         $psrRequest  = (new ServerRequest(
@@ -49,7 +50,7 @@ final class ParameterDeserializationTest extends TestCase
         $validator->validate($psrRequest);
     }
 
-    public function testInvalidJsonQueryParameter() : void
+    public function testInvalidJsonQueryParameter(): void
     {
         $queryParams = ['filter' => 'type,t-shirt,color,blue'];
         $psrRequest  = (new ServerRequest(

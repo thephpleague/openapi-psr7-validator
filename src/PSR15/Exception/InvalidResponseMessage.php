@@ -8,7 +8,7 @@ use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 
 class InvalidResponseMessage extends ValidationFailed
 {
-    public static function because(ValidationFailed $e) : self
+    public static function because(ValidationFailed $e): self
     {
         return new static('Response message failed validation', 0, $e);
     }

@@ -16,7 +16,7 @@ use Psr\Http\Message\RequestInterface;
  */
 final class Issue93Test extends BaseValidatorTest
 {
-    public function testBadMethodRequest() : void
+    public function testBadMethodRequest(): void
     {
         $request = $this->makeBadMethodRequest();
 
@@ -29,7 +29,7 @@ final class Issue93Test extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testBadPathRequest() : void
+    public function testBadPathRequest(): void
     {
         $request = $this->makeBadPathRequest();
 
@@ -43,12 +43,12 @@ final class Issue93Test extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    protected function makeBadMethodRequest() : RequestInterface
+    protected function makeBadMethodRequest(): RequestInterface
     {
         return new Request('get', '/empty');
     }
 
-    protected function makeBadPathRequest() : RequestInterface
+    protected function makeBadPathRequest(): RequestInterface
     {
         return new Request('get', '/no-such-path');
     }

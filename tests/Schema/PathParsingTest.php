@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class PathParsingTest extends TestCase
 {
-    public function testInvalidPathParams() : void
+    public function testInvalidPathParams(): void
     {
         // that specification doesn't raise any errors in swagger-editor
         $yaml      = /** @lang yaml */

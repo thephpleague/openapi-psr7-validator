@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
@@ -16,7 +17,7 @@ final class Issue32Test extends TestCase
     /**
      * @see https://github.com/thephpleague/openapi-psr7-validator/issues/32
      */
-    public function testIssue32() : void
+    public function testIssue32(): void
     {
         $yaml = /** @lang yaml */
             <<<'YAML'
