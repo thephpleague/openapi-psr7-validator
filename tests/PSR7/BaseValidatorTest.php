@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\PSR7;
 
-use Dflydev\FigCookies\Cookie;
-use Dflydev\FigCookies\FigRequestCookies;
-use Dflydev\FigCookies\FigResponseCookies;
-use Dflydev\FigCookies\SetCookie;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
+use HansOtt\PSR7Cookies\SetCookie;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -41,7 +38,7 @@ abstract class BaseValidatorTest extends TestCase
             case 'post /cookies':
                 $response = (new Response())
                     ->withHeader('Content-Type', 'text/plain');
-                $response = FigResponseCookies::set($response, SetCookie::create('session_id', 'abc'));
+                $response = SetCookie::thatStaysForever('session_id', 'abc')->addToResponse($response);
 
                 return $response;
 
@@ -98,8 +95,7 @@ abstract class BaseValidatorTest extends TestCase
 
             case 'post /cookies':
                 $request = $request->withHeader('Content-Type', 'text/plain');
-                $request = FigRequestCookies::set($request, Cookie::create('session_id', 'abc'));
-                $request = FigRequestCookies::set($request, Cookie::create('debug', '10'));
+                $request = $request->withHeader('Cookie', 'session_id=abc; debug=10');
 
                 return $request;
 
