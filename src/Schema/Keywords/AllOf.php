@@ -41,7 +41,7 @@ final class AllOf extends BaseKeyword
      *
      * @throws SchemaMismatch
      */
-    public function validate($data, array $allOf) : void
+    public function validate($data, array $allOf): void
     {
         try {
             Validator::arrayVal()->assert($allOf);

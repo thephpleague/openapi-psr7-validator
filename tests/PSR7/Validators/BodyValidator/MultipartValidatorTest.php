@@ -11,6 +11,7 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function filesize;
 use function GuzzleHttp\Psr7\parse_request;
 
@@ -19,7 +20,7 @@ class MultipartValidatorTest extends TestCase
     /**
      * @return array<array<string>> of arguments
      */
-    public function dataProviderMultipartGreen() : array
+    public function dataProviderMultipartGreen(): array
     {
         return [
             // Normal multipart message
@@ -163,7 +164,7 @@ HTTP
     /**
      * @return array<array<string,string>> of arguments
      */
-    public function dataProviderMultipartRed() : array
+    public function dataProviderMultipartRed(): array
     {
         return [
             // wrong data in one of the parts
@@ -283,7 +284,7 @@ HTTP
     /**
      * @dataProvider dataProviderMultipartGreen
      */
-    public function testValidateMultipartGreen(string $message) : void
+    public function testValidateMultipartGreen(string $message): void
     {
         $specFile = __DIR__ . '/../../../stubs/multipart.yaml';
 
@@ -303,7 +304,7 @@ HTTP
     /**
      * @dataProvider dataProviderMultipartRed
      */
-    public function testValidateMultipartRed(string $message, string $expectedExceptionClass) : void
+    public function testValidateMultipartRed(string $message, string $expectedExceptionClass): void
     {
         $this->expectException($expectedExceptionClass);
 
@@ -321,7 +322,7 @@ HTTP
         $validator->validate($serverRequest);
     }
 
-    public function testValidateMultipartServerRequestGreen() : void
+    public function testValidateMultipartServerRequestGreen(): void
     {
         $specFile = __DIR__ . '/../../../stubs/multipart.yaml';
 

@@ -14,11 +14,13 @@ use League\OpenAPIValidation\PSR7\Validators\ValidationStrategy;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
-use const JSON_ERROR_NONE;
+
 use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
 use function preg_match;
+
+use const JSON_ERROR_NONE;
 
 class UnipartValidator implements MessageValidator
 {
@@ -39,7 +41,7 @@ class UnipartValidator implements MessageValidator
      * @throws NoPath
      * @throws ValidationFailed
      */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         if (preg_match('#^application/.*json$#', $this->contentType)) {
             $body = json_decode((string) $message->getBody(), true);

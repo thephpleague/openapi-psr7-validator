@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function sprintf;
 
 class Minimum extends BaseKeyword
@@ -35,7 +36,7 @@ class Minimum extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, $minimum, bool $exclusiveMinimum = false) : void
+    public function validate($data, $minimum, bool $exclusiveMinimum = false): void
     {
         try {
             Validator::numeric()->assert($data);

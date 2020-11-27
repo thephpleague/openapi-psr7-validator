@@ -19,7 +19,7 @@ final class ValidatorChain implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         foreach ($this->validators as $validator) {
             $validator->validate($addr, $message);

@@ -11,9 +11,11 @@ use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use const PHP_INT_MAX;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
+
+use const PHP_INT_MAX;
 
 // This is another test which tests all request and response with variety of specified parameters:
 // - path,
@@ -28,7 +30,7 @@ final class CompleteTest extends TestCase
     /** @var string string */
     protected $apiSpecFile = __DIR__ . '/../stubs/complete.yaml';
 
-    public function testRequestGreen() : void
+    public function testRequestGreen(): void
     {
         $request = $this->buildGoodRequest();
 
@@ -37,7 +39,7 @@ final class CompleteTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testResponseGreen() : void
+    public function testResponseGreen(): void
     {
         $response = $this->buildGoodResponse();
         $addr     = new OperationAddress('/complete/{param1}/{param2}', 'post');
@@ -47,7 +49,7 @@ final class CompleteTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    protected function buildGoodRequest() : ServerRequestInterface
+    protected function buildGoodRequest(): ServerRequestInterface
     {
         return (new ServerRequest('post', '/complete/good/2'))
             ->withQueryParams(['limit' => 10, 'filtering' => 'good'])
@@ -57,7 +59,7 @@ final class CompleteTest extends TestCase
             ->withBody(stream_for(json_encode(['propB' => 'good value'])));
     }
 
-    protected function buildGoodResponse() : ResponseInterface
+    protected function buildGoodResponse(): ResponseInterface
     {
         return (new Response())
             ->withHeader('Content-Type', 'application/json')

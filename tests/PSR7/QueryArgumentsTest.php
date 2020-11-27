@@ -11,7 +11,7 @@ use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
 final class QueryArgumentsTest extends BaseValidatorTest
 {
-    public function testItValidatesServerRequestQueryArgumentsGreen() : void
+    public function testItValidatesServerRequestQueryArgumentsGreen(): void
     {
         $request = $this->makeGoodServerRequest('/read', 'get');
 
@@ -20,7 +20,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesRequestQueryArgumentsGreen() : void
+    public function testItValidatesRequestQueryArgumentsGreen(): void
     {
         $request = $this->makeGoodRequest('/read', 'get');
 
@@ -29,7 +29,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesServerRequestMissedQueryArgumentsGreen() : void
+    public function testItValidatesServerRequestMissedQueryArgumentsGreen(): void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -43,7 +43,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestMissedQueryArgumentsGreen() : void
+    public function testItValidatesRequestMissedQueryArgumentsGreen(): void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodRequest($addr->path(), $addr->method())
@@ -56,7 +56,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesServerRequestInvalidQueryArgumentsGreen() : void
+    public function testItValidatesServerRequestInvalidQueryArgumentsGreen(): void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -70,7 +70,7 @@ final class QueryArgumentsTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesRequestInvalidQueryArgumentsGreen() : void
+    public function testItValidatesRequestInvalidQueryArgumentsGreen(): void
     {
         $addr    = new OperationAddress('/read', 'get');
         $request = $this->makeGoodRequest($addr->path(), $addr->method())

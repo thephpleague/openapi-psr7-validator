@@ -13,7 +13,7 @@ final class PatternTest extends SchemaValidatorTest
     /**
      * @return array<array<string, string>>
      */
-    public function validDataProvider() : array
+    public function validDataProvider(): array
     {
         return [
             ['^[a|b]+$', 'abba'],
@@ -28,7 +28,7 @@ final class PatternTest extends SchemaValidatorTest
     /**
      * @dataProvider validDataProvider
      */
-    public function testItValidatesPatternGreen(string $pattern, string $data) : void
+    public function testItValidatesPatternGreen(string $pattern, string $data): void
     {
         $spec = <<<SPEC
 schema:
@@ -42,7 +42,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesPatternRed() : void
+    public function testItValidatesPatternRed(): void
     {
         $spec = <<<SPEC
 schema:

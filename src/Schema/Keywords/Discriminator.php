@@ -9,7 +9,7 @@ class Discriminator extends BaseKeyword
     /**
      * @param mixed $data
      */
-    public function validate($data) : void
+    public function validate($data): void
     {
         // TODO
     }

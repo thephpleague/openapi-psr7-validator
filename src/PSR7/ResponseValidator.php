@@ -28,7 +28,7 @@ class ResponseValidator implements ReusableSchema
         );
     }
 
-    public function getSchema() : OpenApi
+    public function getSchema(): OpenApi
     {
         return $this->openApi;
     }
@@ -36,7 +36,7 @@ class ResponseValidator implements ReusableSchema
     /**
      * @throws ValidationFailed
      */
-    public function validate(OperationAddress $opAddr, ResponseInterface $response) : void
+    public function validate(OperationAddress $opAddr, ResponseInterface $response): void
     {
         $this->validator->validate(
             new ResponseAddress($opAddr->path(), $opAddr->method(), $response->getStatusCode()),

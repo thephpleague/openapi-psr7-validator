@@ -9,12 +9,13 @@ use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\SpecFinder;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function array_keys;
 use function iterator_to_array;
 
 final class SpecFinderTest extends TestCase
 {
-    public function testFindCallbackSpecs() : void
+    public function testFindCallbackSpecs(): void
     {
         $yaml = <<<YAML
 openapi: 3.0.0
@@ -73,7 +74,7 @@ YAML;
         $this->assertEquals(['200'], array_keys(iterator_to_array($operation->responses->getIterator())));
     }
 
-    public function testHandleParameters() : void
+    public function testHandleParameters(): void
     {
         $json       = /** @lang JSON */
             <<<'JSON'

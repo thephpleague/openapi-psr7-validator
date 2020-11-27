@@ -17,7 +17,7 @@ final class PrecreatedSchemaFactory implements SchemaFactory
         $this->schema = $schema;
     }
 
-    public function createSchema() : OpenApi
+    public function createSchema(): OpenApi
     {
         return $this->schema;
     }

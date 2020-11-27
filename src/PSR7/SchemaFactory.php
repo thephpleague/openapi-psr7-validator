@@ -8,5 +8,5 @@ use cebe\openapi\spec\OpenApi;
 
 interface SchemaFactory
 {
-    public function createSchema() : OpenApi;
+    public function createSchema(): OpenApi;
 }

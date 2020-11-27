@@ -14,5 +14,5 @@ interface MessageValidator
      * @throws NoPath
      * @throws ValidationFailed
      */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void;
+    public function validate(OperationAddress $addr, MessageInterface $message): void;
 }

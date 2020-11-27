@@ -14,7 +14,7 @@ final class Issue52Test extends TestCase
     /**
      * @see https://github.com/thephpleague/openapi-psr7-validator/issues/52
      */
-    public function testIssue52() : void
+    public function testIssue52(): void
     {
         $json = /** @lang json */
             <<<JSON

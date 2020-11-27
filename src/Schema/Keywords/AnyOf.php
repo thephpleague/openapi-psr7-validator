@@ -43,7 +43,7 @@ class AnyOf extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, array $anyOf) : void
+    public function validate($data, array $anyOf): void
     {
         try {
             Validator::arrayVal()->assert($anyOf);

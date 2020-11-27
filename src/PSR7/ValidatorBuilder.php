@@ -27,7 +27,7 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function setCache(CacheItemPoolInterface $cache, ?int $ttl = null) : self
+    public function setCache(CacheItemPoolInterface $cache, ?int $ttl = null): self
     {
         $this->cache = $cache;
         $this->ttl   = $ttl;
@@ -38,7 +38,7 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function overrideCacheKey(string $cacheKey) : self
+    public function overrideCacheKey(string $cacheKey): self
     {
         $this->cacheKey = $cacheKey;
 
@@ -48,7 +48,7 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function fromYaml(string $yaml) : self
+    public function fromYaml(string $yaml): self
     {
         $this->setSchemaFactory(new YamlFactory($yaml));
 
@@ -58,7 +58,7 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function setSchemaFactory(SchemaFactory $schemaFactory) : self
+    public function setSchemaFactory(SchemaFactory $schemaFactory): self
     {
         $this->factory = $schemaFactory;
 
@@ -68,7 +68,7 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function fromYamlFile(string $yamlFile) : self
+    public function fromYamlFile(string $yamlFile): self
     {
         $this->setSchemaFactory(new YamlFileFactory($yamlFile));
 
@@ -78,7 +78,7 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function fromJson(string $json) : self
+    public function fromJson(string $json): self
     {
         $this->setSchemaFactory(new JsonFactory($json));
 
@@ -88,7 +88,7 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function fromJsonFile(string $jsonFile) : self
+    public function fromJsonFile(string $jsonFile): self
     {
         $this->setSchemaFactory(new JsonFileFactory($jsonFile));
 
@@ -98,48 +98,48 @@ class ValidatorBuilder
     /**
      * @return $this
      */
-    public function fromSchema(OpenApi $schema) : self
+    public function fromSchema(OpenApi $schema): self
     {
         $this->setSchemaFactory(new PrecreatedSchemaFactory($schema));
 
         return $this;
     }
 
-    public function getServerRequestValidator() : ServerRequestValidator
+    public function getServerRequestValidator(): ServerRequestValidator
     {
         $schema = $this->getOrCreateSchema();
 
         return new ServerRequestValidator($schema);
     }
 
-    public function getRequestValidator() : RequestValidator
+    public function getRequestValidator(): RequestValidator
     {
         $schema = $this->getOrCreateSchema();
 
         return new RequestValidator($schema);
     }
 
-    public function getResponseValidator() : ResponseValidator
+    public function getResponseValidator(): ResponseValidator
     {
         return new ResponseValidator($this->getOrCreateSchema());
     }
 
-    public function getRoutedRequestValidator() : RoutedServerRequestValidator
+    public function getRoutedRequestValidator(): RoutedServerRequestValidator
     {
         return new RoutedServerRequestValidator($this->getOrCreateSchema());
     }
 
-    public function getCallbackRequestValidator() : CallbackRequestValidator
+    public function getCallbackRequestValidator(): CallbackRequestValidator
     {
         return new CallbackRequestValidator($this->getOrCreateSchema());
     }
 
-    public function getCallbackResponseValidator() : CallbackResponseValidator
+    public function getCallbackResponseValidator(): CallbackResponseValidator
     {
         return new CallbackResponseValidator($this->getOrCreateSchema());
     }
 
-    protected function getOrCreateSchema() : OpenApi
+    protected function getOrCreateSchema(): OpenApi
     {
         // Make cache dependency optional for end user
         if ($this->cache === null) {
@@ -164,7 +164,7 @@ class ValidatorBuilder
         return $schema;
     }
 
-    protected function getCacheKey() : string
+    protected function getCacheKey(): string
     {
         if ($this->cacheKey !== null) {
             return $this->cacheKey;

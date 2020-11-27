@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class NotTest extends SchemaValidatorTest
 {
-    public function testItValidatesNotGreen() : void
+    public function testItValidatesNotGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -28,7 +28,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesNotRed() : void
+    public function testItValidatesNotRed(): void
     {
         $spec = <<<SPEC
 schema:

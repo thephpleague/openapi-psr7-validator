@@ -17,12 +17,12 @@ class ResponseAddress extends OperationAddress
         $this->responseCode = $responseCode;
     }
 
-    public function responseCode() : int
+    public function responseCode(): int
     {
         return $this->responseCode;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return sprintf('Response [%s %s %d]', $this->method, $this->path, $this->responseCode);
     }

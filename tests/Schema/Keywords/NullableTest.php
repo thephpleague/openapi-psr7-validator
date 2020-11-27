@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class NullableTest extends SchemaValidatorTest
 {
-    public function testItValidatesNullableGreen() : void
+    public function testItValidatesNullableGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -25,7 +25,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesNullableRed() : void
+    public function testItValidatesNullableRed(): void
     {
         $spec = <<<SPEC
 schema:

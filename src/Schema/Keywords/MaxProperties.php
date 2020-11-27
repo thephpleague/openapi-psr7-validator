@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function count;
 use function sprintf;
 
@@ -24,7 +25,7 @@ class MaxProperties extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, int $maxProperties) : void
+    public function validate($data, int $maxProperties): void
     {
         try {
             Validator::arrayType()->assert($data);

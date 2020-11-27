@@ -32,7 +32,7 @@ final class CallbackRequestValidator implements ReusableSchema
         );
     }
 
-    public function getSchema() : OpenApi
+    public function getSchema(): OpenApi
     {
         return $this->openApi;
     }
@@ -40,7 +40,7 @@ final class CallbackRequestValidator implements ReusableSchema
     /**
      * @throws ValidationFailed
      */
-    public function validate(CallbackAddress $opAddr, RequestInterface $serverRequest) : void
+    public function validate(CallbackAddress $opAddr, RequestInterface $serverRequest): void
     {
         $this->validator->validate($opAddr, $serverRequest);
     }

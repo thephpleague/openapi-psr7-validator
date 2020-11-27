@@ -29,6 +29,7 @@ use League\OpenAPIValidation\Schema\Keywords\Properties;
 use League\OpenAPIValidation\Schema\Keywords\Required;
 use League\OpenAPIValidation\Schema\Keywords\Type;
 use League\OpenAPIValidation\Schema\Keywords\UniqueItems;
+
 use function count;
 use function is_array;
 
@@ -50,7 +51,7 @@ final class SchemaValidator implements Validator
     }
 
     /** {@inheritdoc} */
-    public function validate($data, CebeSchema $schema, ?BreadCrumb $breadCrumb = null) : void
+    public function validate($data, CebeSchema $schema, ?BreadCrumb $breadCrumb = null): void
     {
         $breadCrumb = $breadCrumb ?? new BreadCrumb();
 
@@ -128,7 +129,8 @@ final class SchemaValidator implements Validator
                 (new Items($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->items);
             }
 
-            if ($schema->type === CebeType::OBJECT
+            if (
+                $schema->type === CebeType::OBJECT
                 || (isset($schema->properties) && is_array($data) && ArrayHelper::isAssoc($data))
             ) {
                 $additionalProperties = $schema->additionalProperties ?? null; // defaults to true

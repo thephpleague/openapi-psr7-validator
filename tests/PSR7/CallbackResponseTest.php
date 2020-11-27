@@ -10,11 +10,12 @@ use League\OpenAPIValidation\PSR7\CallbackResponseValidator;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Psr\Http\Message\ResponseInterface;
+
 use function json_encode;
 
 final class CallbackResponseTest extends BaseValidatorTest
 {
-    public function testItValidatesMessageGreen() : void
+    public function testItValidatesMessageGreen(): void
     {
         $response = $this->createResponse(json_encode(['success' => true]));
 
@@ -23,7 +24,7 @@ final class CallbackResponseTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesBodyHasInvalidPayloadRed() : void
+    public function testItValidatesBodyHasInvalidPayloadRed(): void
     {
         $response  = $this->createResponse('[]');
         $validator = $this->createValidator();
@@ -36,19 +37,19 @@ final class CallbackResponseTest extends BaseValidatorTest
         $validator->validate($this->getCallbackAddress(), $response);
     }
 
-    private function createResponse(string $body) : ResponseInterface
+    private function createResponse(string $body): ResponseInterface
     {
         $headers = ['Content-Type' => 'application/json'];
 
         return new Response(200, $headers, $body);
     }
 
-    private function getCallbackAddress() : CallbackAddress
+    private function getCallbackAddress(): CallbackAddress
     {
         return new CallbackAddress('/callback', 'post', 'somethingHappened', 'post');
     }
 
-    private function createValidator() : CallbackResponseValidator
+    private function createValidator(): CallbackResponseValidator
     {
         return (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getCallbackResponseValidator();
     }

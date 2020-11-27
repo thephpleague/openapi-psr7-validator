@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function array_unique;
 use function count;
 use function sprintf;
@@ -45,7 +46,7 @@ class Required extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, array $required) : void
+    public function validate($data, array $required): void
     {
         try {
             Validator::arrayType()->assert($data);
@@ -64,7 +65,8 @@ class Required extends BaseKeyword
 
             if (! $propertyFound) {
                 // respect writeOnly/readOnly keywords
-                if ((
+                if (
+                    (
                         ($this->parentSchema->properties[$reqProperty]->writeOnly ?? false) &&
                         $this->validationDataType === SchemaValidator::VALIDATE_AS_RESPONSE
                     )

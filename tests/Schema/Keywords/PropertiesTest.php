@@ -11,7 +11,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class PropertiesTest extends SchemaValidatorTest
 {
-    public function testItValidatesPropertiesGreen() : void
+    public function testItValidatesPropertiesGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -28,7 +28,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesAdditionalPropertiesGreen() : void
+    public function testItValidatesAdditionalPropertiesGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -47,7 +47,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesPropertiesRed() : void
+    public function testItValidatesPropertiesRed(): void
     {
         $spec = <<<SPEC
 schema:
@@ -66,7 +66,7 @@ SPEC;
         (new SchemaValidator())->validate($data, $schema);
     }
 
-    public function testItValidatesAdditionalPropertiesRed() : void
+    public function testItValidatesAdditionalPropertiesRed(): void
     {
         $spec = <<<SPEC
 schema:
@@ -85,7 +85,7 @@ SPEC;
         (new SchemaValidator())->validate($data, $schema);
     }
 
-    public function testItValidatesAdditionalPropertiesDisallowedRed() : void
+    public function testItValidatesAdditionalPropertiesDisallowedRed(): void
     {
         $spec = <<<SPEC
 schema:
@@ -104,7 +104,7 @@ SPEC;
         (new SchemaValidator())->validate($data, $schema);
     }
 
-    public function testItInfersObjectTypeGreen() : void
+    public function testItInfersObjectTypeGreen(): void
     {
         $spec = <<<SPEC
 schema:

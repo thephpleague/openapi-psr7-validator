@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\Tests\FromCommunity;
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
@@ -19,7 +20,7 @@ final class Issue12Test extends TestCase
      *
      * @dataProvider getNullableTypeExamples
      */
-    public function testIssue12(?array $example) : void
+    public function testIssue12(?array $example): void
     {
         $yaml = /** @lang yaml */
             <<<YAML
@@ -70,7 +71,7 @@ YAML;
     /**
      * @return mixed[]
      */
-    public function getNullableTypeExamples() : array
+    public function getNullableTypeExamples(): array
     {
         return [
             'nullable null' => [null],

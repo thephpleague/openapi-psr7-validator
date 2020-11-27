@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function array_map;
 use function array_unique;
 use function count;
@@ -29,7 +30,7 @@ class UniqueItems extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, bool $uniqueItems) : void
+    public function validate($data, bool $uniqueItems): void
     {
         if (! $uniqueItems) {
             return;

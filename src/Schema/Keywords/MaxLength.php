@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function mb_strlen;
 use function sprintf;
 
@@ -29,7 +30,7 @@ class MaxLength extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, int $maxLength) : void
+    public function validate($data, int $maxLength): void
     {
         try {
             Validator::stringType()->assert($data);

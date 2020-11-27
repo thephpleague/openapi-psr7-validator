@@ -9,7 +9,7 @@ use function sprintf;
 // Indicates that data did not match a given content-type
 final class ContentTypeMismatch extends SchemaMismatch
 {
-    public static function fromContentType(string $contentType, string $value) : self
+    public static function fromContentType(string $contentType, string $value): self
     {
         $exception       = new static(sprintf("Value '%s' does not match content-type %s", $value, $contentType));
         $exception->data = $value;

@@ -22,7 +22,7 @@ class TooManyValidSchemas extends KeywordMismatch
         $data,
         array $validSchemas,
         ?string $message = null
-    ) : KeywordMismatch {
+    ): KeywordMismatch {
         $instance               = new self('Keyword validation failed: ' . $message, 0);
         $instance->keyword      = $keyword;
         $instance->data         = $data;
@@ -34,7 +34,7 @@ class TooManyValidSchemas extends KeywordMismatch
     /**
      * @return Schema[]
      */
-    public function validSchemas() : array
+    public function validSchemas(): array
     {
         return $this->validSchemas;
     }

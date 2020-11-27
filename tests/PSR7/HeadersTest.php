@@ -8,11 +8,12 @@ use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
+
 use function sprintf;
 
 final class HeadersTest extends BaseValidatorTest
 {
-    public function testItValidatesRequestQueryArgumentsGreen() : void
+    public function testItValidatesRequestQueryArgumentsGreen(): void
     {
         $request = (new ServerRequest('get', new Uri('/path1?queryArgA=20')))->withHeader('header-a', 'value A');
 
@@ -21,7 +22,7 @@ final class HeadersTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItDeserializesRequestHeaderParametersGreen() : void
+    public function testItDeserializesRequestHeaderParametersGreen(): void
     {
         $request = (new ServerRequest('get', new Uri('/deserialize-headers')))
             ->withHeader('num', '-1.2')
@@ -36,7 +37,7 @@ final class HeadersTest extends BaseValidatorTest
     /**
      * @return mixed[][]
      */
-    public function dataProviderDeserializesRequestHeaderRed() : array
+    public function dataProviderDeserializesRequestHeaderRed(): array
     {
         return [
             ['num', '-'],
@@ -52,7 +53,7 @@ final class HeadersTest extends BaseValidatorTest
     /**
      * @dataProvider dataProviderDeserializesRequestHeaderRed
      */
-    public function testItDeserializesRequestHeaderParametersRed(string $headerName, string $headerValue) : void
+    public function testItDeserializesRequestHeaderParametersRed(string $headerName, string $headerValue): void
     {
         $request = (new ServerRequest('get', new Uri('/deserialize-headers')))
             ->withHeader($headerName, $headerValue);

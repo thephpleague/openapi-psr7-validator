@@ -36,7 +36,7 @@ class RoutedServerRequestValidator implements ReusableSchema
         );
     }
 
-    public function getSchema() : OpenApi
+    public function getSchema(): OpenApi
     {
         return $this->openApi;
     }
@@ -44,7 +44,7 @@ class RoutedServerRequestValidator implements ReusableSchema
     /**
      * @throws ValidationFailed
      */
-    public function validate(OperationAddress $opAddr, ServerRequestInterface $serverRequest) : void
+    public function validate(OperationAddress $opAddr, ServerRequestInterface $serverRequest): void
     {
         $this->validator->validate($opAddr, $serverRequest);
     }

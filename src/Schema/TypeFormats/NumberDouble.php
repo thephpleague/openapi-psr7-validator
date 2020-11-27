@@ -12,7 +12,7 @@ class NumberDouble
     /**
      * @param mixed $value
      */
-    public function __invoke($value) : bool
+    public function __invoke($value): bool
     {
         // treat integers as valid floats
         return is_float($value + 0) || is_int($value + 0);

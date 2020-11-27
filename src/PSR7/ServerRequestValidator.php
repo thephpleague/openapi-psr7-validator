@@ -17,6 +17,7 @@ use League\OpenAPIValidation\PSR7\Validators\SecurityValidator;
 use League\OpenAPIValidation\PSR7\Validators\ValidatorChain;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
+
 use function count;
 use function strtolower;
 
@@ -41,7 +42,7 @@ class ServerRequestValidator implements ReusableSchema
         );
     }
 
-    public function getSchema() : OpenApi
+    public function getSchema(): OpenApi
     {
         return $this->openApi;
     }
@@ -51,7 +52,7 @@ class ServerRequestValidator implements ReusableSchema
      *
      * @throws ValidationFailed
      */
-    public function validate(ServerRequestInterface $serverRequest) : OperationAddress
+    public function validate(ServerRequestInterface $serverRequest): OperationAddress
     {
         $path   = $serverRequest->getUri()->getPath();
         $method = strtolower($serverRequest->getMethod());
@@ -96,7 +97,7 @@ class ServerRequestValidator implements ReusableSchema
      *
      * @return OperationAddress[]
      */
-    private function findMatchingOperations(ServerRequestInterface $request) : array
+    private function findMatchingOperations(ServerRequestInterface $request): array
     {
         $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
 

@@ -20,13 +20,13 @@ class SerializedParameterTest extends TestCase
      *           [{"content": {"application/json": {}, "application/xml": {}}}]
      *           [{"content": {"application/json": {}}, "schema": {}}]
      */
-    public function testFromSpecThrowsInvalidSchemaExceptionIfParameterIsNotValid(array $parameterData) : void
+    public function testFromSpecThrowsInvalidSchemaExceptionIfParameterIsNotValid(array $parameterData): void
     {
         $this->expectException(InvalidSchema::class);
         SerializedParameter::fromSpec(new Parameter($parameterData));
     }
 
-    public function testDeserializeThrowsSchemaMismatchExceptionIfValueIsNotStringWhenShouldBeDeserialized() : void
+    public function testDeserializeThrowsSchemaMismatchExceptionIfValueIsNotStringWhenShouldBeDeserialized(): void
     {
         $subject = new SerializedParameter($this->createMock(Schema::class), 'application/json');
 

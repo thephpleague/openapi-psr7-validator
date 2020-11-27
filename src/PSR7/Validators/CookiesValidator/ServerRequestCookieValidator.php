@@ -34,7 +34,7 @@ class ServerRequestCookieValidator implements MessageValidator
     /**
      * @throws InvalidCookies
      */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         Assert::isInstanceOf($message, ServerRequestInterface::class);
         $validator = new ArrayValidator($this->specs);

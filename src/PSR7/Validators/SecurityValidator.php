@@ -17,6 +17,7 @@ use League\OpenAPIValidation\PSR7\SpecFinder;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
+
 use function count;
 use function preg_match;
 use function sprintf;
@@ -36,7 +37,7 @@ final class SecurityValidator implements MessageValidator
     }
 
     /** {@inheritdoc} */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         // Note: Security schemes support OR/AND union
         // That is, security is an array of hashmaps, where each hashmap contains one or more named security schemes.
@@ -54,7 +55,7 @@ final class SecurityValidator implements MessageValidator
     /**
      * @throws ValidationFailed
      */
-    private function validateServerRequest(OperationAddress $addr, RequestInterface $request) : void
+    private function validateServerRequest(OperationAddress $addr, RequestInterface $request): void
     {
         $securitySpecs = $this->finder->findSecuritySpecs($addr);
 
@@ -85,7 +86,7 @@ final class SecurityValidator implements MessageValidator
         OperationAddress $addr,
         RequestInterface $request,
         SecurityRequirement $spec
-    ) : void {
+    ): void {
         // Here I implement AND-union
         // Each SecurityRequirement contains 1+ security [schema_name=>scopes]
         // Scopes are not used for the purpose of validation
@@ -97,6 +98,7 @@ final class SecurityValidator implements MessageValidator
                     sprintf("Mentioned security scheme '%s' not found in the given spec", $securitySchemeName)
                 );
             }
+
             $securityScheme = $securitySchemesSpecs[$securitySchemeName];
 
             try {
@@ -121,7 +123,7 @@ final class SecurityValidator implements MessageValidator
         OperationAddress $addr,
         RequestInterface $request,
         SecurityScheme $securityScheme
-    ) : void {
+    ): void {
         // Supported schemas: https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
 
         // Token should be passed in TLS session, in header: `Authorization:....`
@@ -162,22 +164,25 @@ final class SecurityValidator implements MessageValidator
         OperationAddress $addr,
         RequestInterface $request,
         SecurityScheme $securityScheme
-    ) : void {
+    ): void {
         switch ($securityScheme->in) {
             case 'query':
                 if (! isset($request->getQueryParams()[$securityScheme->name])) {
                     throw InvalidQueryArgs::becauseOfMissingRequiredArgument($securityScheme->name, $addr);
                 }
+
                 break;
             case 'header':
                 if (! $request->hasHeader($securityScheme->name)) {
                     throw InvalidHeaders::becauseOfMissingRequiredHeader($securityScheme->name, $addr);
                 }
+
                 break;
             case 'cookie':
                 if (! isset($request->getCookieParams()[$securityScheme->name])) {
                     throw InvalidCookies::becauseOfMissingRequiredCookie($securityScheme->name, $addr);
                 }
+
                 break;
         }
     }

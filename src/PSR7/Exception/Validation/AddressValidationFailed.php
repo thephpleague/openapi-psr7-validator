@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\PSR7\Exception\Validation;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use Throwable;
+
 use function sprintf;
 
 abstract class AddressValidationFailed extends ValidationFailed
@@ -17,7 +18,7 @@ abstract class AddressValidationFailed extends ValidationFailed
     /**
      * @return static
      */
-    public static function fromAddrAndPrev(OperationAddress $address, Throwable $prev) : self
+    public static function fromAddrAndPrev(OperationAddress $address, Throwable $prev): self
     {
         $ex          = new static(sprintf('Validation failed for %s', $address), $prev->getCode(), $prev);
         $ex->address = $address;
@@ -28,7 +29,7 @@ abstract class AddressValidationFailed extends ValidationFailed
     /**
      * @return static
      */
-    public static function fromAddr(OperationAddress $address) : self
+    public static function fromAddr(OperationAddress $address): self
     {
         $ex          = new static(sprintf('Validation failed for %s', $address));
         $ex->address = $address;
@@ -36,7 +37,7 @@ abstract class AddressValidationFailed extends ValidationFailed
         return $ex;
     }
 
-    public function getAddress() : OperationAddress
+    public function getAddress(): OperationAddress
     {
         return $this->address;
     }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter as CebeParameter;
-use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Schema as CebeSchema;
+use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Type as CebeType;
 use League\OpenAPIValidation\Schema\Exception\ContentTypeMismatch;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
@@ -14,7 +14,7 @@ use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
-use const JSON_ERROR_NONE;
+
 use function explode;
 use function in_array;
 use function is_array;
@@ -29,6 +29,8 @@ use function key;
 use function preg_match;
 use function reset;
 use function strtolower;
+
+use const JSON_ERROR_NONE;
 
 final class SerializedParameter
 {
@@ -59,7 +61,7 @@ final class SerializedParameter
         $this->explode     = $explode;
     }
 
-    public static function fromSpec(CebeParameter $parameter) : self
+    public static function fromSpec(CebeParameter $parameter): self
     {
         $content = $parameter->content;
         try {
@@ -111,7 +113,7 @@ final class SerializedParameter
         return $value;
     }
 
-    private function isJsonContentType() : bool
+    private function isJsonContentType(): bool
     {
         return $this->contentType !== null && preg_match('#^application/.*json$#', $this->contentType) !== false;
     }
@@ -127,13 +129,17 @@ final class SerializedParameter
             return is_string($value) ? strtolower($value) === 'true' : (bool) $value;
         }
 
-        if (($type === CebeType::NUMBER)
-            && is_scalar($value) && is_numeric($value)) {
+        if (
+            ($type === CebeType::NUMBER)
+            && is_scalar($value) && is_numeric($value)
+        ) {
             return is_int($value) ? (int) $value : (float) $value;
         }
 
-        if (($type === CebeType::INTEGER)
-            && is_scalar($value) && ! is_float($value) && preg_match('#^[-+]?\d+$#', (string) $value)) {
+        if (
+            ($type === CebeType::INTEGER)
+            && is_scalar($value) && ! is_float($value) && preg_match('#^[-+]?\d+$#', (string) $value)
+        ) {
             return (int) $value;
         }
 
@@ -155,8 +161,10 @@ final class SerializedParameter
      */
     protected function convertToSerializationStyle($value, ?Schema $schema)
     {
-        if ($this->explode === false
-            && in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
+        if (
+            $this->explode === false
+            && in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)
+        ) {
             $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             foreach ($value as &$val) {
                 $val = $this->castToSchemaType($val, $schema->items->type ?? null);
@@ -180,7 +188,7 @@ final class SerializedParameter
         return $value;
     }
 
-    public function getSchema() : CebeSchema
+    public function getSchema(): CebeSchema
     {
         return $this->schema;
     }

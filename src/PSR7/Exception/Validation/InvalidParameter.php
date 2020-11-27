@@ -6,10 +6,12 @@ namespace League\OpenAPIValidation\PSR7\Exception\Validation;
 
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use const JSON_PRETTY_PRINT;
+
 use function is_scalar;
 use function json_encode;
 use function sprintf;
+
+use const JSON_PRETTY_PRINT;
 
 class InvalidParameter extends ValidationFailed
 {
@@ -24,7 +26,7 @@ class InvalidParameter extends ValidationFailed
      *
      * @return InvalidParameter
      */
-    public static function becauseValueDidNotMatchSchema(string $name, $value, SchemaMismatch $prev) : self
+    public static function becauseValueDidNotMatchSchema(string $name, $value, SchemaMismatch $prev): self
     {
         if (! is_scalar($value)) {
             $value = json_encode($value, JSON_PRETTY_PRINT);
@@ -37,12 +39,12 @@ class InvalidParameter extends ValidationFailed
         return $exception;
     }
 
-    public function name() : string
+    public function name(): string
     {
         return $this->name;
     }
 
-    public function value() : string
+    public function value(): string
     {
         return (string) $this->value;
     }

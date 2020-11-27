@@ -17,7 +17,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class ValidationMiddlewareTest extends BaseValidatorTest
 {
     /** @return array<mixed> data sets for tests */
-    public function dataProvider() : array
+    public function dataProvider(): array
     {
         return [
             // Bad Server Request
@@ -48,7 +48,7 @@ class ValidationMiddlewareTest extends BaseValidatorTest
         ServerRequestInterface $serverRequest,
         RequestHandlerInterface $handler,
         string $expectedExceptionType
-    ) : void {
+    ): void {
         $builder = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile);
 
         $middleware = new ValidationMiddleware(

@@ -10,6 +10,7 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\RequiredParameterMissing;
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
+
 use function array_key_exists;
 
 /**
@@ -34,7 +35,7 @@ class ArrayValidator
      * @throws InvalidParameter
      * @throws RequiredParameterMissing
      */
-    public function validateArray(array $params, int $validationStrategy) : void
+    public function validateArray(array $params, int $validationStrategy): void
     {
         foreach ($this->specs as $name => $spec) {
             if ($spec->required && ! array_key_exists($name, $params)) {

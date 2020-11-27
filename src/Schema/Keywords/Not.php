@@ -38,7 +38,7 @@ class Not extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, CebeSchema $not) : void
+    public function validate($data, CebeSchema $not): void
     {
         try {
             Validator::instance(CebeSchema::class)->assert($not);

@@ -53,7 +53,7 @@ components:
       scheme: basic
 BASIC;
 
-    public function testItChecksBearerHeaderGreen() : void
+    public function testItChecksBearerHeaderGreen(): void
     {
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Bearer ABCDEFG');
@@ -63,7 +63,7 @@ BASIC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItChecksBearerHeaderRed() : void
+    public function testItChecksBearerHeaderRed(): void
     {
         $request = new ServerRequest('get', '/products');
 
@@ -74,7 +74,7 @@ BASIC;
         $validator->validate($request);
     }
 
-    public function testItChecksBasicHeaderGreen() : void
+    public function testItChecksBasicHeaderGreen(): void
     {
         $request = (new ServerRequest('get', '/products'))
             ->withHeader('Authorization', 'Basic ABCDEFG');
@@ -84,7 +84,7 @@ BASIC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItChecksBasicHeaderRed() : void
+    public function testItChecksBasicHeaderRed(): void
     {
         $request = new ServerRequest('get', '/products');
 

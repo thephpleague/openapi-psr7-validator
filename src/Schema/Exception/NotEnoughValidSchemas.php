@@ -22,7 +22,7 @@ class NotEnoughValidSchemas extends KeywordMismatch
         $data,
         array $innerExceptions,
         ?string $message = null
-    ) : KeywordMismatch {
+    ): KeywordMismatch {
         $instance                  = new self('Keyword validation failed: ' . $message, 0);
         $instance->keyword         = $keyword;
         $instance->data            = $data;
@@ -34,7 +34,7 @@ class NotEnoughValidSchemas extends KeywordMismatch
     /**
      * @return Throwable[]
      */
-    public function innerExceptions() : array
+    public function innerExceptions(): array
     {
         return $this->innerExceptions;
     }

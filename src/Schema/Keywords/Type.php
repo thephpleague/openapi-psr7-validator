@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use League\OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use RuntimeException;
+
 use function class_exists;
 use function is_array;
 use function is_bool;
@@ -35,38 +36,44 @@ class Type extends BaseKeyword
      *
      * @throws TypeMismatch
      */
-    public function validate($data, string $type, ?string $format = null) : void
+    public function validate($data, string $type, ?string $format = null): void
     {
         switch ($type) {
             case CebeType::OBJECT:
                 if (! is_object($data) && ! (is_array($data) && ArrayHelper::isAssoc($data)) && $data !== []) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
                 }
+
                 break;
             case CebeType::ARRAY:
                 if (! is_array($data) || ArrayHelper::isAssoc($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch('array', $data);
                 }
+
                 break;
             case CebeType::BOOLEAN:
                 if (! is_bool($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
                 }
+
                 break;
             case CebeType::NUMBER:
                 if (is_string($data) || ! is_numeric($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::NUMBER, $data);
                 }
+
                 break;
             case CebeType::INTEGER:
                 if (! is_int($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
                 }
+
                 break;
             case CebeType::STRING:
                 if (! is_string($data)) {
                     throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::STRING, $data);
                 }
+
                 break;
             default:
                 throw InvalidSchema::becauseTypeIsNotKnown($type);

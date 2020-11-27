@@ -17,6 +17,7 @@ use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Psr\Http\Message\MessageInterface;
+
 use function parse_str;
 
 /**
@@ -42,7 +43,7 @@ class FormUrlencodedValidator implements MessageValidator
      * @throws NoPath
      * @throws ValidationFailed
      */
-    public function validate(OperationAddress $addr, MessageInterface $message) : void
+    public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         /** @var Schema $schema */
         $schema = $this->mediaTypeSpec->schema;
@@ -76,7 +77,7 @@ class FormUrlencodedValidator implements MessageValidator
     /**
      * @return mixed[]
      */
-    protected function parseUrlencodedData(MessageInterface $message) : array
+    protected function parseUrlencodedData(MessageInterface $message): array
     {
         $body = [];
 

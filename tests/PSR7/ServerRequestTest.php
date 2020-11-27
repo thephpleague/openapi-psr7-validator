@@ -8,12 +8,13 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
 final class ServerRequestTest extends BaseValidatorTest
 {
-    public function testItValidatesMessageGreen() : void
+    public function testItValidatesMessageGreen(): void
     {
         $request = $this->makeGoodServerRequest('/path1', 'get');
 
@@ -22,7 +23,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesBodyGreen() : void
+    public function testItValidatesBodyGreen(): void
     {
         $body    = ['name' => 'Alex'];
         $request = $this->makeGoodServerRequest('/request-body', 'post')
@@ -33,7 +34,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesBodyHasInvalidPayloadRed() : void
+    public function testItValidatesBodyHasInvalidPayloadRed(): void
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $body    = ['name' => 1000];
@@ -49,7 +50,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesBodyHasUnexpectedTypeRed() : void
+    public function testItValidatesBodyHasUnexpectedTypeRed(): void
     {
         $addr    = new OperationAddress('/request-body', 'post');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())
@@ -65,7 +66,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesMessageWrongHeaderValueRed() : void
+    public function testItValidatesMessageWrongHeaderValueRed(): void
     {
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withHeader('Header-A', 'wrong value');
@@ -77,7 +78,7 @@ final class ServerRequestTest extends BaseValidatorTest
         $validator->validate($request);
     }
 
-    public function testItValidatesMessageMissedHeaderRed() : void
+    public function testItValidatesMessageMissedHeaderRed(): void
     {
         $addr    = new OperationAddress('/path1', 'get');
         $request = $this->makeGoodServerRequest($addr->path(), $addr->method())->withoutHeader('Header-A');

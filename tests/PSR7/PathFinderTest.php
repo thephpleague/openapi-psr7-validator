@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PathFinderTest extends TestCase
 {
-    public function testItFindsMatchingOperation() : void
+    public function testItFindsMatchingOperation(): void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"
@@ -36,7 +36,7 @@ SPEC;
         $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
 
-    public function testItFindsMatchingOperationWithParametrizedServer() : void
+    public function testItFindsMatchingOperationWithParametrizedServer(): void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"
@@ -62,7 +62,7 @@ SPEC;
         $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
 
-    public function testItFindsMatchingOperationForFullUrl() : void
+    public function testItFindsMatchingOperationForFullUrl(): void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"
@@ -89,7 +89,7 @@ SPEC;
         $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
 
-    public function testItFindsMatchingOperationForMultipleServersWithSamePath() : void
+    public function testItFindsMatchingOperationForMultipleServersWithSamePath(): void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"

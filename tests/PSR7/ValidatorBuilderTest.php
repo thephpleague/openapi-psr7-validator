@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class ValidatorBuilderTest extends TestCase
 {
-    public function testItCachesParsedOpenApiSpec() : void
+    public function testItCachesParsedOpenApiSpec(): void
     {
         // configure cache
         $pool  = [];
@@ -35,7 +35,7 @@ final class ValidatorBuilderTest extends TestCase
         self::assertTrue($cache->getItem($cacheKey)->isHit());
     }
 
-    public function testItUtilizesCacheKeyOverride() : void
+    public function testItUtilizesCacheKeyOverride(): void
     {
         // configure cache
         $pool  = [];

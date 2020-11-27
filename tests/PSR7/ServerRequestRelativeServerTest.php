@@ -12,7 +12,7 @@ class ServerRequestRelativeServerTest extends BaseValidatorTest
     /**
      * @return array<array<ServerRequest>>
      */
-    public function validDataProvider() : array
+    public function validDataProvider(): array
     {
         return [
             // matches server: https://localhost/v1
@@ -38,7 +38,7 @@ class ServerRequestRelativeServerTest extends BaseValidatorTest
     /**
      * @dataProvider validDataProvider
      */
-    public function testItAllowsRelativesServerUrlsGreen(ServerRequest $request) : void
+    public function testItAllowsRelativesServerUrlsGreen(ServerRequest $request): void
     {
         $spec = <<<SPEC
 openapi: "3.0.0"

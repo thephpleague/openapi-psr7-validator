@@ -9,6 +9,7 @@ use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\ServerRequestValidator;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+
 use function json_encode;
 
 /**
@@ -21,33 +22,33 @@ final class Issue19Test extends TestCase
     /** @var ServerRequestValidator $validator */
     private $validator;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->validator = (new ValidatorBuilder())->fromYamlFile($this->yamlFile)->getServerRequestValidator();
     }
 
-    public function testInvalidDateTime() : void
+    public function testInvalidDateTime(): void
     {
         // For regression testing, try a date-time without a time zone (ie. an invalid value)
         $this->expectException(ValidationFailed::class);
         $this->validator->validate($this->makeRequest('2019-10-11T08:03:43'));
     }
 
-    public function testDateTime() : void
+    public function testDateTime(): void
     {
         // For regression testing, try the currently allowed date time format
         $this->validator->validate($this->makeRequest('2019-10-11T08:03:43Z'));
         $this->addToAssertionCount(1);
     }
 
-    public function testDateTimeWithMilliseconds() : void
+    public function testDateTimeWithMilliseconds(): void
     {
         $this->validator->validate($this->makeRequest('2019-10-11T08:03:43.500Z'));
         $this->addToAssertionCount(1);
     }
 
-    protected function makeRequest(string $dateTimeString) : ServerRequest
+    protected function makeRequest(string $dateTimeString): ServerRequest
     {
         $data['createdAt'] = $dateTimeString;
         $body              = json_encode($data);

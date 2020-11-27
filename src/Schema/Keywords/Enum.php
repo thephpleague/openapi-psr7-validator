@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function count;
 use function in_array;
 
@@ -27,7 +28,7 @@ class Enum extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, array $enum) : void
+    public function validate($data, array $enum): void
     {
         try {
             Validator::arrayType()->assert($enum);

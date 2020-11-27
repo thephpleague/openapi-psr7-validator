@@ -8,11 +8,12 @@ use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
+
 use function sprintf;
 
 final class CookieDeserializeTest extends BaseValidatorTest
 {
-    public function testItDeserializesServerRequestCookieParametersGreen() : void
+    public function testItDeserializesServerRequestCookieParametersGreen(): void
     {
         $request = (new ServerRequest('get', new Uri('/deserialize-cookies')))
             ->withCookieParams([
@@ -29,7 +30,7 @@ final class CookieDeserializeTest extends BaseValidatorTest
     /**
      * @return mixed[][]
      */
-    public function dataProviderCookiesRed() : array
+    public function dataProviderCookiesRed(): array
     {
         return [
             ['num', '-'],
@@ -45,7 +46,7 @@ final class CookieDeserializeTest extends BaseValidatorTest
     /**
      * @dataProvider dataProviderCookiesRed
      */
-    public function testItDeserializesServerRequestCookieParametersRed(string $cookieName, string $cookieValue) : void
+    public function testItDeserializesServerRequestCookieParametersRed(string $cookieName, string $cookieValue): void
     {
         $request = (new ServerRequest('get', new Uri('/deserialize-cookies')))
             ->withCookieParams([$cookieName => $cookieValue]);

@@ -6,7 +6,7 @@ namespace League\OpenAPIValidation\PSR7;
 
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
-use const PREG_SPLIT_DELIM_CAPTURE;
+
 use function implode;
 use function preg_match;
 use function preg_quote;
@@ -14,6 +14,8 @@ use function preg_replace;
 use function preg_split;
 use function sprintf;
 use function strtok;
+
+use const PREG_SPLIT_DELIM_CAPTURE;
 
 class OperationAddress
 {
@@ -34,24 +36,24 @@ class OperationAddress
      * @param string $specPath like "/users/{id}"
      * @param string $path     like "/users/12"
      */
-    public static function isPathMatchesSpec(string $specPath, string $path) : bool
+    public static function isPathMatchesSpec(string $specPath, string $path): bool
     {
         $pattern = '#^' . preg_replace('#{[^}]+}#', '[^/]+', $specPath) . '/?$#';
 
         return (bool) preg_match($pattern, $path);
     }
 
-    public function method() : string
+    public function method(): string
     {
         return $this->method;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return sprintf('Request [%s %s]', $this->method, $this->path);
     }
 
-    public function path() : string
+    public function path(): string
     {
         return $this->path;
     }
@@ -70,7 +72,7 @@ class OperationAddress
      *
      * @throws InvalidPath
      */
-    public function parseParams(string $url) : array
+    public function parseParams(string $url): array
     {
         // pattern: /a/{b}/c/{d}
         // actual:  /a/12/c/some
@@ -101,7 +103,7 @@ class OperationAddress
      *
      * @param array<string>|null $parameterNames
      */
-    protected function buildPattern(string $url, ?array &$parameterNames) : string
+    protected function buildPattern(string $url, ?array &$parameterNames): string
     {
         $parameterNames = [];
         $pregParts      = [];
@@ -114,12 +116,14 @@ class OperationAddress
                     if ($inParameter) {
                         throw InvalidSchema::becauseBracesAreNotBalanced($url);
                     }
+
                     $inParameter = true;
                     continue 2;
                 case '}':
                     if (! $inParameter) {
                         throw InvalidSchema::becauseBracesAreNotBalanced($url);
                     }
+
                     $inParameter = false;
                     continue 2;
             }

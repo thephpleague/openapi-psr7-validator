@@ -8,5 +8,5 @@ use cebe\openapi\spec\OpenApi;
 
 interface ReusableSchema
 {
-    public function getSchema() : OpenApi;
+    public function getSchema(): OpenApi;
 }

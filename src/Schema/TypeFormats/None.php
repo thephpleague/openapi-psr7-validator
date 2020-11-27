@@ -10,7 +10,7 @@ class None
     /**
      * @param mixed $value
      */
-    public function __invoke($value) : bool
+    public function __invoke($value): bool
     {
         return true;
     }

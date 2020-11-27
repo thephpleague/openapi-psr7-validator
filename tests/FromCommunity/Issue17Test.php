@@ -15,7 +15,7 @@ final class Issue17Test extends TestCase
     /**
      * @see https://github.com/lezhnev74/openapi-psr7-validator/issues/17
      */
-    public function testIssue17() : void
+    public function testIssue17(): void
     {
         $yaml = /** @lang yaml */
             <<<YAML

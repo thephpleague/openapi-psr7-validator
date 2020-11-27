@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+
 use function sprintf;
 
 class MultipleOf extends BaseKeyword
@@ -21,7 +22,7 @@ class MultipleOf extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, $multipleOf) : void
+    public function validate($data, $multipleOf): void
     {
         try {
             Validator::numeric()->assert($data);

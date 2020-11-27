@@ -15,7 +15,7 @@ class Nullable extends BaseKeyword
      *
      * @throws KeywordMismatch
      */
-    public function validate($data, bool $nullable) : void
+    public function validate($data, bool $nullable): void
     {
         if (! $nullable && ($data === null)) {
             throw KeywordMismatch::fromKeyword('nullable', $data, 'Value cannot be null');

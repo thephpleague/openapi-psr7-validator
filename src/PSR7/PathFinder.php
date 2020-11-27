@@ -7,7 +7,7 @@ namespace League\OpenAPIValidation\PSR7;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Server;
-use const PHP_URL_PATH;
+
 use function count;
 use function ltrim;
 use function parse_url;
@@ -16,6 +16,8 @@ use function preg_replace;
 use function rtrim;
 use function sprintf;
 use function strtolower;
+
+use const PHP_URL_PATH;
 
 // This class finds operations matching the given URI+method
 // That would be a very simple operation if there were no "Servers" keyword.
@@ -47,13 +49,14 @@ class PathFinder
      *
      * @return PathItem[]
      */
-    public function getPathMatches() : array
+    public function getPathMatches(): array
     {
         // Determine if path matches exactly.
         $match = $this->openApiSpec->paths->getPath($this->path);
         if ($match !== null) {
             return [$match];
         }
+
         // Probably path is parametrized or matches partially. Determine candidates and try to match path.
         $matches = [];
         foreach ($this->search() as $result) {
@@ -66,7 +69,7 @@ class PathFinder
     /**
      * @return OperationAddress[]
      */
-    public function search() : array
+    public function search(): array
     {
         if ($this->searchResult === null) {
             $this->searchResult = $this->doSearch();
@@ -78,7 +81,7 @@ class PathFinder
     /**
      * @return OperationAddress[]
      */
-    private function doSearch() : array
+    private function doSearch(): array
     {
         $paths = [];
 
@@ -124,7 +127,7 @@ class PathFinder
      *
      * @return OperationAddress[]
      */
-    private function searchForCandidates() : array
+    private function searchForCandidates(): array
     {
         $matchedOperations = [];
 
@@ -159,7 +162,7 @@ class PathFinder
      *
      * @return Server[]
      */
-    private function findServersForOperation(OperationAddress $opAddress) : array
+    private function findServersForOperation(OperationAddress $opAddress): array
     {
         $path      = $this->openApiSpec->paths->getPath($opAddress->path());
         $operation = $path->getOperations()[$opAddress->method()];

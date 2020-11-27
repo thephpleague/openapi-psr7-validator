@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class Issue4Test extends TestCase
 {
-    public function testItResolvesSchemaRefsFromYamlStringGreen() : void
+    public function testItResolvesSchemaRefsFromYamlStringGreen(): void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
         $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServerRequestValidator();
@@ -22,7 +22,7 @@ final class Issue4Test extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testItResolvesSchemaRefsFromYamlFileGreen() : void
+    public function testItResolvesSchemaRefsFromYamlFileGreen(): void
     {
         $yamlFile  = __DIR__ . '/../stubs/SchemaWithRefs.yaml';
         $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile)->getServerRequestValidator();
@@ -31,7 +31,7 @@ final class Issue4Test extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    protected function makeRequest() : ServerRequest
+    protected function makeRequest(): ServerRequest
     {
         return new ServerRequest(
             'POST',

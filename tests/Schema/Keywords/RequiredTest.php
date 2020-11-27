@@ -10,7 +10,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class RequiredTest extends SchemaValidatorTest
 {
-    public function testItValidatesRequiredGreen() : void
+    public function testItValidatesRequiredGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -27,7 +27,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesPropertiesWriteOnlyGreen() : void
+    public function testItValidatesPropertiesWriteOnlyGreen(): void
     {
         $spec = <<<SPEC
 schema:
@@ -50,7 +50,7 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
-    public function testItValidatesRequiredRed() : void
+    public function testItValidatesRequiredRed(): void
     {
         $spec = <<<SPEC
 schema:
@@ -70,7 +70,7 @@ SPEC;
         }
     }
 
-    public function testItValidatesPropertiesRed() : void
+    public function testItValidatesPropertiesRed(): void
     {
         $spec = <<<SPEC
 schema:
