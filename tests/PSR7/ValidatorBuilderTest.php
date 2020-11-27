@@ -4,22 +4,20 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\PSR7;
 
-use Cache\Adapter\PHPArray\ArrayCachePool;
 use cebe\openapi\spec\OpenApi;
 use League\OpenAPIValidation\PSR7\CacheableSchemaFactory;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
- * @covers \OpenAPIValidation\PSR7\ValidatorBuilder
+ * @covers \League\OpenAPIValidation\PSR7\ValidatorBuilder
  */
 final class ValidatorBuilderTest extends TestCase
 {
     public function testItCachesParsedOpenApiSpec(): void
     {
-        // configure cache
-        $pool  = [];
-        $cache = new ArrayCachePool(10, $pool);
+        $cache = new ArrayAdapter(0, true, 0, 10);
 
         $factory = $this->createMock(CacheableSchemaFactory::class);
         $factory->expects($this->once())->method('createSchema')
@@ -37,9 +35,7 @@ final class ValidatorBuilderTest extends TestCase
 
     public function testItUtilizesCacheKeyOverride(): void
     {
-        // configure cache
-        $pool  = [];
-        $cache = new ArrayCachePool(10, $pool);
+        $cache = new ArrayAdapter(0, true, 0, 10);
 
         $factory = $this->createMock(CacheableSchemaFactory::class);
         $factory->expects($this->once())->method('createSchema')

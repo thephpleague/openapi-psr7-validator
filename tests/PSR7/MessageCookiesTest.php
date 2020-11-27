@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\PSR7;
 
-use Dflydev\FigCookies\Cookie;
-use Dflydev\FigCookies\FigRequestCookies;
-use Dflydev\FigCookies\FigResponseCookies;
-use Dflydev\FigCookies\SetCookie;
+use HansOtt\PSR7Cookies\SetCookie;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidCookies;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\OperationAddress;
@@ -100,8 +97,7 @@ final class MessageCookiesTest extends BaseValidatorTest
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodRequest($addr->path(), $addr->method())
                         ->withoutHeader('Cookie');
-        $request = FigRequestCookies::set($request, Cookie::create('session_id', 'goodvalue'));
-        $request = FigRequestCookies::set($request, Cookie::create('debug', 'bad value'));
+        $request = $request->withHeader('Cookie', 'session_id=goodvalue; debug=bad value');
 
         $this->expectException(InvalidCookies::class);
         $this->expectExceptionMessage('Value "bad value" for cookie "debug" is invalid for Request [post /cookies]');
@@ -129,7 +125,7 @@ final class MessageCookiesTest extends BaseValidatorTest
     {
         $addr    = new OperationAddress('/cookies', 'post');
         $request = $this->makeGoodRequest($addr->path(), $addr->method());
-        $request = FigRequestCookies::set($request, Cookie::create('extra', 'any value'));
+        $request = $request->withAddedHeader('Cookie', 'extra=any value');
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRequestValidator();
         $validator->validate($request);
@@ -140,7 +136,7 @@ final class MessageCookiesTest extends BaseValidatorTest
     {
         $addr     = new ResponseAddress('/cookies', 'post', 200);
         $response = $this->makeGoodResponse($addr->path(), $addr->method());
-        $response = FigResponseCookies::set($response, SetCookie::create('any', 'value'));
+        $response = SetCookie::thatStaysForever('any', 'value')->addToResponse($response);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
         $validator->validate($addr, $response);
