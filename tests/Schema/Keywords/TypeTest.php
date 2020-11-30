@@ -93,4 +93,24 @@ SPEC;
             ['integer', 1.0],
         ];
     }
+
+    public function testItValidatesDictionaryTypeGreen(): void
+    {
+        $spec = <<<SPEC
+schema:
+  type: array
+  items:
+    type: string
+    additionalProperties:
+      type: string
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+
+        (new SchemaValidator())->validate([
+            'test' => 'value',
+            'value' => 'test'
+        ], $schema);
+        $this->addToAssertionCount(1);
+    }
 }

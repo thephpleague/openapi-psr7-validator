@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Schema\Keywords;
 
+use cebe\openapi\spec\Schema as CebeSchema;
 use cebe\openapi\spec\Type as CebeType;
 use League\OpenAPIValidation\Foundation\ArrayHelper;
+use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\FormatMismatch;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
 use League\OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use RuntimeException;
 
+use function array_keys;
 use function class_exists;
 use function is_array;
 use function is_bool;
@@ -23,6 +27,18 @@ use function sprintf;
 
 class Type extends BaseKeyword
 {
+    /** @var int this can be Validator::VALIDATE_AS_REQUEST or Validator::VALIDATE_AS_RESPONSE */
+    protected $validationDataType;
+    /** @var BreadCrumb */
+    protected $dataBreadCrumb;
+
+    public function __construct(CebeSchema $parentSchema, int $type, BreadCrumb $breadCrumb)
+    {
+        parent::__construct($parentSchema);
+        $this->validationDataType = $type;
+        $this->dataBreadCrumb     = $breadCrumb;
+    }
+
     /**
      * The value of this keyword MUST be either a string ONLY.
      *
@@ -36,8 +52,11 @@ class Type extends BaseKeyword
      *
      * @throws TypeMismatch
      */
-    public function validate($data, string $type, ?string $format = null): void
+    public function validate($data): void
     {
+        $type   = $this->parentSchema->type;
+        $format = $this->parentSchema->format;
+
         switch ($type) {
             case CebeType::OBJECT:
                 if (! is_object($data) && ! (is_array($data) && ArrayHelper::isAssoc($data)) && $data !== []) {
@@ -46,8 +65,27 @@ class Type extends BaseKeyword
 
                 break;
             case CebeType::ARRAY:
-                if (! is_array($data) || ArrayHelper::isAssoc($data)) {
+                $additionalProperties = $this->parentSchema->items
+                    ? $this->parentSchema->items->additionalProperties
+                    : null;
+                if (
+                    ! is_array($data)
+                    || (! ($additionalProperties instanceof CebeSchema) && ArrayHelper::isAssoc($data))
+                ) {
                     throw TypeMismatch::becauseTypeDoesNotMatch('array', $data);
+                }
+
+                if ($additionalProperties instanceof CebeSchema) {
+                    // @see https://swagger.io/docs/specification/data-models/dictionaries/
+                    $dictionaryDataKeys = array_keys($data);
+                    $schemaValidator    = new SchemaValidator($this->validationDataType);
+                    foreach ($dictionaryDataKeys as $dataIndex => $dataItem) {
+                        $schemaValidator->validate(
+                            $dataItem,
+                            $additionalProperties,
+                            $this->dataBreadCrumb->addCrumb($dataIndex)
+                        );
+                    }
                 }
 
                 break;

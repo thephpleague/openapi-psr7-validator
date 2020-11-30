@@ -66,7 +66,7 @@ final class SchemaValidator implements Validator
 
             // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
             if (isset($schema->type)) {
-                (new Type($schema))->validate($data, $schema->type, $schema->format);
+                (new Type($schema, $this->validationStrategy, $breadCrumb))->validate($data);
             }
 
             // This keywords come directly from JSON Schema Validation, they are the same as in JSON schema
