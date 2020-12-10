@@ -4,3 +4,4 @@ docs/
 .phpunit*
 composer.lock
 .phpcs*
+.vscode
