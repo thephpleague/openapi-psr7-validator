@@ -12,7 +12,6 @@ use League\OpenAPIValidation\Schema\Exception\ContentTypeMismatch;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
-use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
 use function explode;
@@ -72,7 +71,7 @@ final class SerializedParameter
             }
 
             Validator::length(1, 1)->assert($content);
-        } catch (ExceptionInterface $e) {
+        } catch (\Respect\Validation\Exceptions\Exception $e) {
             // If there is a `schema`, `content` must be empty.
             // If there isn't a `schema`, a `content` with exactly 1 property must exist.
             // @see https://swagger.io/docs/specification/describing-parameters/#schema-vs-content

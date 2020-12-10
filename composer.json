@@ -21,7 +21,7 @@
         }
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.3",
         "ext-json": "*",
         "cebe/php-openapi": "^1.3",
         "hansott/psr7-cookies": "^3.0.2",
@@ -29,7 +29,7 @@
         "psr/cache": "^1.0",
         "psr/http-message": "^1.0",
         "psr/http-server-middleware": "^1.0",
-        "respect/validation": "^1.1.3",
+        "respect/validation": "^2.1",
         "riverline/multipart-parser": "^2.0.3",
         "webmozart/assert": "^1.4"
     },

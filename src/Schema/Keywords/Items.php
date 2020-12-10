@@ -9,7 +9,6 @@ use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
-use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
 use function sprintf;
@@ -42,7 +41,7 @@ class Items extends BaseKeyword
         try {
             Validator::arrayVal()->assert($data);
             Validator::instance(CebeSchema::class)->assert($itemsSchema);
-        } catch (ExceptionInterface $e) {
+        } catch (\Respect\Validation\Exceptions\Exception $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
