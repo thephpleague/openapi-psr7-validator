@@ -1,0 +1,70 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        dependencies:
+          - "lowest"
+          - "highest"
+        php:
+          - '7.2'
+          - '7.3'
+          - '7.4'
+          - '8.0'
+        experimental:
+          - false
+        include:
+          - php: "8.1"
+            composer-options: "--ignore-platform-reqs"
+            experimental: true
+            dependencies: "highest"
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.9.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, mbstring
+          tools: "composer:v2"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+
+      - name: "Install lowest dependencies"
+        if: ${{ matrix.dependencies == 'lowest' }}
+        run: composer update --prefer-lowest --no-interaction --no-progress --no-suggest ${{ matrix.composer-options }}
+
+      - name: "Install highest dependencies"
+        if: ${{ matrix.dependencies == 'highest' }}
+        run: composer update --no-interaction --no-progress --no-suggest ${{ matrix.composer-options }}
+
+      - name: "Run tests"
+        run: ./vendor/bin/phpunit -c phpunit.xml
+
+  cs:
+    name: Codestyle check on PHP 7.2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.1.0
+        with:
+          php-version: 7.2
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: Run tests
+        run: ./vendor/bin/phpcs
