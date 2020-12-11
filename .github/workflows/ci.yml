@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@2.2.0
+        uses: shivammathur/setup-php@2.9.0
         with:
           php-version: ${{ matrix.php }}
           extensions: intl, mbstring
