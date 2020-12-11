@@ -1,0 +1,65 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '7.2', '7.3', '7.4', '8.0', '8.1' ]
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.2.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, mbstring
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit -c phpunit.xml
+
+  lowest:
+    name: Lowest deps
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.1.0
+        with:
+          php-version: 7.3
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable --prefer-lowest
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit -c phpunit.xml
+
+  cs:
+    name: Codestyle check on PHP 7.2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.1.0
+        with:
+          php-version: 7.2
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: Run tests
+        run: ./vendor/bin/phpcs
