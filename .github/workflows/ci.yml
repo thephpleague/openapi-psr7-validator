@@ -7,9 +7,19 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
+      fail-fast: false
       matrix:
-        php: [ '7.2', '7.3', '7.4', '8.0' ]
+        dependencies:
+          - "lowest"
+          - "highest"
+        php: [ '7.2', '7.3', '7.4', '8.0', '8.1' ]
+        experimental: [ false ]
+        include:
+          - php: "8.1"
+            composer-options: "--ignore-platform-reqs"
+            experimental: true
 
     steps:
       - name: Set up PHP
@@ -17,32 +27,21 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: intl, mbstring
+          tools: "composer:v2"
 
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download dependencies
-        run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
 
-      - name: Run tests
-        run: ./vendor/bin/phpunit -c phpunit.xml
+      - name: "Install lowest dependencies"
+        if: ${{ matrix.dependencies == 'lowest' }}
+        run: composer update --prefer-lowest --no-interaction --no-progress --no-suggest ${{ matrix.composer-options }}
 
-  lowest:
-    name: Lowest deps
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up PHP
-        uses: shivammathur/setup-php@2.1.0
-        with:
-          php-version: 7.3
+      - name: "Install highest dependencies"
+        if: ${{ matrix.dependencies == 'highest' }}
+        run: composer update --no-interaction --no-progress --no-suggest ${{ matrix.composer-options }}
 
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download dependencies
-        run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable --prefer-lowest
-
-      - name: Run tests
+      - name: "Run tests"
         run: ./vendor/bin/phpunit -c phpunit.xml
 
   cs:
