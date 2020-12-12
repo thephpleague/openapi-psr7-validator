@@ -50,8 +50,6 @@ final class OperationAddressTest extends TestCase
     }
 
     /**
-     * @param mixed[] $result
-     *
      * @dataProvider dataProviderParseRed
      */
     public function testItThrowsIfParsingNotPossible(string $spec, string $url): void

@@ -36,6 +36,10 @@
     "require-dev": {
         "doctrine/coding-standard": "^8.0",
         "guzzlehttp/psr7": "^1.5",
+        "phpstan/extension-installer": "^1.0",
+        "phpstan/phpstan": "^0.12.59",
+        "phpstan/phpstan-phpunit": "^0.12.16",
+        "phpstan/phpstan-webmozart-assert": "^0.12.7",
         "phpunit/phpunit": "^7|^8|^9",
         "symfony/cache": "^5.1"
     },

@@ -12,6 +12,7 @@ final class JsonFactory extends StringFactory
 {
     public function createSchema(): OpenApi
     {
+        /** @var OpenApi $schema */
         $schema = Reader::readFromJson($this->getContent());
 
         $schema->resolveReferences(new ReferenceContext($schema, '/'));
