@@ -206,12 +206,12 @@ final class SerializedParameter
                 return $schema->properties[$key];
             }
 
-            if (! is_bool($schema->additionalProperties)) {
+            if (! is_bool($schema->additionalProperties) && $schema->additionalProperties instanceof CebeSchema) {
                 return $schema->additionalProperties;
             }
         }
 
-        if ($schema->type === CebeType::ARRAY && $schema->items) {
+        if ($schema->type === CebeType::ARRAY && $schema->items instanceof CebeSchema) {
             return $schema->items;
         }
 
