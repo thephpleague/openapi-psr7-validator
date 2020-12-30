@@ -222,7 +222,8 @@ paths:
           description: A list of users
 YAML;
         $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
-        $request = $this->makeRequest('deepObject', 'numericKeys');
+        $request   = $this->makeRequest('deepObject', 'numericKeys');
+
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -255,12 +256,15 @@ paths:
           description: A list of users
 YAML;
         $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
-        $request = $this->makeRequest('deepObject', 'deepArrayInteger');
+        $request   = $this->makeRequest('deepObject', 'deepArrayInteger');
+
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
 
-    /// DeepObject without explode should works too
+    /**
+     * DeepObject without explode should works too
+     */
     public function testConvertDeepArrayIntegerWithoutExplode(): void
     {
         $yaml      = /** @lang yaml */
@@ -288,12 +292,11 @@ paths:
           description: A list of users
 YAML;
         $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
-        $request = $this->makeRequest('deepObject', 'deepArrayInteger');
+        $request   = $this->makeRequest('deepObject', 'deepArrayInteger');
+
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
-
-
 
     public function testConvertDeepArrayBoolean(): void
     {
@@ -323,7 +326,8 @@ paths:
           description: A list of users
 YAML;
         $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
-        $request = $this->makeRequest('deepObject', 'deepArrayBoolean');
+        $request   = $this->makeRequest('deepObject', 'deepArrayBoolean');
+
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -356,7 +360,8 @@ paths:
           description: A list of users
 YAML;
         $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
-        $request = $this->makeRequest('deepObject', 'deepArrayStrings');
+        $request   = $this->makeRequest('deepObject', 'deepArrayStrings');
+
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -391,7 +396,8 @@ paths:
           description: A list of users
 YAML;
         $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
-        $request = $this->makeRequest('deepObject', 'deepArrayOfArrayInteger');
+        $request   = $this->makeRequest('deepObject', 'deepArrayOfArrayInteger');
+
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
@@ -434,6 +440,7 @@ YAML;
             /** @var TypeMismatch $previous */
             $previous = $previous->getPrevious();
             self::assertEquals(['id', 0], $previous->dataBreadCrumb()->buildChain());
+
             throw $exception;
         }
     }
@@ -522,13 +529,23 @@ YAML;
     protected function makeRequest(string $style, string $type): ServerRequest
     {
         $map     = [
-            'form' => ['integer' => '1,2,3', 'string' => 'id1,id2,id3', 'boolean' => 'true,false', 'number' => '1.00,2.00,3.00'],
-            'spaceDelimited' => ['integer' => '1 2 3', 'string' => 'id1 id2 id3', 'boolean' => 'true false', 'number' => '1.00 2.00 3.00'],
+            'form' => [
+                'integer' => '1,2,3',
+                'string' => 'id1,id2,id3',
+                'boolean' => 'true,false',
+                'number' => '1.00,2.00,3.00',
+            ],
+            'spaceDelimited' => [
+                'integer' => '1 2 3',
+                'string' => 'id1 id2 id3',
+                'boolean' => 'true false',
+                'number' => '1.00 2.00 3.00',
+            ],
             'pipeDelimited' => [
                 'integer' => '1|2|3',
                 'string' => 'id1|id2|id3',
                 'boolean' => 'true|false',
-                'number' => '1.00|2.00|3.00'
+                'number' => '1.00|2.00|3.00',
             ],
             'deepObject' => [ // we pass all arguments as strings because we can't encode it otherwise using query
                 'integer' => ['before' => '10', 'after' => '1'],

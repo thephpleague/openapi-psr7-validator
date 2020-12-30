@@ -17,6 +17,7 @@ use Respect\Validation\Validator;
 use function explode;
 use function in_array;
 use function is_array;
+use function is_bool;
 use function is_float;
 use function is_int;
 use function is_numeric;
@@ -158,8 +159,8 @@ final class SerializedParameter
     }
 
     /**
-     * @param mixed $value
-     * @param ?CebeSchema $schema - optional schema of value to convert it in case of DeepObject serialisation
+     * @param mixed           $value
+     * @param CebeSchema|null $schema - optional schema of value to convert it in case of DeepObject serialisation
      *
      * @return mixed
      */
@@ -179,7 +180,7 @@ final class SerializedParameter
 
         if ($schema && $this->style === self::STYLE_DEEP_OBJECT) {
             foreach ($value as $key => &$val) {
-                $childSchema = $this->getChildSchema($schema, (string)$key);
+                $childSchema = $this->getChildSchema($schema, (string) $key);
                 if (is_array($val)) {
                     $val = $this->convertToSerializationStyle($val, $childSchema);
                 } else {
@@ -200,15 +201,17 @@ final class SerializedParameter
 
     protected function getChildSchema(CebeSchema $schema, string $key): ?CebeSchema
     {
-        if ($schema->type == CebeType::OBJECT) {
+        if ($schema->type === CebeType::OBJECT) {
             if ($schema->properties[$key] ?? false) {
                 return $schema->properties[$key];
             }
-            if (!is_bool($schema->additionalProperties)) {
+
+            if (! is_bool($schema->additionalProperties)) {
                 return $schema->additionalProperties;
             }
         }
-        if ($schema->type == CebeType::ARRAY && $schema->items) {
+
+        if ($schema->type === CebeType::ARRAY && $schema->items) {
             return $schema->items;
         }
 
