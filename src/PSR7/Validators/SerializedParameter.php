@@ -17,7 +17,6 @@ use Respect\Validation\Validator;
 use function explode;
 use function in_array;
 use function is_array;
-use function is_bool;
 use function is_float;
 use function is_int;
 use function is_numeric;
@@ -202,11 +201,11 @@ final class SerializedParameter
     protected function getChildSchema(CebeSchema $schema, string $key): ?CebeSchema
     {
         if ($schema->type === CebeType::OBJECT) {
-            if ($schema->properties[$key] ?? false) {
+            if (($schema->properties[$key] ?? false) && $schema->properties[$key] instanceof CebeSchema) {
                 return $schema->properties[$key];
             }
 
-            if (! is_bool($schema->additionalProperties) && $schema->additionalProperties instanceof CebeSchema) {
+            if ($schema->additionalProperties instanceof CebeSchema) {
                 return $schema->additionalProperties;
             }
         }
