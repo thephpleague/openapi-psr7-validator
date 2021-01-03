@@ -9,6 +9,8 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
+use function urlencode;
+
 final class PathParametersTest extends TestCase
 {
     public function testItValidatesRequestQueryArgumentsGreen(): void
@@ -75,6 +77,22 @@ final class PathParametersTest extends TestCase
         // dot in path template must be handled with care
         $specFile = __DIR__ . '/../stubs/pathParams.yaml';
         $request  = new ServerRequest('get', '/number/99.json');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesUrlEncodedPathParameter(): void
+    {
+        // Path parameter can be url encoded
+
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+
+        // results in "/email/openapi%40example.com"
+        $uri = '/email/' . urlencode('openapi@example.com');
+
+        $request = new ServerRequest('get', $uri);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
         $validator->validate($request);

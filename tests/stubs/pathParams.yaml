@@ -79,3 +79,17 @@ paths:
       responses:
         204:
           description: No response
+  /email/{email}:
+    parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+          format: email
+    get:
+      summary: Read data
+      operationId: read-email-format
+      responses:
+        204:
+          description: No response
