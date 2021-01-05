@@ -98,4 +98,18 @@ final class PathParametersTest extends TestCase
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
+
+    public function testItValidatesBase64EncodedPathParameter(): void
+    {
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+
+        // evaluates to "/base64/c3ViamVjdHM%2FYQ%3D%3D"
+        $uri = '/base64/' . rawurlencode(base64_encode('subjects?a'));
+
+        $request = new ServerRequest('get', $uri);
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
 }

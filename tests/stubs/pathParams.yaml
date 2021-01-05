@@ -93,3 +93,17 @@ paths:
       responses:
         204:
           description: No response
+  /base64/{base64}:
+    parameters:
+      - name: base64
+        in: path
+        required: true
+        schema:
+          type: string
+          format: byte
+    get:
+      summary: Read data
+      operationId: read-base64-format
+      responses:
+        204:
+          description: No response
