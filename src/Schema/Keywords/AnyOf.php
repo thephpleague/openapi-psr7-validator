@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\NotEnoughValidSchemas;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
@@ -48,7 +49,7 @@ class AnyOf extends BaseKeyword
         try {
             Validator::arrayVal()->assert($anyOf);
             Validator::each(Validator::instance(CebeSchema::class))->assert($anyOf);
-        } catch (ExceptionInterface $e) {
+        } catch (Exception | ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
