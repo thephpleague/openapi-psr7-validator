@@ -9,6 +9,7 @@ use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
+use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
@@ -46,7 +47,7 @@ final class AllOf extends BaseKeyword
         try {
             Validator::arrayVal()->assert($allOf);
             Validator::each(Validator::instance(CebeSchema::class))->assert($allOf);
-        } catch (ExceptionInterface $exception) {
+        } catch (Exception | ExceptionInterface $exception) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($exception);
         }
 
