@@ -194,6 +194,257 @@ YAML;
         $this->addToAssertionCount(1);
     }
 
+    public function testConvertNumericKeysDeepObject(): void
+    {
+        $yaml      = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties:
+              type: integer
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        $request   = $this->makeRequest('deepObject', 'numericKeys');
+
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConvertDeepArrayInteger(): void
+    {
+        $yaml      = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        $request   = $this->makeRequest('deepObject', 'deepArrayInteger');
+
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * DeepObject without explode should works too
+     */
+    public function testConvertDeepArrayIntegerWithoutExplode(): void
+    {
+        $yaml      = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        $request   = $this->makeRequest('deepObject', 'deepArrayInteger');
+
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConvertDeepArrayBoolean(): void
+    {
+        $yaml      = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: array
+            items:
+              type: boolean
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        $request   = $this->makeRequest('deepObject', 'deepArrayBoolean');
+
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConvertDeepArrayString(): void
+    {
+        $yaml      = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        $request   = $this->makeRequest('deepObject', 'deepArrayStrings');
+
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConvertDeepArrayOfArrayInteger(): void
+    {
+        $yaml      = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: integer
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        $request   = $this->makeRequest('deepObject', 'deepArrayOfArrayInteger');
+
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConvertDeepArrayIntegerNegative(): void
+    {
+        // there should be ints instead of strings in the array
+        $this->expectException(InvalidQueryArgs::class);
+        $yaml      = /** @lang yaml */
+            <<<YAML
+openapi: 3.0.0
+info:
+  title: Product import API
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8000/api/v1'
+paths:
+  /users:
+    get:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          style: deepObject
+          explode: true
+          schema:
+            type: array
+            items:
+              type: boolean
+      responses:
+        '200':
+          description: A list of users
+YAML;
+        $validator = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator();
+        try {
+            $validator->validate($this->makeRequest('deepObject', 'deepArrayStrings'));
+        } catch (InvalidQueryArgs $exception) {
+            /** @var InvalidParameter $previous */
+            $previous = $exception->getPrevious();
+            /** @var TypeMismatch $previous */
+            $previous = $previous->getPrevious();
+            self::assertEquals(['id', 0], $previous->dataBreadCrumb()->buildChain());
+
+            throw $exception;
+        }
+    }
+
     public function testConvertMultiLayerDeepObjectError(): void
     {
         $yaml = /** @lang yaml */
@@ -278,10 +529,34 @@ YAML;
     protected function makeRequest(string $style, string $type): ServerRequest
     {
         $map     = [
-            'form' => ['integer' => '1,2,3', 'string' => 'id1,id2,id3', 'boolean' => 'true,false', 'number' => '1.00,2.00,3.00'],
-            'spaceDelimited' => ['integer' => '1 2 3', 'string' => 'id1 id2 id3', 'boolean' => 'true false', 'number' => '1.00 2.00 3.00'],
-            'pipeDelimited' => ['integer' => '1|2|3', 'string' => 'id1|id2|id3', 'boolean' => 'true|false', 'number' => '1.00|2.00|3.00'],
-            'deepObject' => ['integer' => ['before' => 10, 'after' => 1], 'deep' => ['before' => ['first' => ['second' => '10']], 'after' => 1], 'error' => ['before' => 'ten', 'after' => 'one']],
+            'form' => [
+                'integer' => '1,2,3',
+                'string' => 'id1,id2,id3',
+                'boolean' => 'true,false',
+                'number' => '1.00,2.00,3.00',
+            ],
+            'spaceDelimited' => [
+                'integer' => '1 2 3',
+                'string' => 'id1 id2 id3',
+                'boolean' => 'true false',
+                'number' => '1.00 2.00 3.00',
+            ],
+            'pipeDelimited' => [
+                'integer' => '1|2|3',
+                'string' => 'id1|id2|id3',
+                'boolean' => 'true|false',
+                'number' => '1.00|2.00|3.00',
+            ],
+            'deepObject' => [ // we pass all arguments as strings because we can't encode it otherwise using query
+                'integer' => ['before' => '10', 'after' => '1'],
+                'deep' => ['before' => ['first' => ['second' => '10']], 'after' => 1],
+                'error' => ['before' => 'ten', 'after' => 'one'],
+                'deepArrayInteger' => ['10', '20'],
+                'deepArrayBoolean' => ['true', 'false'],
+                'deepArrayStrings' => ['abc', 'def'],
+                'deepArrayOfArrayInteger' => [['1', '2'], ['3', '4']],
+                'numericKeys' => ['1' => '10', '2' => '20'],
+            ],
         ];
         $request = new ServerRequest('GET', 'http://localhost:8000/api/v1/users');
         $request = $request->withQueryParams(['id' => $map[$style][$type]]);

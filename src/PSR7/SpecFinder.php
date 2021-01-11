@@ -6,7 +6,6 @@ namespace League\OpenAPIValidation\PSR7;
 
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\Callback;
-use cebe\openapi\spec\Header;
 use cebe\openapi\spec\Header as HeaderSpec;
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\OpenApi;
@@ -210,7 +209,7 @@ final class SpecFinder
 
         $operation = $this->findOperationSpec($addr);
 
-        $response = $operation->responses->getResponse($addr->responseCode());
+        $response = $operation->responses->getResponse((string) $addr->responseCode());
 
         if (! $response) {
             $response = $operation->responses->getResponse('default');
@@ -228,7 +227,7 @@ final class SpecFinder
     }
 
     /**
-     * @return Header[]
+     * @return array<string, HeaderSpec|Parameter>
      *
      * @throws NoPath
      */
@@ -244,7 +243,9 @@ final class SpecFinder
         // 1. Collect operation level headers from "parameters" keyword
         // An API call may require that custom headers be sent with an HTTP request. OpenAPI lets you define custom
         // request headers as in: header parameters.
+        /** @var array<string, HeaderSpec|Parameter> $headerSpecs */
         $headerSpecs = [];
+
         foreach ($spec->parameters as $p) {
             if ($p->in !== 'header') {
                 continue;
@@ -262,6 +263,7 @@ final class SpecFinder
         // 2. Collect path-level headers from "parameters" keyword
         // Path level params are fall-backs
         $pathSpec = $this->findPathSpec($addr);
+
         foreach ($pathSpec->parameters as $p) {
             if ($p->in !== 'header') {
                 continue;

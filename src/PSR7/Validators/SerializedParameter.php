@@ -6,7 +6,6 @@ namespace League\OpenAPIValidation\PSR7\Validators;
 
 use cebe\openapi\spec\Parameter as CebeParameter;
 use cebe\openapi\spec\Schema as CebeSchema;
-use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Type as CebeType;
 use League\OpenAPIValidation\Schema\Exception\ContentTypeMismatch;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
@@ -147,6 +146,10 @@ final class SerializedParameter
             return $this->convertToSerializationStyle($value, $this->schema);
         }
 
+        if (($type === CebeType::ARRAY) && is_array($value)) {
+            return $this->convertToSerializationStyle($value, $this->schema);
+        }
+
         if (($type === CebeType::OBJECT) && is_array($value)) {
             return $this->convertToSerializationStyle($value, $this->schema);
         }
@@ -155,11 +158,12 @@ final class SerializedParameter
     }
 
     /**
-     * @param mixed $value
+     * @param mixed           $value
+     * @param CebeSchema|null $schema - optional schema of value to convert it in case of DeepObject serialisation
      *
      * @return mixed
      */
-    protected function convertToSerializationStyle($value, ?Schema $schema)
+    protected function convertToSerializationStyle($value, ?CebeSchema $schema)
     {
         if (
             $this->explode === false
@@ -173,12 +177,13 @@ final class SerializedParameter
             return $value;
         }
 
-        if ($schema && $this->explode === true && $this->style === self::STYLE_DEEP_OBJECT) {
+        if ($schema && $this->style === self::STYLE_DEEP_OBJECT) {
             foreach ($value as $key => &$val) {
+                $childSchema = $this->getChildSchema($schema, (string) $key);
                 if (is_array($val)) {
-                    $val = $this->convertToSerializationStyle($val, $schema->properties[$key] ?? null);
+                    $val = $this->convertToSerializationStyle($val, $childSchema);
                 } else {
-                    $val = $this->castToSchemaType($val, $schema->properties[$key]->type ?? null);
+                    $val = $this->castToSchemaType($val, $childSchema->type ?? null);
                 }
             }
 
@@ -191,5 +196,24 @@ final class SerializedParameter
     public function getSchema(): CebeSchema
     {
         return $this->schema;
+    }
+
+    protected function getChildSchema(CebeSchema $schema, string $key): ?CebeSchema
+    {
+        if ($schema->type === CebeType::OBJECT) {
+            if (($schema->properties[$key] ?? false) && $schema->properties[$key] instanceof CebeSchema) {
+                return $schema->properties[$key];
+            }
+
+            if ($schema->additionalProperties instanceof CebeSchema) {
+                return $schema->additionalProperties;
+            }
+        }
+
+        if ($schema->type === CebeType::ARRAY && $schema->items instanceof CebeSchema) {
+            return $schema->items;
+        }
+
+        return null;
     }
 }

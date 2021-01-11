@@ -17,6 +17,7 @@ use League\OpenAPIValidation\PSR7\SpecFinder;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 use function count;
 use function preg_match;
@@ -45,7 +46,7 @@ final class SecurityValidator implements MessageValidator
         // Security schemes combined via OR are alternatives – any one can be used in the given context.
         // Security schemes combined via AND must be used simultaneously in the same request.
         // @see https://swagger.io/docs/specification/authentication/
-        if (! ($message instanceof RequestInterface)) {
+        if (! ($message instanceof ServerRequestInterface)) {
             return;
         }
 
@@ -55,7 +56,7 @@ final class SecurityValidator implements MessageValidator
     /**
      * @throws ValidationFailed
      */
-    private function validateServerRequest(OperationAddress $addr, RequestInterface $request): void
+    private function validateServerRequest(OperationAddress $addr, ServerRequestInterface $request): void
     {
         $securitySpecs = $this->finder->findSecuritySpecs($addr);
 
@@ -84,7 +85,7 @@ final class SecurityValidator implements MessageValidator
      */
     private function validateSecurityScheme(
         OperationAddress $addr,
-        RequestInterface $request,
+        ServerRequestInterface $request,
         SecurityRequirement $spec
     ): void {
         // Here I implement AND-union
@@ -162,7 +163,7 @@ final class SecurityValidator implements MessageValidator
      */
     private function validateApiKeySecurityScheme(
         OperationAddress $addr,
-        RequestInterface $request,
+        ServerRequestInterface $request,
         SecurityScheme $securityScheme
     ): void {
         switch ($securityScheme->in) {

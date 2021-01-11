@@ -4,8 +4,8 @@ on: [push, pull_request]
 
 jobs:
 
-  build:
-    name: Build
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     strategy:
@@ -68,3 +68,27 @@ jobs:
 
       - name: Run tests
         run: ./vendor/bin/phpcs
+
+  static-analysis:
+    name: Static analysis
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php:
+          - '7.2'
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@2.1.0
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse --memory-limit 512M
