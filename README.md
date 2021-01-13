@@ -182,7 +182,10 @@ $validator = (new \League\OpenAPIValidation\PSR7\ValidatorBuilder)
     ->setCache($cachePool)
     ->getResponseValidator();
 # or
-\League\OpenAPIValidation\PSR15\ValidationMiddleware::fromYamlFile($yamlFile, $cachePool);
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)
+    ->fromYamlFile($yamlFile)
+    ->setCache($cachePool)
+    ->getValidationMiddleware();
 ```
 
 You can use `->setCache($pool, $ttl)` call for both PSR-7 and PSR-15 builder in order to set 
