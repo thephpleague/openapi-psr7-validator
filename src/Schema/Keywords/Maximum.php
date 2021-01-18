@@ -44,10 +44,10 @@ class Maximum extends BaseKeyword
         try {
             if (class_exists(NumericVal::class)) {
                 Validator::numericVal()->assert($data);
-                Validator::numericVal()->positive()->assert($maximum);
+                Validator::numericVal()->assert($maximum);
             } else {
                 Validator::numeric()->assert($data);
-                Validator::numeric()->positive()->assert($maximum);
+                Validator::numeric()->assert($maximum);
             }
         } catch (Exception | ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);

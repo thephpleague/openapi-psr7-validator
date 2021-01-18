@@ -44,10 +44,10 @@ class Minimum extends BaseKeyword
         try {
             if (class_exists(NumericVal::class)) {
                 Validator::numericVal()->assert($data);
-                Validator::numericVal()->positive()->assert($minimum);
+                Validator::numericVal()->assert($minimum);
             } else {
                 Validator::numeric()->assert($data);
-                Validator::numeric()->positive()->assert($minimum);
+                Validator::numeric()->assert($minimum);
             }
         } catch (Exception | ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
