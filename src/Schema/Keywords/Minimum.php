@@ -6,9 +6,12 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
+use Respect\Validation\Rules\NumericVal;
 use Respect\Validation\Validator;
 
+use function class_exists;
 use function sprintf;
 
 class Minimum extends BaseKeyword
@@ -39,9 +42,14 @@ class Minimum extends BaseKeyword
     public function validate($data, $minimum, bool $exclusiveMinimum = false): void
     {
         try {
-            Validator::numeric()->assert($data);
-            Validator::numeric()->assert($minimum);
-        } catch (ExceptionInterface $e) {
+            if (class_exists(NumericVal::class)) {
+                Validator::numericVal()->assert($data);
+                Validator::numericVal()->assert($minimum);
+            } else {
+                Validator::numeric()->assert($data);
+                Validator::numeric()->assert($minimum);
+            }
+        } catch (Exception | ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

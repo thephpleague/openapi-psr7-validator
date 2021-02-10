@@ -6,9 +6,12 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
+use Respect\Validation\Rules\NumericVal;
 use Respect\Validation\Validator;
 
+use function class_exists;
 use function sprintf;
 
 class Maximum extends BaseKeyword
@@ -39,9 +42,14 @@ class Maximum extends BaseKeyword
     public function validate($data, $maximum, bool $exclusiveMaximum = false): void
     {
         try {
-            Validator::numeric()->assert($data);
-            Validator::numeric()->assert($maximum);
-        } catch (ExceptionInterface $e) {
+            if (class_exists(NumericVal::class)) {
+                Validator::numericVal()->assert($data);
+                Validator::numericVal()->assert($maximum);
+            } else {
+                Validator::numeric()->assert($data);
+                Validator::numeric()->assert($maximum);
+            }
+        } catch (Exception | ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

@@ -6,6 +6,7 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
@@ -30,7 +31,7 @@ class MaxProperties extends BaseKeyword
         try {
             Validator::arrayType()->assert($data);
             Validator::trueVal()->assert($maxProperties >= 0);
-        } catch (ExceptionInterface $e) {
+        } catch (Exception | ExceptionInterface $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

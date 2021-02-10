@@ -10,16 +10,20 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 
 final class MinimumTest extends SchemaValidatorTest
 {
-    public function testMinimumNonexclusiveKeywordGreen(): void
+    /**
+     * @testWith [100]
+     *           [0]
+     *           [-1]
+     */
+    public function testMinimumNonexclusiveKeywordGreen(int $data): void
     {
         $spec = <<<SPEC
 schema:
   type: number
-  minimum: 100
+  minimum: {$data}
 SPEC;
 
         $schema = $this->loadRawSchema($spec);
-        $data   = 100;
 
         (new SchemaValidator())->validate($data, $schema);
         $this->addToAssertionCount(1);
