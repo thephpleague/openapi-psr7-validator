@@ -48,7 +48,7 @@ class Minimum extends BaseKeyword
             throw KeywordMismatch::fromKeyword(
                 'minimum',
                 $data,
-                sprintf('Value %d must be greater or equal to %d', $data, $minimum)
+                sprintf('Value %d must be greater than %d', $data, $minimum)
             );
         }
 
@@ -56,7 +56,7 @@ class Minimum extends BaseKeyword
             throw KeywordMismatch::fromKeyword(
                 'minimum',
                 $data,
-                sprintf('Value %d must be greater than %d', $data, $minimum)
+                sprintf('Value %d must be greater or equal to %d', $data, $minimum)
             );
         }
     }

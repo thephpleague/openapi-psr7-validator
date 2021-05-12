@@ -41,6 +41,7 @@ SPEC;
             (new SchemaValidator())->validate($data, $schema);
         } catch (KeywordMismatch $e) {
             $this->assertEquals('minimum', $e->keyword());
+            $this->assertEquals('Keyword validation failed: Value 100 must be greater than 100', $e->getMessage());
         }
     }
 }
