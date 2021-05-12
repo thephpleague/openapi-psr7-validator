@@ -57,7 +57,7 @@ class Maximum extends BaseKeyword
             throw KeywordMismatch::fromKeyword(
                 'maximum',
                 $data,
-                sprintf('Value %d must be less or equal to %d', $data, $maximum)
+                sprintf('Value %d must be less than %d', $data, $maximum)
             );
         }
 
@@ -65,7 +65,7 @@ class Maximum extends BaseKeyword
             throw KeywordMismatch::fromKeyword(
                 'maximum',
                 $data,
-                sprintf('Value %d must be less than %d', $data, $maximum)
+                sprintf('Value %d must be less or equal to %d', $data, $maximum)
             );
         }
     }
