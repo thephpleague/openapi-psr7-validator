@@ -58,22 +58,15 @@ class WebHookServerRequestValidator implements ReusableSchema
         $event   = $serverRequest->getHeaderLine('X-GitHub-Event');
         $method = strtolower($serverRequest->getMethod());
 
-        if (! $this->openApi->webhooks->hasPath($event)) {
+        if (! $this->openApi->webhooks->hasWebHook($event)) {
             throw NoOperation::fromPathAndMethod($event, $method);
         }
 
-        // there are multiple matching operations, this is bad, because if none of them match the message
-        // then we cannot say reliably which one intended to match
-        foreach ($matchingOperationsAddrs as $matchedAddr) {
-            try {
-                $this->validator->validate($matchedAddr, $serverRequest);
-
-                return $matchedAddr; // Good, operation matched and request is valid against it, stop here
-            } catch (Throwable $e) {
-                // that operation did not match
-            }
+//        var_export($this->openApi->webhooks->getWebHook($event));
+//        var_export($matchingOperationsAddrs = $this->findMatchingOperations($serverRequest));
+        foreach ($this->findMatchingOperations($serverRequest) as $operation) {
+            $this->validator->validate(new OperationAddress());
         }
-
         // no operation matched at all...
         throw MultipleOperationsMismatchForRequest::fromMatchedAddrs($matchingOperationsAddrs);
     }
@@ -87,7 +80,7 @@ class WebHookServerRequestValidator implements ReusableSchema
      */
     private function findMatchingOperations(ServerRequestInterface $request): array
     {
-        $pathFinder = new PathFinder($this->openApi, (string) $request->getUri(), $request->getMethod());
+        $pathFinder = new WebHookFinder($this->openApi, $request->getHeaderLine('X-GitHub-Event'), $request->getMethod());
 
         return $pathFinder->search();
     }
