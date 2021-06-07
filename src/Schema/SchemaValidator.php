@@ -10,6 +10,7 @@ use League\OpenAPIValidation\Foundation\ArrayHelper;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Keywords\AllOf;
 use League\OpenAPIValidation\Schema\Keywords\AnyOf;
+use League\OpenAPIValidation\Schema\Keywords\BaseKeyword;
 use League\OpenAPIValidation\Schema\Keywords\Enum;
 use League\OpenAPIValidation\Schema\Keywords\Items;
 use League\OpenAPIValidation\Schema\Keywords\Maximum;
@@ -66,7 +67,14 @@ final class SchemaValidator implements Validator
 
             // The following properties are taken from the JSON Schema definition but their definitions were adjusted to the OpenAPI Specification.
             if (isset($schema->type)) {
-                (new Type($schema))->validate($data, $schema->type, $schema->format);
+                if (is_string($schema->type)) {
+                    (new Type($schema))->validate($data, $schema->type, $schema->format);
+                } else if (is_array($schema->type)) {
+                    foreach ($schema->type as $schemaType) {
+                        (new Type($schema))->validate($data, $schemaType, $schema->format);
+                        break;
+                    }
+                }
             }
 
             // This keywords come directly from JSON Schema Validation, they are the same as in JSON schema
