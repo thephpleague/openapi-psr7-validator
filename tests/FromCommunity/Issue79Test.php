@@ -30,7 +30,7 @@ final class Issue79Test extends TestCase
     }
 
     /**
-     * @return string[]
+     * @return iterable<string[]>
      */
     public function provideSpecAndOperationToMatch(): iterable
     {
@@ -134,7 +134,7 @@ YAML
     }
 
     /**
-     * @return string[]
+     * @return iterable<string[]>
      */
     public function provideSpecAndOperationToNotMatch(): iterable
     {

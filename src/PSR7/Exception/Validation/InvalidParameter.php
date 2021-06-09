@@ -13,6 +13,9 @@ use function sprintf;
 
 use const JSON_PRETTY_PRINT;
 
+/**
+ * @method SchemaMismatch getPrevious()
+ */
 class InvalidParameter extends ValidationFailed
 {
     /** @var string */
