@@ -12,7 +12,7 @@ use stdClass;
 final class TypeTest extends SchemaValidatorTest
 {
     /**
-     * @return array<array<string, mixed>>
+     * @return mixed[][]
      */
     public function validDataProvider(): array
     {
@@ -70,7 +70,7 @@ SPEC;
     }
 
     /**
-     * @return array<array<string, mixed>>
+     * @return mixed[][]
      */
     public function invalidDataProvider(): array
     {

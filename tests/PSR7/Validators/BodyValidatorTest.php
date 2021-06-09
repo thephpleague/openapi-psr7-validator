@@ -6,7 +6,6 @@ namespace League\OpenAPIValidation\Tests\PSR7\Validators;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
-use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +14,7 @@ use function GuzzleHttp\Psr7\parse_request;
 class BodyValidatorTest extends TestCase
 {
     /**
-     * @return array<array<string,string>> of arguments
+     * @return string[][] of arguments
      */
     public function dataProviderGreen(): array
     {
@@ -53,7 +52,6 @@ Content-Length: 3
 abc
 HTTP
 ,
-                new OperationAddress('/post-media-range', 'post'),
             ],
             [
                 __DIR__ . '/../../stubs/multi-media-types.yaml',
@@ -81,7 +79,7 @@ HTTP
     }
 
     /**
-     * @return array<array<string,string>> of arguments
+     * @return string[][] of arguments
      */
     public function dataProviderRed(): array
     {

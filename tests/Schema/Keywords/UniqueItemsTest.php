@@ -11,7 +11,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 final class UniqueItemsTest extends SchemaValidatorTest
 {
     /**
-     * @return array<array<string, array<mixed>>>>
+     * @return array<array<(string|array<mixed>)>>
      */
     public function dataProviderGreen(): array
     {
@@ -122,7 +122,7 @@ SPEC
     }
 
     /**
-     * @return array<array<string, array<mixed>>>>
+     * @return array<array<(string|array<mixed>)>>
      */
     public function dataProviderRed(): array
     {

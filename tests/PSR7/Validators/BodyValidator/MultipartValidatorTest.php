@@ -18,7 +18,7 @@ use function GuzzleHttp\Psr7\parse_request;
 class MultipartValidatorTest extends TestCase
 {
     /**
-     * @return array<array<string>> of arguments
+     * @return string[][] of arguments
      */
     public function dataProviderMultipartGreen(): array
     {
@@ -162,7 +162,7 @@ HTTP
     }
 
     /**
-     * @return array<array<string,string>> of arguments
+     * @return string[][] of arguments
      */
     public function dataProviderMultipartRed(): array
     {

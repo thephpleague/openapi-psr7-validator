@@ -18,7 +18,7 @@ final class StringDateTimeTest extends TestCase
     }
 
     /**
-     * @return array<string>
+     * @return string[][]
      */
     public function dateTimeGreenDataProvider(): array
     {
@@ -43,7 +43,7 @@ final class StringDateTimeTest extends TestCase
     }
 
     /**
-     * @return array<string>
+     * @return string[][]
      */
     public function dateTimeRedDataProvider(): array
     {

@@ -11,7 +11,7 @@ use League\OpenAPIValidation\Tests\Schema\SchemaValidatorTest;
 final class PatternTest extends SchemaValidatorTest
 {
     /**
-     * @return array<array<string, string>>
+     * @return string[][]
      */
     public function validDataProvider(): array
     {
