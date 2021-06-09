@@ -16,6 +16,7 @@ use function preg_replace;
 use function rtrim;
 use function sprintf;
 use function strtolower;
+use function usort;
 
 use const PHP_URL_PATH;
 
@@ -91,7 +92,7 @@ class PathFinder
         // 2. for each operation, find suitable "servers" (with respect to overriding)
         foreach ($opCandidates as $i => $opAddress) {
             $opCandidates[$i] = [
-                'addr'    => $opAddress,
+                'addr' => $opAddress,
                 'servers' => $this->findServersForOperation($opAddress),
             ];
         }
@@ -100,11 +101,7 @@ class PathFinder
         foreach ($opCandidates as $opCandidate) {
             /** @var Server $server */
             foreach ($opCandidate['servers'] as $server) {
-                $candidatePath = sprintf(
-                    '%s/%s',
-                    rtrim((string) parse_url($server->url, PHP_URL_PATH), '/'),
-                    ltrim($opCandidate['addr']->path(), '/')
-                );
+                $candidatePath = $this->composeFullOperationPath($server, $opCandidate['addr']);
 
                 // 3.1 Compare this path against the real/given path
                 if (! OperationAddress::isPathMatchesSpec($candidatePath, $this->path)) {
@@ -117,7 +114,7 @@ class PathFinder
             }
         }
 
-        return $paths;
+        return $this->prioritizeStaticPaths($paths);
     }
 
     /**
@@ -179,5 +176,36 @@ class PathFinder
 
         // 3. Fallback with servers on root level
         return $this->openApiSpec->servers;
+    }
+
+    private function composeFullOperationPath(Server $server, OperationAddress $addr): string
+    {
+        return sprintf(
+            '%s/%s',
+            rtrim((string) parse_url($server->url, PHP_URL_PATH), '/'),
+            ltrim($addr->path(), '/')
+        );
+    }
+
+    /**
+     * @param OperationAddress[] $paths
+     *
+     * @return OperationAddress[]
+     */
+    private function prioritizeStaticPaths(array $paths): array
+    {
+        usort($paths, static function (OperationAddress $a, OperationAddress $b): int {
+            if ($a->hasPlaceholders() && ! $b->hasPlaceholders()) {
+                return 1;
+            }
+
+            if ($b->hasPlaceholders() && ! $a->hasPlaceholders()) {
+                return -1;
+            }
+
+            return 0;
+        });
+
+        return $paths;
     }
 }

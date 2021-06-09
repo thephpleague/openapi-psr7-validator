@@ -19,6 +19,8 @@ use const PREG_SPLIT_DELIM_CAPTURE;
 
 class OperationAddress
 {
+    private const PATH_PLACEHOLDER = '#{[^}]+}#';
+
     /** @var string */
     protected $method;
     /** @var string */
@@ -38,7 +40,7 @@ class OperationAddress
      */
     public static function isPathMatchesSpec(string $specPath, string $path): bool
     {
-        $pattern = '#^' . preg_replace('#{[^}]+}#', '[^/]+', $specPath) . '/?$#';
+        $pattern = '#^' . preg_replace(self::PATH_PLACEHOLDER, '[^/]+', $specPath) . '/?$#';
 
         return (bool) preg_match($pattern, $path);
     }
@@ -56,6 +58,11 @@ class OperationAddress
     public function path(): string
     {
         return $this->path;
+    }
+
+    public function hasPlaceholders(): bool
+    {
+        return preg_match(self::PATH_PLACEHOLDER, $this->path()) === 1;
     }
 
     /**
