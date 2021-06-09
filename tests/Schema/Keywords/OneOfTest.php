@@ -54,6 +54,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
         } catch (KeywordMismatch $e) {
             $this->assertEquals('oneOf', $e->keyword());
         }
@@ -79,6 +80,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
         } catch (KeywordMismatch $e) {
             $this->assertEquals('oneOf', $e->keyword());
         }

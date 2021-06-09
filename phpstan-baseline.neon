@@ -6,19 +6,9 @@ parameters:
 			path: src/PSR7/Validators/CookiesValidator/ServerRequestCookieValidator.php
 
 		-
-			message: "#^Parameter \\#1 \\$openApiSpec of class League\\\\OpenAPIValidation\\\\PSR7\\\\PathFinder constructor expects cebe\\\\openapi\\\\spec\\\\OpenApi, cebe\\\\openapi\\\\SpecObjectInterface given\\.$#"
-			count: 2
-			path: tests/FromCommunity/Issue79Test.php
-
-		-
 			message: "#^Generator expects value type string, array\\<int, string\\> given\\.$#"
 			count: 7
 			path: tests/FromCommunity/Issue79Test.php
-
-		-
-			message: "#^Parameter \\#1 \\$openApiSpec of class League\\\\OpenAPIValidation\\\\PSR7\\\\PathFinder constructor expects cebe\\\\openapi\\\\spec\\\\OpenApi, cebe\\\\openapi\\\\SpecObjectInterface given\\.$#"
-			count: 4
-			path: tests/PSR7/PathFinderTest.php
 
 		-
 			message: "#^Method League\\\\OpenAPIValidation\\\\Tests\\\\PSR7\\\\Validators\\\\BodyValidator\\\\MultipartValidatorTest\\:\\:dataProviderMultipartRed\\(\\) should return array\\<array\\<string, string\\>\\> but returns array\\<int, array\\<int, string\\>\\>\\.$#"
@@ -59,11 +49,6 @@ parameters:
 			message: "#^Method League\\\\OpenAPIValidation\\\\Tests\\\\Schema\\\\Keywords\\\\UniqueItemsTest\\:\\:dataProviderRed\\(\\) should return array\\<array\\<string, array\\>\\> but returns array\\<int, array\\<int, array\\<int, array\\<int\\|string, array\\<string, int\\>\\|int\\>\\|bool\\|int\\|string\\>\\|string\\>\\>\\.$#"
 			count: 1
 			path: tests/Schema/Keywords/UniqueItemsTest.php
-
-		-
-			message: "#^Access to an undefined property cebe\\\\openapi\\\\SpecObjectInterface\\:\\:\\$schema\\.$#"
-			count: 2
-			path: tests/Schema/SchemaValidatorTest.php
 
 		-
 			message: "#^Method League\\\\OpenAPIValidation\\\\Tests\\\\Schema\\\\TypeFormats\\\\StringDateTimeTest\\:\\:dateTimeGreenDataProvider\\(\\) should return array\\<string\\> but returns array\\<int, array\\<int, string\\>\\>\\.$#"

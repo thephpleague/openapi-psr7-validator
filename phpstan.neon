@@ -7,7 +7,5 @@ parameters:
         - tests
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
-        - '#Unsafe usage of new static\(\)\.#'
-        - '#Method [a-zA-Z0-9_\\]+::[a-zA-Z0-9_]+\(\) should return cebe\\openapi\\spec\\OpenApi but returns cebe\\openapi\\SpecObjectInterface\.#'
         - '#Caught class Respect\\Validation\\Exceptions\\ExceptionInterface not found.#'
         - '#Call to an undefined static method Respect\\Validation\\Validator::numeric\(\).#'
