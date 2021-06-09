@@ -38,6 +38,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
         } catch (KeywordMismatch $e) {
             $this->assertEquals('minLength', $e->keyword());
         }

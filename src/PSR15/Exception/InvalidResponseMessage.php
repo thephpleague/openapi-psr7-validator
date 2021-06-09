@@ -10,6 +10,6 @@ class InvalidResponseMessage extends ValidationFailed
 {
     public static function because(ValidationFailed $e): self
     {
-        return new static('Response message failed validation', 0, $e);
+        return new self('Response message failed validation', 0, $e);
     }
 }

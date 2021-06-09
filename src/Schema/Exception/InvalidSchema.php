@@ -20,16 +20,16 @@ final class InvalidSchema extends RuntimeException
      */
     public static function becauseDefensiveSchemaValidationFailed(Throwable $e): self
     {
-        return new static('Schema(or data) validation failed: ' . $e->getMessage(), $e->getCode(), $e);
+        return new self('Schema(or data) validation failed: ' . $e->getMessage(), $e->getCode(), $e);
     }
 
     public static function becauseTypeIsNotKnown(string $type): self
     {
-        return new static(sprintf("Type '%s' is unexpected.", $type));
+        return new self(sprintf("Type '%s' is unexpected.", $type));
     }
 
     public static function becauseBracesAreNotBalanced(string $path): self
     {
-        return new static(sprintf("Braces in path '%s' are not balanced.", $path));
+        return new self(sprintf("Braces in path '%s' are not balanced.", $path));
     }
 }

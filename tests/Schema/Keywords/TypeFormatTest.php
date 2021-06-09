@@ -36,7 +36,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate('invalid email', $schema);
-            $this->fail('Exception expected');
+            $this->fail('Validation did not expected to pass');
         } catch (FormatMismatch $e) {
             $this->assertEquals('email', $e->format());
         }
@@ -96,6 +96,7 @@ SPEC;
         try {
             $schema = $this->loadRawSchema($spec);
             (new SchemaValidator())->validate('bad value', $schema);
+            $this->fail('Validation did not expected to pass');
         } catch (FormatMismatch $e) {
             $this->assertEquals('unexpected', $e->format());
         }

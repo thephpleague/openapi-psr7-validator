@@ -23,6 +23,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
         } catch (TypeMismatch $e) {
             $this->assertEquals([2], $e->dataBreadCrumb()->buildChain());
             $this->assertEquals($data[2], $e->data());
@@ -55,6 +56,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
         } catch (TypeMismatch $e) {
             $this->assertEquals([1, 0, 'name'], $e->dataBreadCrumb()->buildChain());
             $this->assertEquals($data[1][0]['name'], $e->data());

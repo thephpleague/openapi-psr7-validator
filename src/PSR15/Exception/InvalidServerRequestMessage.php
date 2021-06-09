@@ -10,6 +10,6 @@ class InvalidServerRequestMessage extends ValidationFailed
 {
     public static function because(ValidationFailed $e): self
     {
-        return new static('Server Request message failed validation', 0, $e);
+        return new self('Server Request message failed validation', 0, $e);
     }
 }

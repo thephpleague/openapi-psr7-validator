@@ -19,7 +19,7 @@ class FormatMismatch extends TypeMismatch
      */
     public static function fromFormat(string $format, $value, string $type): self
     {
-        $i          = new static(sprintf("Value '%s' does not match format %s of type %s", $value, $format, $type));
+        $i          = new self(sprintf("Value '%s' does not match format %s of type %s", $value, $format, $type));
         $i->format  = $format;
         $i->data    = $value;
         $i->keyword = 'type';

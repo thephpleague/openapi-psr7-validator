@@ -43,6 +43,7 @@ SPEC;
 
         try {
             (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
         } catch (KeywordMismatch $e) {
             $this->assertEquals('minimum', $e->keyword());
             $this->assertEquals('Keyword validation failed: Value 100 must be greater than 100', $e->getMessage());
