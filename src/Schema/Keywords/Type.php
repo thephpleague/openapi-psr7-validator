@@ -75,6 +75,12 @@ class Type extends BaseKeyword
                 }
 
                 break;
+            case CebeType::NULL:
+                if ($data !== null) {
+                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::NULL, $data);
+                }
+
+                break;
             default:
                 throw InvalidSchema::becauseTypeIsNotKnown($type);
         }
