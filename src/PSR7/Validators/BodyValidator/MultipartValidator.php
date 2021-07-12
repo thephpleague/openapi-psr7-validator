@@ -28,7 +28,9 @@ use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
 
+use function array_map;
 use function array_replace;
+use function explode;
 use function in_array;
 use function is_array;
 use function json_decode;
@@ -117,27 +119,27 @@ class MultipartValidator implements MessageValidator
 
             foreach ($parts as $part) {
                 // 2.1 parts encoding
-                $partContentType     = $part->getHeader(self::HEADER_CONTENT_TYPE);
-                $encodingContentType = $this->detectEncondingContentType($encoding, $part, $schema->properties[$partName]);
-                if (strpos($encodingContentType, '*') === false) {
-                    // strict comparison (ie "image/jpeg")
-                    if ($encodingContentType !== $partContentType) {
-                        throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
-                            $partName,
-                            $partContentType,
-                            $addr
-                        );
+                $partContentType   = $part->getHeader(self::HEADER_CONTENT_TYPE);
+                $validContentTypes = $this->detectEncodingContentTypes($encoding, $part, $schema->properties[$partName]);
+                $match             = false;
+
+                foreach ($validContentTypes as $encodingContentType) {
+                    if (strpos($encodingContentType, '*') === false) {
+                        // strict comparison (ie "image/jpeg")
+                        $match = $match || $encodingContentType === $partContentType;
+                    } else {
+                        // loose comparison (ie "image/*")
+                        $encodingContentType = str_replace('*', '.*', $encodingContentType);
+                        $match               = $match || preg_match('#' . $encodingContentType . '#', $partContentType);
                     }
-                } else {
-                    // loose comparison (ie "image/*")
-                    $encodingContentType = str_replace('*', '.*', $encodingContentType);
-                    if (! preg_match('#' . $encodingContentType . '#', $partContentType)) {
-                        throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
-                            $partName,
-                            $partContentType,
-                            $addr
-                        );
-                    }
+                }
+
+                if (! $match) {
+                    throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
+                        $partName,
+                        $partContentType,
+                        $addr
+                    );
                 }
 
                 // 2.2. parts headers
@@ -195,7 +197,10 @@ class MultipartValidator implements MessageValidator
         return $multipartData;
     }
 
-    private function detectEncondingContentType(Encoding $encoding, StreamedPart $part, Schema $partSchema): string
+    /**
+     * @return string[]
+     */
+    private function detectEncodingContentTypes(Encoding $encoding, StreamedPart $part, Schema $partSchema): array
     {
         $contentType = $encoding->contentType;
 
@@ -219,7 +224,7 @@ class MultipartValidator implements MessageValidator
             }
         }
 
-        return $contentType;
+        return array_map('trim', explode(',', $contentType));
     }
 
     /**

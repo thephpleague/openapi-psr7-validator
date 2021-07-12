@@ -91,7 +91,7 @@ paths:
                   format: binary
             encoding:
               image:
-                contentType: image/*
+                contentType: specific/type, image/*
       responses:
         204:
           description: good post
