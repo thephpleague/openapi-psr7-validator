@@ -231,11 +231,17 @@ class MultipartValidator implements MessageValidator
         ServerRequestInterface $message,
         Schema $schema
     ): void {
-        $body = (array) $message->getParsedBody();
 
-        $files = $this->normalizeFiles($message->getUploadedFiles());
-
-        $body = array_replace($body, $files);
+        switch($_SERVER['REQUEST_METHOD']){
+            case 'PUT':
+                $body = [];
+                $this->parse_raw_http_request($body);
+                break;
+            default:
+                $body = (array) $message->getParsedBody();
+                $files = $this->normalizeFiles($message->getUploadedFiles());
+                $body = array_replace($body, $files);
+        }
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
@@ -286,5 +292,47 @@ class MultipartValidator implements MessageValidator
         }
 
         return $normalized;
+    }
+
+    /** Parses raw HTTP PUT request
+     * @param array[] $a_data
+     * @link https://stackoverflow.com/questions/5483851/manually-parse-raw-multipart-form-data-data-with-php
+     */
+    private function parse_raw_http_request(array &$a_data)
+    {
+        // read incoming data
+        $input = file_get_contents('php://input');
+
+        // grab multipart boundary from content type header
+        preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
+        $boundary = $matches[1];
+
+        // split content by boundary and get rid of last -- element
+        $a_blocks = preg_split("/-+$boundary/", $input);
+        array_pop($a_blocks);
+
+        // loop data blocks
+        foreach ($a_blocks as $id => $block)
+        {
+            if (empty($block))
+                continue;
+
+            // you'll have to var_dump $block to understand this and maybe replace \n or \r with a visibile char
+
+            // parse uploaded files
+            if (strpos($block, 'application/octet-stream') !== FALSE)
+            {
+                // match "name", then everything after "stream" (optional) except for prepending newlines
+                preg_match("/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s", $block, $matches);
+            }
+            // parse all other fields
+            else
+            {
+                // match "name" and optional value in between newline sequences
+                preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
+            }
+            if(isset($matches[2]))
+                $a_data[$matches[1]] = $matches[2];
+        }
     }
 }
