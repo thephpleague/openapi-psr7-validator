@@ -170,6 +170,7 @@ final class SerializedParameter
             if ($this->explode === false) {
                 $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             }
+
             foreach ($value as &$val) {
                 $val = $this->castToSchemaType($val, $schema->items->type ?? null);
             }
