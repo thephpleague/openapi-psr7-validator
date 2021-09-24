@@ -166,11 +166,10 @@ final class SerializedParameter
      */
     protected function convertToSerializationStyle($value, ?CebeSchema $schema)
     {
-        if (
-            $this->explode === false
-            && in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)
-        ) {
-            $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
+        if (in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
+            if ($this->explode === false) {
+                $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
+            }
             foreach ($value as &$val) {
                 $val = $this->castToSchemaType($val, $schema->items->type ?? null);
             }
