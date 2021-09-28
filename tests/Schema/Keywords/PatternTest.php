@@ -22,6 +22,7 @@ final class PatternTest extends SchemaValidatorTest
             ['1foo1', '1foo1'], // Tests adding anchors when first and last character is same with numbers
             ['^#\d+$', '#123'], // Tests adding anchors to string which has #
             ['^#(\d+)#$', '#123#'], // Tests adding anchors to string which has multiple#
+            ['^[А-Я]{2}$', 'ДГ'], // Tests patterns with Unicode
         ];
     }
 
