@@ -38,7 +38,7 @@ class Pattern extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        $pattern = sprintf('#%s#', str_replace('#', '\#', $pattern));
+        $pattern = sprintf('#%s#u', str_replace('#', '\#', $pattern));
 
         if (! preg_match($pattern, $data)) {
             throw KeywordMismatch::fromKeyword('pattern', $data, sprintf('Data does not match pattern \'%s\'', $pattern));
