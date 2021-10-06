@@ -15,6 +15,11 @@ class StringDate
     {
         // full-date notation as defined by RFC 3339, section 5.6, for example, 2017-07-21
 
-        return DateTime::createFromFormat('Y-m-d', $value) !== false;
+        $datetime = DateTime::createFromFormat('Y-m-d', $value);
+        if ($datetime === false) {
+            return false;
+        }
+
+        return $datetime->format('Y-m-d') === $value;
     }
 }
