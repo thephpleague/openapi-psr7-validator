@@ -20,6 +20,6 @@ class StringDate
             return false;
         }
 
-        return $datetime->format('Y-m-d') == $value;
+        return $datetime->format('Y-m-d') === $value;
     }
 }
