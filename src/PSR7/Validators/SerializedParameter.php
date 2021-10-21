@@ -125,8 +125,13 @@ final class SerializedParameter
      */
     private function castToSchemaType($value, ?string $type)
     {
-        if (($type === CebeType::BOOLEAN) && is_scalar($value) && preg_match('#^(true|false)$#i', (string) $value)) {
-            return is_string($value) ? strtolower($value) === 'true' : (bool) $value;
+        if ($type === CebeType::BOOLEAN && is_scalar($value)) {
+            if (preg_match('#^(true|false)$#i', (string)$value)) {
+                return is_string($value) ? strtolower($value) === 'true' : (bool)$value;
+            }
+            if (preg_match('#^(0|1)$#i', (string)$value)) {
+                return (string)$value === '1';
+            }
         }
 
         if (
