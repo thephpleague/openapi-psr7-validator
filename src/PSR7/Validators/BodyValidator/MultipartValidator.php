@@ -267,7 +267,7 @@ class MultipartValidator implements MessageValidator
     }
 
     /**
-     * @param UploadedFileInterface[]|array[] $files
+     * @param UploadedFileInterface[]|array<int, UploadedFileInterface[]> $files
      *
      * @return mixed[]
      */
