@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\ContentTypeMismatch;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
@@ -181,6 +182,26 @@ final class SerializedParameter
         if ($schema && $this->style === self::STYLE_DEEP_OBJECT) {
             foreach ($value as $key => &$val) {
                 $childSchema = $this->getChildSchema($schema, (string) $key);
+
+                if (isset($childSchema->oneOf) && count($childSchema->oneOf)) {
+                    $schemaValidator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
+                    $validSchemas = [];
+                    foreach ($childSchema->oneOf as $schemaCandidate) {
+                        try {
+                            $val1 = $this->convertToSerializationStyle($val, $schemaCandidate);
+
+                            $schemaValidator->validate($val1, $schemaCandidate);
+                            $validSchemas[] = $schemaCandidate;
+                        } catch (SchemaMismatch $e) {
+                            // nothintg to do
+                        }
+                    }
+
+                    if (count($validSchemas) == 1) {
+                        $childSchema = $validSchemas[0];
+                    }
+                }
+
                 if (is_array($val)) {
                     $val = $this->convertToSerializationStyle($val, $childSchema);
                 } else {
