@@ -211,7 +211,7 @@ final class SpecFinder
 
         $response = $operation->responses->getResponse((string) $addr->responseCode());
 
-        if(! $response){
+        if (! $response){
             $response = $operation->responses->getResponse(substr((string)$addr->responseCode(),0,1) . 'XX');
         }
         
