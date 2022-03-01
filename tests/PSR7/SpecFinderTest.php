@@ -163,8 +163,8 @@ paths:
                     type: string
 YAML;
 
-        $schema = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator()->getSchema();
-        $specFinder = new SpecFinder($schema);
+        $schema       = (new ValidatorBuilder())->fromYaml($yaml)->getServerRequestValidator()->getSchema();
+        $specFinder   = new SpecFinder($schema);
         $responseSpec = $specFinder->findResponseSpec(
             new ResponseAddress('/products.find', 'get', 404)
         );

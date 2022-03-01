@@ -26,6 +26,7 @@ use Webmozart\Assert\Assert;
 use function json_decode;
 use function json_encode;
 use function property_exists;
+use function substr;
 
 final class SpecFinder
 {
@@ -211,10 +212,10 @@ final class SpecFinder
 
         $response = $operation->responses->getResponse((string) $addr->responseCode());
 
-        if (! $response){
-            $response = $operation->responses->getResponse(substr((string)$addr->responseCode(),0,1) . 'XX');
+        if (! $response) {
+            $response = $operation->responses->getResponse(substr((string) $addr->responseCode(), 0, 1) . 'XX');
         }
-        
+
         if (! $response) {
             $response = $operation->responses->getResponse('default');
         }
