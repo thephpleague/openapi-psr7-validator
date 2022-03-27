@@ -89,7 +89,7 @@ class OperationAddress
         $url = strtok($url, '?');
 
         // 1. Find param names and build pattern
-        $pattern = $this->buildPattern($this->path(), $parameterNames);
+        $pattern = $this->buildPattern($url, $parameterNames);
 
         // 2. Parse param values
         if (! preg_match($pattern, $url, $matches)) {
