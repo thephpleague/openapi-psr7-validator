@@ -166,18 +166,6 @@ final class SerializedParameter
      */
     protected function convertToSerializationStyle($value, ?CebeSchema $schema)
     {
-        if (in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
-            if ($this->explode === false) {
-                $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
-            }
-
-            foreach ($value as &$val) {
-                $val = $this->castToSchemaType($val, $schema->items->type ?? null);
-            }
-
-            return $value;
-        }
-
         if ($schema && $this->style === self::STYLE_DEEP_OBJECT) {
             foreach ($value as $key => &$val) {
                 $childSchema = $this->getChildSchema($schema, (string) $key);
@@ -189,6 +177,18 @@ final class SerializedParameter
             }
 
             return $value;
+        }
+
+        if (in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
+            if ($this->explode === false) {
+                $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
+            }
+        }
+
+        if (is_array($value)) {
+            foreach ($value as &$val) {
+                $val = $this->castToSchemaType($val, $schema->items->type ?? null);
+            }
         }
 
         return $value;

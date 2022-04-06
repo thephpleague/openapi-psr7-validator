@@ -237,7 +237,7 @@ class MultipartValidator implements MessageValidator
 
         $files = $this->normalizeFiles($message->getUploadedFiles());
 
-        $body = array_replace($body, $files);
+        $body = $this->deserializeBody(array_replace($body, $files), $schema);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
