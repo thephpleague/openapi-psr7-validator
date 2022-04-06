@@ -10,6 +10,7 @@ use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Type as CebeType;
 use InvalidArgumentException;
+use League\OpenAPIValidation\Foundation\ArrayHelper;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
@@ -189,7 +190,8 @@ class MultipartValidator implements MessageValidator
             }
 
             // if name is not set, it should be validated with "additionalProperties" keyword
-            $multipartData[$part->getName() ?? '____' . $i] = $partBody;
+            $paramName = $part->getName() ?? '____' . $i;
+            ArrayHelper::setRecursive($multipartData, $paramName, $partBody);
         }
 
         return $multipartData;
