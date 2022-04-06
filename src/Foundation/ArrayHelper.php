@@ -6,7 +6,10 @@ namespace League\OpenAPIValidation\Foundation;
 
 use function array_keys;
 use function count;
+use function is_array;
+use function preg_match;
 use function range;
+use function str_replace;
 
 final class ArrayHelper
 {
@@ -27,5 +30,31 @@ final class ArrayHelper
         }
 
         return array_keys($arr) !== range(0, count($arr) - 1);
+    }
+
+    /**
+     * @param array<int|string, mixed> $arr
+     * @param mixed                    $value
+     */
+    public static function setRecursive(array &$arr, string $key, $value): void
+    {
+        $_arr = &$arr;
+        while (preg_match('#^([^\]]+)\[([^\]]*)\](.*)$#', $key, $matches)) {
+            if (! isset($arr[$matches[1]]) || ! is_array($arr[$matches[1]])) {
+                $_arr[$matches[1]] = [];
+            }
+
+            if ($matches[2] === '') {
+                $key = count($_arr[$matches[1]]);
+            } else {
+                $key = $matches[2];
+            }
+
+            $key .= preg_match('#^\[.*\]$#', $matches[3]) ? $matches[3] : '';
+            $_arr = &$_arr[$matches[1]];
+        }
+
+        $key        = str_replace('[', '_', $key);
+        $_arr[$key] = $value;
     }
 }
