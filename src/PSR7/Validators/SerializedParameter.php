@@ -183,22 +183,10 @@ final class SerializedParameter
             foreach ($value as $key => &$val) {
                 $childSchema = $this->getChildSchema($schema, (string) $key);
 
-                if (isset($childSchema->oneOf) && count($childSchema->oneOf)) {
-                    $schemaValidator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
-                    $validSchemas = [];
-                    foreach ($childSchema->oneOf as $schemaCandidate) {
-                        try {
-                            $val1 = $this->convertToSerializationStyle($val, $schemaCandidate);
-
-                            $schemaValidator->validate($val1, $schemaCandidate);
-                            $validSchemas[] = $schemaCandidate;
-                        } catch (SchemaMismatch $e) {
-                            // nothintg to do
-                        }
-                    }
-
-                    if (count($validSchemas) == 1) {
-                        $childSchema = $validSchemas[0];
+                if (isset($childSchema->oneOf)) {
+                    $suitableSchema = $this->findSuitableOneOf($childSchema, $val);
+                    if ($suitableSchema) {
+                        $childSchema = $suitableSchema;
                     }
                 }
 
@@ -237,5 +225,32 @@ final class SerializedParameter
         }
 
         return null;
+    }
+
+    /**
+     * @param CebeSchema $schema
+     * @param mixed $val
+     * @return CebeSchema|null
+     */
+    private function findSuitableOneOf(CebeSchema $schema, $val): ?CebeSchema
+    {
+        if (!count($schema->oneOf)) {
+            return null;
+        }
+
+        $schemaValidator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
+        $validSchemas = [];
+        foreach ($schema->oneOf as $schemaCandidate) {
+            try {
+                $valCandidate = $this->convertToSerializationStyle($val, $schemaCandidate);
+
+                $schemaValidator->validate($valCandidate, $schemaCandidate);
+                $validSchemas[] = $schemaCandidate;
+            } catch (SchemaMismatch $e) {
+                // nothing to do
+            }
+        }
+
+        return (count($validSchemas) === 1) ? $validSchemas[0] : null;
     }
 }
