@@ -16,6 +16,7 @@ use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
+use function count;
 use function explode;
 use function in_array;
 use function is_array;
@@ -228,18 +229,16 @@ final class SerializedParameter
     }
 
     /**
-     * @param CebeSchema $schema
      * @param mixed $val
-     * @return CebeSchema|null
      */
     private function findSuitableOneOf(CebeSchema $schema, $val): ?CebeSchema
     {
-        if (!count($schema->oneOf)) {
+        if (! count($schema->oneOf)) {
             return null;
         }
 
         $schemaValidator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
-        $validSchemas = [];
+        $validSchemas    = [];
         foreach ($schema->oneOf as $schemaCandidate) {
             try {
                 $valCandidate = $this->convertToSerializationStyle($val, $schemaCandidate);
@@ -251,6 +250,6 @@ final class SerializedParameter
             }
         }
 
-        return (count($validSchemas) === 1) ? $validSchemas[0] : null;
+        return count($validSchemas) === 1 ? $validSchemas[0] : null;
     }
 }

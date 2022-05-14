@@ -66,7 +66,6 @@ YAML;
             $validator->validate($psrRequest);
             $this->assertTrue(true);
         } catch (InvalidQueryArgs $e) {
-
             self::fail('Should not throw an exception');
         }
     }
