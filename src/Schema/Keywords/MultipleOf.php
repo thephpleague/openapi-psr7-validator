@@ -39,7 +39,7 @@ class MultipleOf extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        $value = (float) ($data / $multipleOf);
+        $value = (float)bcdiv((string)$data, (string)$multipleOf, 1);
         if ($value - (int) $value !== 0.0) {
             throw KeywordMismatch::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
         }
