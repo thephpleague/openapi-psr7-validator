@@ -22,6 +22,7 @@
     },
     "require": {
         "php": ">=7.2",
+        "ext-bcmath": "*",
         "ext-json": "*",
         "cebe/php-openapi": "^1.6",
         "league/uri": "^6.3",
