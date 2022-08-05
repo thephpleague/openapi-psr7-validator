@@ -171,6 +171,10 @@ final class SerializedParameter
                 $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             }
 
+            if (!is_array($value)) {
+                throw TypeMismatch::becauseTypeDoesNotMatch('array', $value);
+            }
+
             foreach ($value as &$val) {
                 $val = $this->castToSchemaType($val, $schema->items->type ?? null);
             }
