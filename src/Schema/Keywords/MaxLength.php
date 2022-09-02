@@ -6,8 +6,6 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
-use Respect\Validation\Exceptions\Exception;
-use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
 use function mb_strlen;
@@ -37,7 +35,7 @@ class MaxLength extends BaseKeyword
             Validator::stringType()->assert($data);
             Validator::intType()->assert($maxLength);
             Validator::trueVal()->assert($maxLength >= 0);
-        } catch (Exception | ExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
