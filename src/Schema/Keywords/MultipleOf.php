@@ -6,8 +6,6 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
-use Respect\Validation\Exceptions\Exception;
-use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Rules\NumericVal;
 use Respect\Validation\Validator;
 
@@ -36,7 +34,7 @@ class MultipleOf extends BaseKeyword
                 Validator::numeric()->assert($data);
                 Validator::numeric()->positive()->assert($multipleOf);
             }
-        } catch (Exception | ExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
