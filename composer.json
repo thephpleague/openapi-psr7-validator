@@ -1,13 +1,16 @@
 {
-    "name": "league/openapi-psr7-validator",
+    "name": "napojse/openapi-psr7-validator",
     "description": "Validate PSR-7 messages against OpenAPI (3.0.2) specifications \nexpressed in YAML or JSON",
+    "homepage": "https://github.com/napojse/openapi-psr7-validator",
+    "replace": {
+        "thephpleague/openapi-psr7-validator": "self.version"
+    },
     "keywords": [
         "OpenAPI",
         "psr7",
         "http",
         "validation"
     ],
-    "homepage": "https://github.com/thephpleague/openapi-psr7-validator",
     "license": "MIT",
     "type": "library",
     "autoload": {
