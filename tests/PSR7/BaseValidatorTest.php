@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\Utils;
 use HansOtt\PSR7Cookies\SetCookie;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +16,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 use function sprintf;
 
@@ -33,7 +33,7 @@ abstract class BaseValidatorTest extends TestCase
                 return (new Response())
                     ->withHeader('Content-Type', 'application/json')
                     ->withHeader('Header-B', 'good value')
-                    ->withBody(stream_for(json_encode($body)));
+                    ->withBody(Utils::streamFor(json_encode($body)));
 
             case 'post /cookies':
                 $response = (new Response())
@@ -72,7 +72,7 @@ abstract class BaseValidatorTest extends TestCase
 
                 return $request
                     ->withHeader('Content-Type', 'application/json')
-                    ->withBody(stream_for(json_encode($body)));
+                    ->withBody(Utils::streamFor(json_encode($body)));
 
             default:
                 throw new InvalidArgumentException(sprintf("unexpected operation '%s %s''", $method, $path));
@@ -104,7 +104,7 @@ abstract class BaseValidatorTest extends TestCase
 
                 return $request
                     ->withHeader('Content-Type', 'application/json')
-                    ->withBody(stream_for(json_encode($body)));
+                    ->withBody(Utils::streamFor(json_encode($body)));
 
             default:
                 throw new InvalidArgumentException(sprintf("unexpected operation '%s %s''", $method, $path));

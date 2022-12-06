@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\PSR7\Validators;
 
+use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\ServerRequest;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
-
-use function GuzzleHttp\Psr7\parse_request;
 
 class BodyValidatorTest extends TestCase
 {
@@ -140,7 +139,7 @@ HTTP
      */
     public function testValidateGreen(string $specFile, string $message): void
     {
-        $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
+        $request       = Message::parseRequest($message); // convert a text HTTP message to a PSR7 message
         $serverRequest = new ServerRequest(
             $request->getMethod(),
             $request->getUri(),
@@ -158,7 +157,7 @@ HTTP
      */
     public function testValidateRed(string $specFile, string $message): void
     {
-        $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
+        $request       = Message::parseRequest($message); // convert a text HTTP message to a PSR7 message
         $serverRequest = new ServerRequest(
             $request->getMethod(),
             $request->getUri(),
