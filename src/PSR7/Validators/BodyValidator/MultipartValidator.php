@@ -28,7 +28,7 @@ use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
 
-use function array_replace;
+use function array_merge_recursive;
 use function in_array;
 use function is_array;
 use function json_decode;
@@ -235,7 +235,7 @@ class MultipartValidator implements MessageValidator
 
         $files = $this->normalizeFiles($message->getUploadedFiles());
 
-        $body = array_replace($body, $files);
+        $body = array_merge_recursive($body, $files);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
