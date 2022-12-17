@@ -15,7 +15,9 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use function parse_str;
+use function array_filter;
+use function explode;
+use function urldecode;
 
 /**
  * @see https://swagger.io/docs/specification/describing-parameters/
@@ -69,11 +71,39 @@ final class QueryArgumentsValidator implements MessageValidator
     private function parseQueryArguments(RequestInterface $message): array
     {
         if ($message instanceof ServerRequestInterface) {
-            $parsedQueryArguments = $message->getQueryParams();
-        } else {
-            parse_str($message->getUri()->getQuery(), $parsedQueryArguments);
+            return $message->getQueryParams();
         }
 
-        return $parsedQueryArguments;
+        return $this->parseQueryString($message->getUri()->getQuery());
+    }
+
+    /**
+     * @see https://www.php.net/manual/en/function.parse-str.php#76792
+     *
+     * @return array
+     */
+    private function parseQueryString(string $queryString): array
+    {
+        $queryParameterPairs    = explode('&', urldecode($queryString));
+        $filteredParameterPairs = array_filter(
+            $queryParameterPairs,
+            static function ($item) {
+                return $item !== '';
+            }
+        );
+
+        $arr = [];
+        foreach ($filteredParameterPairs as $i) {
+            [$key, $value] = explode('=', $i);
+
+            if (! isset($arr[$key])) {
+                $arr[$key] = $value;
+                continue;
+            }
+
+            $arr[$key] = [$arr[$key], $value];
+        }
+
+        return $arr;
     }
 }
