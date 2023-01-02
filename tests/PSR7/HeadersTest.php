@@ -22,12 +22,27 @@ final class HeadersTest extends BaseValidatorTest
         $this->addToAssertionCount(1);
     }
 
-    public function testItDeserializesRequestHeaderParametersGreen(): void
+    /**
+     * @return mixed[][]
+     */
+    public function dataProviderDeserializesRequestHeaderGreen(): array
+    {
+        return [
+            ['num', '-1.2'],
+            ['int', '414'],
+            ['bool', 'true'],
+            ['bool', '1'],
+            ['bool', '0'],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderDeserializesRequestHeaderGreen
+     */
+    public function testItDeserializesRequestHeaderParametersGreen(string $headerName, string $headerValue): void
     {
         $request = (new ServerRequest('get', new Uri('/deserialize-headers')))
-            ->withHeader('num', '-1.2')
-            ->withHeader('int', '414')
-            ->withHeader('bool', 'true');
+            ->withHeader($headerName, $headerValue);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);
@@ -44,7 +59,7 @@ final class HeadersTest extends BaseValidatorTest
             ['num', 'ac'],
             ['int', 'ac'],
             ['int', '1.0'],
-            ['bool', '1'],
+            ['bool', '2'],
             ['bool', 'yes'],
             ['bool', ''],
         ];
