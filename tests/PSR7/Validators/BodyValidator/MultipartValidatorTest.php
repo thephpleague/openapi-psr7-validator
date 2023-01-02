@@ -349,7 +349,7 @@ Content-Type: text/plain
 Content-Disposition: form-data; name="secure"
 Content-Type: text/plain
 
-0
+2
 ------WebKitFormBoundaryOmz20xyMCkE27rN7
 Content-Disposition: form-data; name="code"
 Content-Type: text/plain
