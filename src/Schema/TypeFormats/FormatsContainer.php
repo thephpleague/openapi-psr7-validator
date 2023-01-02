@@ -51,8 +51,8 @@ class FormatsContainer
         self::registerFormat('string', 'ipv6', StringIP6::class);
 
         // number
-        self::registerFormat('string', 'float', NumberFloat::class);
-        self::registerFormat('string', 'double', NumberDouble::class);
+        self::registerFormat('number', 'float', NumberFloat::class);
+        self::registerFormat('number', 'double', NumberDouble::class);
     }
 
     /**
