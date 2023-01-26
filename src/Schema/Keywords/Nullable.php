@@ -17,8 +17,16 @@ class Nullable extends BaseKeyword
      */
     public function validate($data, bool $nullable): void
     {
-        if (! $nullable && ($data === null)) {
+        if (! $nullable && ($data === null) && !$this->nullableByType()) {
             throw KeywordMismatch::fromKeyword('nullable', $data, 'Value cannot be null');
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function nullableByType(): bool
+    {
+        return !is_string($this->parentSchema->type) && in_array('null', $this->parentSchema->type);
     }
 }
