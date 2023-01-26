@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use League\OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use RuntimeException;
+use TypeError;
 
 use function class_exists;
 use function is_array;
@@ -32,19 +33,21 @@ class Type extends BaseKeyword
      * An instance matches successfully if its primitive type is one of the
      * types defined by keyword.  Recall: "number" includes "integer".
      *
-     * @param mixed $data
-     * @param string|array $types
+     * @param mixed           $data
+     * @param string|string[] $types
      *
      * @throws TypeMismatch
      */
     public function validate($data, $types, ?string $format = null): void
     {
-        if (!is_array($types) && !is_string($types)) {
-            throw new \TypeError('$types only can be array or string');
+        if (! is_array($types) && ! is_string($types)) {
+            throw new TypeError('$types only can be array or string');
         }
-        if (!is_array($types)) {
+
+        if (! is_array($types)) {
             $types = [$types];
         }
+
         $matchedType = false;
         foreach ($types as $type) {
             switch ($type) {
@@ -52,48 +55,56 @@ class Type extends BaseKeyword
                     if (! is_object($data) && ! (is_array($data) && ArrayHelper::isAssoc($data)) && $data !== []) {
                         break;
                     }
+
                     $matchedType = $type;
                     break;
                 case CebeType::ARRAY:
                     if (! is_array($data) || ArrayHelper::isAssoc($data)) {
                         break;
                     }
+
                     $matchedType = $type;
                     break;
                 case CebeType::BOOLEAN:
                     if (! is_bool($data)) {
                         break;
                     }
+
                     $matchedType = $type;
                     break;
                 case CebeType::NUMBER:
                     if (is_string($data) || ! is_numeric($data)) {
                         break;
                     }
+
                     $matchedType = $type;
                     break;
                 case CebeType::INTEGER:
                     if (! is_int($data)) {
                         break;
                     }
+
                     $matchedType = $type;
                     break;
                 case CebeType::STRING:
                     if (! is_string($data)) {
                         break;
                     }
+
                     $matchedType = $type;
                     break;
                 case CebeType::NULL:
-                    if (! is_null($data)) {
+                    if ($data !== null) {
                         break;
                     }
+
                     $matchedType = $type;
                     break;
                 default:
                     throw InvalidSchema::becauseTypeIsNotKnown($type);
             }
         }
+
         if ($matchedType === false) {
             throw TypeMismatch::becauseTypeDoesNotMatch($types, $data);
         }
