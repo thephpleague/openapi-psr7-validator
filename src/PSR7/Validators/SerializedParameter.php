@@ -171,8 +171,8 @@ final class SerializedParameter
                 $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             }
 
-            if (!is_array($value)) {
-                throw TypeMismatch::becauseTypeDoesNotMatch('array', $value);
+            if (!is_iterable($value)) {
+                throw TypeMismatch::becauseTypeDoesNotMatch('iterable', $value);
             }
 
             foreach ($value as &$val) {
