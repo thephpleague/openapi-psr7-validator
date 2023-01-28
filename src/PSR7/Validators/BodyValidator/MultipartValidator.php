@@ -28,7 +28,11 @@ use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
 
+use function array_diff;
+use function array_map;
 use function array_replace;
+use function array_shift;
+use function explode;
 use function in_array;
 use function is_array;
 use function json_decode;
@@ -38,6 +42,8 @@ use function preg_match;
 use function sprintf;
 use function str_replace;
 use function strpos;
+use function strtolower;
+use function substr;
 
 use const JSON_ERROR_NONE;
 
@@ -117,27 +123,20 @@ class MultipartValidator implements MessageValidator
 
             foreach ($parts as $part) {
                 // 2.1 parts encoding
-                $partContentType     = $part->getHeader(self::HEADER_CONTENT_TYPE);
-                $encodingContentType = $this->detectEncondingContentType($encoding, $part, $schema->properties[$partName]);
-                if (strpos($encodingContentType, '*') === false) {
-                    // strict comparison (ie "image/jpeg")
-                    if ($encodingContentType !== $partContentType) {
-                        throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
-                            $partName,
-                            $partContentType,
-                            $addr
-                        );
-                    }
-                } else {
-                    // loose comparison (ie "image/*")
-                    $encodingContentType = str_replace('*', '.*', $encodingContentType);
-                    if (! preg_match('#' . $encodingContentType . '#', $partContentType)) {
-                        throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
-                            $partName,
-                            $partContentType,
-                            $addr
-                        );
-                    }
+                $partContentType   = $part->getHeader(self::HEADER_CONTENT_TYPE);
+                $validContentTypes = $this->detectEncodingContentTypes($encoding, $part, $schema->properties[$partName]);
+                $match             = false;
+
+                foreach ($validContentTypes as $contentType) {
+                    $match = $match || $this->contentTypeMatches($contentType, $partContentType);
+                }
+
+                if (! $match) {
+                    throw InvalidBody::becauseBodyDoesNotMatchSchemaMultipart(
+                        $partName,
+                        $partContentType,
+                        $addr
+                    );
                 }
 
                 // 2.2. parts headers
@@ -195,7 +194,10 @@ class MultipartValidator implements MessageValidator
         return $multipartData;
     }
 
-    private function detectEncondingContentType(Encoding $encoding, StreamedPart $part, Schema $partSchema): string
+    /**
+     * @return string[]
+     */
+    private function detectEncodingContentTypes(Encoding $encoding, StreamedPart $part, Schema $partSchema): array
     {
         $contentType = $encoding->contentType;
 
@@ -219,7 +221,69 @@ class MultipartValidator implements MessageValidator
             }
         }
 
-        return $contentType;
+        return array_map('trim', explode(',', $contentType));
+    }
+
+    private function contentTypeMatches(string $expected, string $match): bool
+    {
+        $expectedNormalized = $this->normalizedContentTypeParts($expected);
+        $matchNormalized    = $this->normalizedContentTypeParts($match);
+        $expectedType       = array_shift($expectedNormalized);
+        $matchType          = array_shift($matchNormalized);
+
+        if (strpos($expectedType, '*') === false) {
+            // strict comparison (ie "image/jpeg")
+            if ($expectedType !== $matchType) {
+                return false;
+            }
+        } else {
+            // loose comparison (ie "image/*")
+            $expectedType = str_replace('*', '.*', $expectedType);
+            if (! preg_match('#' . $expectedType . '#', $matchType)) {
+                return false;
+            }
+        }
+
+        // Any expected parameter values must also match
+        return ! array_diff($expectedNormalized, $matchNormalized);
+    }
+
+    /**
+     * Per RFC-7231 Section 3.1.1.1:
+     * "The type, subtype, and parameter name tokens are case-insensitive. Parameter values might or might not be case-sensitive..."
+     *
+     * Section 3.1.1.2: "A charset is identified by a case-insensitive token."
+     *
+     * The following are equivalent:
+     *
+     * text/html;charset=utf-8
+     * text/html;charset=UTF-8
+     * Text/HTML;Charset="utf-8"
+     * text/html; charset="utf-8"
+     *
+     * @return array<int|string, string>
+     */
+    private function normalizedContentTypeParts(string $contentType): array
+    {
+        $parts  = array_map('trim', explode(';', $contentType));
+        $result = [strtolower(array_shift($parts))];
+
+        foreach ($parts as $part) {
+            [$parameter, $value] = explode('=', $part, 2);
+            $parameter           = strtolower($parameter);
+
+            if ($value[0] === '"') { // quoted-string
+                $value = str_replace('\\', '', substr($value, 1, -1));
+            }
+
+            if ($parameter === 'charset') {
+                $value = strtolower($value);
+            }
+
+            $result[$parameter] = $value;
+        }
+
+        return $result;
     }
 
     /**
