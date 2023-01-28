@@ -11,10 +11,12 @@ use League\OpenAPIValidation\Schema\Exception\ContentTypeMismatch;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
+use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Exceptions\Exception;
 use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
 
+use function count;
 use function explode;
 use function in_array;
 use function is_array;
@@ -181,6 +183,14 @@ final class SerializedParameter
         if ($schema && $this->style === self::STYLE_DEEP_OBJECT) {
             foreach ($value as $key => &$val) {
                 $childSchema = $this->getChildSchema($schema, (string) $key);
+
+                if (isset($childSchema->oneOf)) {
+                    $suitableSchema = $this->findSuitableOneOf($childSchema, $val);
+                    if ($suitableSchema) {
+                        $childSchema = $suitableSchema;
+                    }
+                }
+
                 if (is_array($val)) {
                     $val = $this->convertToSerializationStyle($val, $childSchema);
                 } else {
@@ -216,5 +226,30 @@ final class SerializedParameter
         }
 
         return null;
+    }
+
+    /**
+     * @param mixed $val
+     */
+    private function findSuitableOneOf(CebeSchema $schema, $val): ?CebeSchema
+    {
+        if (! count($schema->oneOf)) {
+            return null;
+        }
+
+        $schemaValidator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
+        $validSchemas    = [];
+        foreach ($schema->oneOf as $schemaCandidate) {
+            try {
+                $valCandidate = $this->convertToSerializationStyle($val, $schemaCandidate);
+
+                $schemaValidator->validate($valCandidate, $schemaCandidate);
+                $validSchemas[] = $schemaCandidate;
+            } catch (SchemaMismatch $e) {
+                // nothing to do
+            }
+        }
+
+        return count($validSchemas) === 1 ? $validSchemas[0] : null;
     }
 }
