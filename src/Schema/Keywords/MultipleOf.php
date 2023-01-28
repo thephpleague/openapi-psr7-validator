@@ -11,6 +11,7 @@ use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Rules\NumericVal;
 use Respect\Validation\Validator;
 
+use function bcdiv;
 use function class_exists;
 use function sprintf;
 
@@ -39,7 +40,7 @@ class MultipleOf extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        $value = (float)bcdiv((string)$data, (string)$multipleOf, 1);
+        $value = (float) bcdiv((string) $data, (string) $multipleOf, 1);
         if ($value - (int) $value !== 0.0) {
             throw KeywordMismatch::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
         }
