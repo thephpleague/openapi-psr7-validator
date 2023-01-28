@@ -132,6 +132,54 @@ Content-Type: image/whatever
 HTTP
 ,
             ],
+            // specified headers for one part (multiple, with charset)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: APPLICATION/XML;CHARSET=UTF-8
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
+            // specified headers for one part (multiple, other valid type)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: application/json ; charset="ISO-8859-1"
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
+            // specified headers for one part (multiple, wildcard)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: text/plain; charset=us-ascii
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
             // deserialized values
             [
                 <<<HTTP
@@ -207,6 +255,40 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyE
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
 Content-Disposition: form-data; name="image"; filename="file1.txt"
 Content-Type: invalid/type
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+                InvalidBody::class,
+            ],
+            // wrong encoding charset for one of the parts (multiple)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: application/xml; charset=ISO-8859-1
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+                InvalidBody::class,
+            ],
+            // missing encoding charset for one of the parts (multiple)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: application/xml
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
