@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function count;
 use function in_array;
@@ -32,7 +33,7 @@ class Enum extends BaseKeyword
         try {
             Validator::arrayType()->assert($enum);
             Validator::trueVal()->assert(count($enum) >= 1);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

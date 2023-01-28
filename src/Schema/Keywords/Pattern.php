@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function preg_match;
 use function sprintf;
@@ -32,7 +33,7 @@ class Pattern extends BaseKeyword
         try {
             Validator::stringType()->assert($data);
             Validator::stringType()->assert($pattern);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

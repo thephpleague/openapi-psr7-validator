@@ -13,6 +13,7 @@ use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TooManyValidSchemas;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function count;
 use function sprintf;
@@ -51,7 +52,7 @@ class OneOf extends BaseKeyword
         try {
             Validator::arrayVal()->assert($oneOf);
             Validator::each(Validator::instance(CebeSchema::class))->assert($oneOf);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

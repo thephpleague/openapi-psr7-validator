@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function array_map;
 use function array_unique;
@@ -37,7 +38,7 @@ class UniqueItems extends BaseKeyword
 
         try {
             Validator::arrayType()->assert($data);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

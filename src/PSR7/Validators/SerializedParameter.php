@@ -12,12 +12,14 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function explode;
 use function in_array;
 use function is_array;
 use function is_float;
 use function is_int;
+use function is_iterable;
 use function is_numeric;
 use function is_scalar;
 use function is_string;
@@ -70,7 +72,7 @@ final class SerializedParameter
             }
 
             Validator::length(1, 1)->assert($content);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // If there is a `schema`, `content` must be empty.
             // If there isn't a `schema`, a `content` with exactly 1 property must exist.
             // @see https://swagger.io/docs/specification/describing-parameters/#schema-vs-content
@@ -169,7 +171,7 @@ final class SerializedParameter
                 $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             }
 
-            if (!is_iterable($value)) {
+            if (! is_iterable($value)) {
                 throw TypeMismatch::becauseTypeDoesNotMatch('iterable', $value);
             }
 

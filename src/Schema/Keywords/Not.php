@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Validator;
+use Throwable;
 
 class Not extends BaseKeyword
 {
@@ -41,7 +42,7 @@ class Not extends BaseKeyword
     {
         try {
             Validator::instance(CebeSchema::class)->assert($not);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

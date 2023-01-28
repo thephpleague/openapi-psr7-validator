@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Rules\NumericVal;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function bcdiv;
 use function class_exists;
@@ -34,7 +35,7 @@ class MultipleOf extends BaseKeyword
                 Validator::numeric()->assert($data);
                 Validator::numeric()->positive()->assert($multipleOf);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

@@ -8,6 +8,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Rules\NumericVal;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function class_exists;
 use function sprintf;
@@ -47,7 +48,7 @@ class Maximum extends BaseKeyword
                 Validator::numeric()->assert($data);
                 Validator::numeric()->assert($maximum);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

@@ -7,6 +7,7 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function count;
 use function sprintf;
@@ -33,7 +34,7 @@ class MinItems extends BaseKeyword
             Validator::arrayType()->assert($data);
             Validator::intVal()->assert($minItems);
             Validator::trueVal()->assert($minItems >= 0);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
