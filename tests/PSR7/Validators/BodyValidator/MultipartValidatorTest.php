@@ -141,7 +141,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyE
 
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
 Content-Disposition: form-data; name="data"; filename="file1.txt"
-Content-Type: APPLICATION/XML; CHARSET=UTF-8; OTHER=value;
+Content-Type: APPLICATION/XML; CHARSET=UTF-8; OTHER=value
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
