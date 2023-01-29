@@ -28,7 +28,7 @@ use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
 use RuntimeException;
 
-use function array_diff;
+use function array_diff_assoc;
 use function array_map;
 use function array_replace;
 use function array_shift;
@@ -245,14 +245,14 @@ class MultipartValidator implements MessageValidator
         }
 
         // Any expected parameter values must also match
-        return ! array_diff($expectedNormalized, $matchNormalized);
+        return ! array_diff_assoc($expectedNormalized, $matchNormalized);
     }
 
     /**
      * Per RFC-7231 Section 3.1.1.1:
      * "The type, subtype, and parameter name tokens are case-insensitive. Parameter values might or might not be case-sensitive..."
      *
-     * Section 3.1.1.2: "A charset is identified by a case-insensitive token."
+     * And section 3.1.1.2: "A charset is identified by a case-insensitive token."
      *
      * The following are equivalent:
      *

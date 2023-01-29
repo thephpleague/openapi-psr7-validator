@@ -141,7 +141,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyE
 
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
 Content-Disposition: form-data; name="data"; filename="file1.txt"
-Content-Type: APPLICATION/XML;CHARSET=UTF-8
+Content-Type: APPLICATION/XML; CHARSET=UTF-8; OTHER=value;
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
@@ -271,7 +271,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyE
 
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
 Content-Disposition: form-data; name="data"; filename="file1.txt"
-Content-Type: application/xml; charset=ISO-8859-1
+Content-Type: application/xml; other=utf-8; charset=ISO-8859-1
 
 [file content goes there]
 ------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
