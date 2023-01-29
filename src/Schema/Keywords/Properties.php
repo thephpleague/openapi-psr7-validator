@@ -108,7 +108,7 @@ class Properties extends BaseKeyword
             // if not covered by "properties"
             $schemaValidator->validate(
                 $data[$propName],
-                $additionalProperties,
+                $additionalProperties->properties[$propName],
                 $this->dataBreadCrumb->addCrumb($propName)
             );
         }
