@@ -120,4 +120,23 @@ SPEC;
         $this->expectException(KeywordMismatch::class);
         (new SchemaValidator())->validate($data, $schema);
     }
+
+    public function testItValidatesAdditionalPropertiesBlue(): void
+    {
+        $spec = <<<SPEC
+schema:
+  type: object
+  additionalProperties:
+    type: object
+    properties:
+      flag:
+        type: boolean
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = ['flag' => true];
+
+        (new SchemaValidator())->validate($data, $schema);
+        $this->addToAssertionCount(1);
+    }
 }
