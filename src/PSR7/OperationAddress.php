@@ -62,7 +62,25 @@ class OperationAddress
 
     public function hasPlaceholders(): bool
     {
-        return preg_match(self::PATH_PLACEHOLDER, $this->path()) === 1;
+        return (bool) $this->countPlaceholders();
+    }
+
+    public function countPlaceholders(): int
+    {
+        return preg_match_all(self::PATH_PLACEHOLDER, $this->path()) ?? 0;
+    }
+
+    public function countExactMatchParts(string $comparisonPath): int
+    {
+        $comparisonPathParts = explode('/', trim($comparisonPath, '/'));
+        $pathParts = explode('/', trim($this->path(), '/'));
+        $exactMatchCount = 0;
+        foreach($comparisonPathParts as $key => $comparisonPathPart) {
+            if ($comparisonPathPart === $pathParts[$key]) {
+                $exactMatchCount++;
+            }
+        }
+        return $exactMatchCount;
     }
 
     /**
