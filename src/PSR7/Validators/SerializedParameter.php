@@ -43,6 +43,9 @@ final class SerializedParameter
         self::STYLE_SPACE_DELIMITED => ' ',
         self::STYLE_PIPE_DELIMITED => '|',
     ];
+    private const STYLE_LABEL           = 'label';
+    private const STYLE_SIMPLE          = 'simple';
+    private const STYLE_MATRIX          = 'matrix';
 
     /** @var CebeSchema */
     private $schema;
@@ -52,13 +55,16 @@ final class SerializedParameter
     private $style;
     /** @var bool|null */
     private $explode;
+    /** @var string|null */
+    private $in;
 
-    public function __construct(CebeSchema $schema, ?string $contentType = null, ?string $style = null, ?bool $explode = null)
+    public function __construct(CebeSchema $schema, ?string $contentType = null, ?string $style = null, ?bool $explode = null, ?string $in = null)
     {
         $this->schema      = $schema;
         $this->contentType = $contentType;
         $this->style       = $style;
         $this->explode     = $explode;
+        $this->in          = $in;
     }
 
     public static function fromSpec(CebeParameter $parameter): self
@@ -68,7 +74,7 @@ final class SerializedParameter
             if ($parameter->schema !== null) {
                 Validator::not(Validator::notEmpty())->assert($content);
 
-                return new self($parameter->schema, null, $parameter->style, $parameter->explode);
+                return new self($parameter->schema, null, $parameter->style, $parameter->explode, $parameter->in);
             }
 
             Validator::length(1, 1)->assert($content);
@@ -82,7 +88,7 @@ final class SerializedParameter
         $schema      = reset($content)->schema;
         $contentType = key($content);
 
-        return new self($schema, $contentType, $parameter->style, $parameter->explode);
+        return new self($schema, $contentType, $parameter->style, $parameter->explode, $parameter->in);
     }
 
     /**
@@ -165,6 +171,85 @@ final class SerializedParameter
      * @return mixed
      */
     protected function convertToSerializationStyle($value, ?CebeSchema $schema)
+    {
+        switch ($this->in) {
+            case 'path':
+                return $this->convertToSerializationStyleForPath($value, $schema);
+            default:
+                return $this->convertToSerializationStyleForQuery($value, $schema);
+        }
+    }
+
+    /**
+     * @param mixed           $value
+     * @param CebeSchema|null $schema - optional schema of value to convert it in case of DeepObject serialisation
+     *
+     * @return mixed
+     */
+    protected function convertToSerializationStyleForPath($value, ?CebeSchema $schema)
+    {
+        switch ($this->style) {
+            case self::STYLE_SIMPLE:
+            case null:
+                // default style simple
+                $value = explode(',', $value);
+                break;
+            case self::STYLE_LABEL:
+                if (!str_starts_with($value, '.')) {
+                    throw TypeMismatch::becauseTypeDoesNotMatch('label-array', $value);
+                }
+                $value = substr($value, 1);
+                if ($this->explode === true) {
+                    $value = explode('.', $value);
+                }
+                else {
+                    $value = explode(',', $value);
+                }
+                break;
+            case self::STYLE_MATRIX:
+                if (!str_starts_with($value, ';')) {
+                    throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
+                }
+                $value = substr($value, 1);
+                if ($this->explode === true) {
+                    $value = explode(';', $value);
+                    foreach ($value as &$val) {
+                        $eqpos = strpos($val, '=');
+                        if ($eqpos === false) {
+                            throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
+                        }
+                        $val = substr($val, $eqpos + 1);
+                    }
+                }
+                else {
+                    $eqpos = strpos($value, '=');
+                    if ($eqpos === false) {
+                        throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
+                    }
+                    $value = substr($value, $eqpos + 1);
+                    $value = explode(',', $value);
+                }
+                break;
+        }
+
+        if (! is_iterable($value)) {
+            throw TypeMismatch::becauseTypeDoesNotMatch('iterable', $value);
+        }
+
+        foreach ($value as &$val) {
+            $val = $this->castToSchemaType($val, $schema->items->type ?? null);
+        }
+
+        return $value;
+    }
+    
+    /**
+     * @param mixed           $value
+     * @param CebeSchema|null $schema - optional schema of value to convert it in case of DeepObject serialisation
+     *
+     * @return mixed
+     */
+    protected function convertToSerializationStyleForQuery($value, ?CebeSchema $schema)
     {
         if (in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
             if ($this->explode === false) {
