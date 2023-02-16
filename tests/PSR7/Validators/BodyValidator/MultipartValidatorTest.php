@@ -214,6 +214,23 @@ HTTP
 ,
                 InvalidBody::class,
             ],
+            // missing required part
+            [
+                <<<HTTP
+POST /multipart/encoding HTTP/1.1
+Content-Length: 428
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOmz20xyMCkE27rN7
+
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="description"
+Content-Type: text/plain
+
+123
+------WebKitFormBoundaryOmz20xyMCkE27rN7--
+HTTP
+,
+                InvalidBody::class,
+            ],
             // wrong header for one part
             [
                 <<<HTTP

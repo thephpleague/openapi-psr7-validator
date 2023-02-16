@@ -108,12 +108,6 @@ class MultipartValidator implements MessageValidator
 
         foreach ($encodings as $partName => $encoding) {
             $parts = $document->getPartsByName($partName); // multiple parts share a name?
-            if (! $parts) {
-                throw new RuntimeException(sprintf(
-                    'Specified body part %s is not found',
-                    $partName
-                ));
-            }
 
             foreach ($parts as $part) {
                 // 2.1 parts encoding
