@@ -28,7 +28,7 @@ abstract class BaseValidatorTest extends TestCase
     {
         switch ($method . ' ' . $path) {
             case 'get /path1':
-                $body = ['propA' => 1];
+                $body = ['propA' => 1, 'propD' => [1, 'string', null]];
 
                 return (new Response())
                     ->withHeader('Content-Type', 'application/json')

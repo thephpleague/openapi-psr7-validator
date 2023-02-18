@@ -24,7 +24,7 @@
         "php": ">=7.2",
         "ext-bcmath": "*",
         "ext-json": "*",
-        "cebe/php-openapi": "^1.6",
+        "devizzent/cebe-php-openapi": "^1.0",
         "league/uri": "^6.3",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "psr/http-message": "^1.0",

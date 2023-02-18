@@ -97,7 +97,7 @@ final class SerializedParameter
         if ($this->isJsonContentType()) {
             // Value MUST be a string.
             if (! is_string($value)) {
-                throw TypeMismatch::becauseTypeDoesNotMatch('string', $value);
+                throw TypeMismatch::becauseTypeDoesNotMatch(['string'], $value);
             }
 
             $decodedValue = json_decode($value, true);
@@ -172,7 +172,7 @@ final class SerializedParameter
             }
 
             if (! is_iterable($value)) {
-                throw TypeMismatch::becauseTypeDoesNotMatch('iterable', $value);
+                throw TypeMismatch::becauseTypeDoesNotMatch(['iterable'], $value);
             }
 
             foreach ($value as &$val) {
