@@ -6,8 +6,11 @@ namespace League\OpenAPIValidation\PSR7\Exception\Validation;
 
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use Throwable;
 
+use function implode;
+use function rtrim;
 use function sprintf;
 
 abstract class AddressValidationFailed extends ValidationFailed
@@ -40,6 +43,21 @@ abstract class AddressValidationFailed extends ValidationFailed
         $ex->address = $address;
 
         return $ex;
+    }
+
+    public function getVerboseMessage(): string
+    {
+        $previous = $this->getPrevious();
+        if (! $previous instanceof SchemaMismatch) {
+            return $this->getMessage();
+        }
+
+        return sprintf(
+            '%s. [%s in %s]',
+            $this->getMessage(),
+            rtrim($previous->getMessage(), '.'),
+            implode('->', $previous->dataBreadCrumb()->buildChain())
+        );
     }
 
     public function getAddress(): OperationAddress
