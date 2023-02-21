@@ -26,7 +26,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Riverline\MultiPartParser\Converters\PSR7;
 use Riverline\MultiPartParser\StreamedPart;
-use RuntimeException;
 
 use function array_replace;
 use function in_array;
@@ -35,7 +34,6 @@ use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
 use function preg_match;
-use function sprintf;
 use function str_replace;
 use function strpos;
 
@@ -247,7 +245,7 @@ class MultipartValidator implements MessageValidator
 
         foreach ($encodings as $partName => $encoding) {
             if (! isset($body[$partName])) {
-                throw new RuntimeException(sprintf('Specified body part %s is not found', $partName));
+                continue;
             }
 
             $part = $body[$partName];
