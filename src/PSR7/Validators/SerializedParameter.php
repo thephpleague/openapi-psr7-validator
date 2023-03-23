@@ -206,7 +206,7 @@ final class SerializedParameter
                 break;
             case self::STYLE_LABEL:
                 if (! str_starts_with($value, '.')) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch('label-array', $value);
+                    throw TypeMismatch::becauseTypeDoesNotMatch(['label-array'], $value);
                 }
 
                 $value = substr($value, 1);
@@ -219,7 +219,7 @@ final class SerializedParameter
                 break;
             case self::STYLE_MATRIX:
                 if (! str_starts_with($value, ';')) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
+                    throw TypeMismatch::becauseTypeDoesNotMatch(['matrix-array'], $value);
                 }
 
                 $value = substr($value, 1);
@@ -228,7 +228,7 @@ final class SerializedParameter
                     foreach ($value as &$val) {
                         $eqpos = strpos($val, '=');
                         if ($eqpos === false) {
-                            throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
+                            throw TypeMismatch::becauseTypeDoesNotMatch(['matrix-array'], $value);
                         }
 
                         $val = substr($val, $eqpos + 1);
@@ -236,7 +236,7 @@ final class SerializedParameter
                 } else {
                     $eqpos = strpos($value, '=');
                     if ($eqpos === false) {
-                        throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
+                        throw TypeMismatch::becauseTypeDoesNotMatch(['matrix-array'], $value);
                     }
 
                     $value = substr($value, $eqpos + 1);
@@ -247,7 +247,7 @@ final class SerializedParameter
         }
 
         if (! is_iterable($value)) {
-            throw TypeMismatch::becauseTypeDoesNotMatch('iterable', $value);
+            throw TypeMismatch::becauseTypeDoesNotMatch(['iterable'], $value);
         }
 
         foreach ($value as &$val) {
