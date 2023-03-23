@@ -14,7 +14,6 @@ class NumberFloat
      */
     public function __invoke($value): bool
     {
-        // @phpstan-ignore-next-line treat integers as valid floats
         return is_float($value + 0) || is_int($value + 0);
     }
 }

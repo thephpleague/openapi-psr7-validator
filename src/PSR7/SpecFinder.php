@@ -159,7 +159,6 @@ final class SpecFinder
             return $securitySpecs;
         }
 
-        // @phpstan-ignore-next-line security is set on root level (fallback option)
         return $this->openApi->security;
     }
 

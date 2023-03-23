@@ -33,9 +33,7 @@ final class CookieDeserializeTest extends BaseValidatorTest
     public function testItDeserializesServerRequestCookieParametersGreen(string $cookieName, string $cookieValue): void
     {
         $request = (new ServerRequest('get', new Uri('/deserialize-cookies')))
-            ->withCookieParams([
-                $cookieName => $cookieValue,
-            ]);
+            ->withCookieParams([$cookieName => $cookieValue]);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);

@@ -28,7 +28,10 @@ use function json_last_error;
 use function key;
 use function preg_match;
 use function reset;
+use function str_starts_with;
+use function strpos;
 use function strtolower;
+use function substr;
 
 use const JSON_ERROR_NONE;
 
@@ -132,11 +135,12 @@ final class SerializedParameter
     private function castToSchemaType($value, ?string $type)
     {
         if ($type === CebeType::BOOLEAN && is_scalar($value)) {
-            if (preg_match('#^(true|false)$#i', (string)$value)) {
-                return is_string($value) ? strtolower($value) === 'true' : (bool)$value;
+            if (preg_match('#^(true|false)$#i', (string) $value)) {
+                return is_string($value) ? strtolower($value) === 'true' : (bool) $value;
             }
-            if (preg_match('#^(0|1)$#i', (string)$value)) {
-                return (string)$value === '1';
+
+            if (preg_match('#^(0|1)$#i', (string) $value)) {
+                return (string) $value === '1';
             }
         }
 
@@ -180,6 +184,7 @@ final class SerializedParameter
         switch ($this->in) {
             case 'path':
                 return $this->convertToSerializationStyleForPath($value, $schema);
+
             default:
                 return $this->convertToSerializationStyleForQuery($value, $schema);
         }
@@ -200,21 +205,23 @@ final class SerializedParameter
                 $value = explode(',', $value);
                 break;
             case self::STYLE_LABEL:
-                if (!str_starts_with($value, '.')) {
+                if (! str_starts_with($value, '.')) {
                     throw TypeMismatch::becauseTypeDoesNotMatch('label-array', $value);
                 }
+
                 $value = substr($value, 1);
                 if ($this->explode === true) {
                     $value = explode('.', $value);
-                }
-                else {
+                } else {
                     $value = explode(',', $value);
                 }
+
                 break;
             case self::STYLE_MATRIX:
-                if (!str_starts_with($value, ';')) {
+                if (! str_starts_with($value, ';')) {
                     throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
                 }
+
                 $value = substr($value, 1);
                 if ($this->explode === true) {
                     $value = explode(';', $value);
@@ -223,17 +230,19 @@ final class SerializedParameter
                         if ($eqpos === false) {
                             throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
                         }
+
                         $val = substr($val, $eqpos + 1);
                     }
-                }
-                else {
+                } else {
                     $eqpos = strpos($value, '=');
                     if ($eqpos === false) {
                         throw TypeMismatch::becauseTypeDoesNotMatch('matrix-array', $value);
                     }
+
                     $value = substr($value, $eqpos + 1);
                     $value = explode(',', $value);
                 }
+
                 break;
         }
 
@@ -247,7 +256,7 @@ final class SerializedParameter
 
         return $value;
     }
-    
+
     /**
      * @param mixed           $value
      * @param CebeSchema|null $schema - optional schema of value to convert it in case of DeepObject serialisation
