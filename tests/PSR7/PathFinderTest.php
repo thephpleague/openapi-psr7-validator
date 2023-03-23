@@ -168,5 +168,4 @@ SPEC;
         $this->assertEquals('/products/{product}/images/thumbnails/{size}', $opAddrs[0]->path());
         $this->assertEquals('/products/{product}/images/{image}/primary', $opAddrs[1]->path());
     }
-
 }
