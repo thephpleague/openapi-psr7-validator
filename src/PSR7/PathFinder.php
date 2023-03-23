@@ -8,14 +8,19 @@ use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Server;
 
+use function array_keys;
+use function array_unique;
 use function count;
 use function ltrim;
+use function max;
 use function parse_url;
 use function preg_match;
+use function preg_match_all;
 use function preg_replace;
 use function rtrim;
 use function sprintf;
 use function strtolower;
+use function trim;
 use function usort;
 
 use const PHP_URL_PATH;
@@ -206,6 +211,60 @@ class PathFinder
             return 0;
         });
 
+        return $this->attemptNarrowDown($paths);
+    }
+
+    /**
+     * Some paths are more static than others.
+     *
+     * @param OperationAddress[] $paths
+     *
+     * @return OperationAddress[]
+     */
+    private function attemptNarrowDown(array $paths): array
+    {
+        if (count($paths) === 1) {
+            return $paths;
+        }
+
+        $partCounts        = [];
+        $placeholderCounts = [];
+        foreach ($paths as $path) {
+            $partCounts[]        = $this->countParts($path->path());
+            $placeholderCounts[] = $path->countPlaceholders();
+        }
+
+        $partCounts[] = $this->countParts($this->path);
+        if (count(array_unique($partCounts)) === 1 && count(array_unique($placeholderCounts)) > 1) {
+            // All paths have the same number of parts but there are differing placeholder counts. We can narrow down!
+            return $this->filterToHighestExactMatchingParts($paths);
+        }
+
         return $paths;
+    }
+
+    /**
+     * Scores all paths by how many parts match exactly with $this->path and returns only the highest scoring group
+     *
+     * @param OperationAddress[] $paths
+     *
+     * @return OperationAddress[]
+     */
+    private function filterToHighestExactMatchingParts(array $paths): array
+    {
+        $scoredCandidates = [];
+        foreach ($paths as $candidate) {
+            $score                      = $candidate->countExactMatchParts($this->path);
+            $scoredCandidates[$score][] = $candidate;
+        }
+
+        $highestScoreKey = max(array_keys($scoredCandidates));
+
+        return $scoredCandidates[$highestScoreKey];
+    }
+
+    private function countParts(string $path): int
+    {
+        return preg_match_all('#/#', trim($path, '/')) + 1;
     }
 }

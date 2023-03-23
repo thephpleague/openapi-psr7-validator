@@ -13,14 +13,27 @@ use function sprintf;
 
 final class CookieDeserializeTest extends BaseValidatorTest
 {
-    public function testItDeserializesServerRequestCookieParametersGreen(): void
+    /**
+     * @return mixed[][]
+     */
+    public function dataProviderCookiesGreen(): array
+    {
+        return [
+            ['num' , '-1.2'],
+            ['int' , '414'],
+            ['bool', 'true'],
+            ['bool', '1'],
+            ['bool', '0'],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderCookiesGreen
+     */
+    public function testItDeserializesServerRequestCookieParametersGreen(string $cookieName, string $cookieValue): void
     {
         $request = (new ServerRequest('get', new Uri('/deserialize-cookies')))
-            ->withCookieParams([
-                'num' => '-1.2',
-                'int' => '414',
-                'bool' => 'true',
-            ]);
+            ->withCookieParams([$cookieName => $cookieValue]);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);
@@ -37,7 +50,7 @@ final class CookieDeserializeTest extends BaseValidatorTest
             ['num', 'ac'],
             ['int', 'ac'],
             ['int', '1.0'],
-            ['bool', '1'],
+            ['bool', '2'],
             ['bool', 'yes'],
             ['bool', ''],
         ];

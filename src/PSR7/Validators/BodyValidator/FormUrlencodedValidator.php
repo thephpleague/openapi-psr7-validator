@@ -50,7 +50,7 @@ class FormUrlencodedValidator implements MessageValidator
 
         // 0. Multipart body message MUST be described with a set of object properties
         if ($schema->type !== CebeType::OBJECT) {
-            throw TypeMismatch::becauseTypeDoesNotMatch('object', $schema->type);
+            throw TypeMismatch::becauseTypeDoesNotMatch(['object'], $schema->type);
         }
 
         // 1. Parse message body

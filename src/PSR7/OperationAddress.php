@@ -7,13 +7,16 @@ namespace League\OpenAPIValidation\PSR7;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidPath;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 
+use function explode;
 use function implode;
 use function preg_match;
+use function preg_match_all;
 use function preg_quote;
 use function preg_replace;
 use function preg_split;
 use function sprintf;
 use function strtok;
+use function trim;
 
 use const PREG_SPLIT_DELIM_CAPTURE;
 
@@ -62,7 +65,28 @@ class OperationAddress
 
     public function hasPlaceholders(): bool
     {
-        return preg_match(self::PATH_PLACEHOLDER, $this->path()) === 1;
+        return (bool) $this->countPlaceholders();
+    }
+
+    public function countPlaceholders(): int
+    {
+        return preg_match_all(self::PATH_PLACEHOLDER, $this->path()) ?? 0;
+    }
+
+    public function countExactMatchParts(string $comparisonPath): int
+    {
+        $comparisonPathParts = explode('/', trim($comparisonPath, '/'));
+        $pathParts           = explode('/', trim($this->path(), '/'));
+        $exactMatchCount     = 0;
+        foreach ($comparisonPathParts as $key => $comparisonPathPart) {
+            if ($comparisonPathPart !== $pathParts[$key]) {
+                continue;
+            }
+
+            $exactMatchCount++;
+        }
+
+        return $exactMatchCount;
     }
 
     /**
