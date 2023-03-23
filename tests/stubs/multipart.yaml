@@ -66,13 +66,19 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - image
               properties:
                 image:
                   type: string
                   format: binary
+                description:
+                  type: string
             encoding:
               image:
                 contentType: specific/type
+              description:
+                contentType: text/plain
       responses:
         204:
           description: good post
