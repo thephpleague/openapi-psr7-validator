@@ -10,12 +10,13 @@ use Respect\Validation\Rules\NumericVal;
 use Respect\Validation\Validator;
 use Throwable;
 
-use function bcdiv;
 use function class_exists;
 use function sprintf;
 
 class MultipleOf extends BaseKeyword
 {
+    private const EPSILON = 0.00000001;
+
     /**
      * The value of "multipleOf" MUST be a number, strictly greater than 0.
      * A numeric instance is only valid if division by this keyword's value results in an integer.
@@ -39,9 +40,9 @@ class MultipleOf extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        $value = (float) bcdiv((string) $data, (string) $multipleOf, 1);
-        if ($value - (int) $value !== 0.0) {
-            throw KeywordMismatch::fromKeyword('multipleOf', $data, sprintf('Division by %d did not resulted in integer', $multipleOf));
+        $value = round($data / $multipleOf, 8);
+        if ($value - (int) $value > self::EPSILON) {
+            throw KeywordMismatch::fromKeyword('multipleOf', $data, sprintf('Division by %s did not resulted in integer', $multipleOf));
         }
     }
 }
