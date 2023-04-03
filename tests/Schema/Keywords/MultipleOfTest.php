@@ -35,6 +35,7 @@ final class MultipleOfTest extends SchemaValidatorTest
             [10, .11],
             [9.9, .451],
             [.94, .03],
+            [1, .3333333],
         ];
     }
 
