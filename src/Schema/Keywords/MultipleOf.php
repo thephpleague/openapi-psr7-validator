@@ -11,6 +11,7 @@ use Respect\Validation\Validator;
 use Throwable;
 
 use function class_exists;
+use function round;
 use function sprintf;
 
 class MultipleOf extends BaseKeyword
