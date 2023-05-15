@@ -7,15 +7,14 @@ namespace League\OpenAPIValidation\PSR7;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\Callback;
 use cebe\openapi\spec\Header as HeaderSpec;
-use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\Parameter;
 use cebe\openapi\spec\PathItem;
-use cebe\openapi\spec\Reference;
 use cebe\openapi\spec\Response as ResponseSpec;
 use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\spec\SecurityScheme;
+use cebe\openapi\SpecBaseObject;
 use League\OpenAPIValidation\PSR7\Exception\NoCallback;
 use League\OpenAPIValidation\PSR7\Exception\NoOperation;
 use League\OpenAPIValidation\PSR7\Exception\NoPath;
@@ -171,23 +170,15 @@ final class SpecFinder
     }
 
     /**
-     * @return MediaType[]|Reference[]
-     *
      * @throws NoPath
      */
-    public function findBodySpec(OperationAddress $addr): array
+    public function findBodySpec(OperationAddress $addr): ?SpecBaseObject
     {
         if ($addr instanceof ResponseAddress || $addr instanceof CallbackResponseAddress) {
-            return $this->findResponseSpec($addr)->content;
+            return $this->findResponseSpec($addr);
         }
 
-        $requestBody = $this->findOperationSpec($addr)->requestBody;
-
-        if (! $requestBody) {
-            return [];
-        }
-
-        return $requestBody->content;
+        return $this->findOperationSpec($addr)->requestBody;
     }
 
     /**
