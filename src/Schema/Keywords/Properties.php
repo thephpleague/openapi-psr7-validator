@@ -10,9 +10,8 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
-use Respect\Validation\Exceptions\Exception;
-use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function array_diff;
 use function array_key_exists;
@@ -70,7 +69,7 @@ class Properties extends BaseKeyword
             Validator::arrayType()->assert($data);
             Validator::arrayVal()->assert($properties);
             Validator::each(Validator::instance(CebeSchema::class))->assert($properties);
-        } catch (Exception | ExceptionInterface $exception) {
+        } catch (Throwable $exception) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($exception);
         }
 

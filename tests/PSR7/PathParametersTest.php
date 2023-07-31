@@ -80,4 +80,59 @@ final class PathParametersTest extends TestCase
         $validator->validate($request);
         $this->addToAssertionCount(1);
     }
+
+    public function testItValidatesPathParameterArray(): void
+    {
+        // dot in path template must be handled with care
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/array/1,2,3,99');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesPathParameterSimpleArray(): void
+    {
+        // dot in path template must be handled with care
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/arrayLabel/.1,2,3,99');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesPathParameterExplodedSimpleArray(): void
+    {
+        // dot in path template must be handled with care
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/arrayLabelExploded/.1.2.3.99');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesPathParameterMatrixArray(): void
+    {
+        // dot in path template must be handled with care
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/arrayMatrix/;id=1,2,3,99');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesPathParameterExplodedMatrixArray(): void
+    {
+        // dot in path template must be handled with care
+        $specFile = __DIR__ . '/../stubs/pathParams.yaml';
+        $request  = new ServerRequest('get', '/arrayMatrixExploded/;id=1;id=2;id=3;id=99');
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
+        $validator->validate($request);
+        $this->addToAssertionCount(1);
+    }
 }

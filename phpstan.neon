@@ -1,9 +1,9 @@
 parameters:
+    phpVersion: 70200
     level: 6
     paths:
         - src
         - tests
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
-        - '#Caught class Respect\\Validation\\Exceptions\\ExceptionInterface not found.#'
         - '#Call to an undefined static method Respect\\Validation\\Validator::numeric\(\).#'

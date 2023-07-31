@@ -116,4 +116,56 @@ SPEC;
         $this->assertCount(1, $opAddrs);
         $this->assertEquals('/products/{id}', $opAddrs[0]->path());
     }
+
+    public function testItPrioritisesOperatorsThatAreMoreStatic(): void
+    {
+        $spec = <<<SPEC
+openapi: "3.0.0"
+info:
+  title: Uber API
+  description: Move your app forward with the Uber API
+  version: "1.0.0"
+paths:
+  /products/{product}/images/{image}:
+    get:
+      summary: A specific image for a specific product
+  /products/{product}/images/thumbnails:
+    get:
+      summary: All thumbnail images for a specific product
+SPEC;
+
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), '/products/10/images/thumbnails', 'get');
+        $opAddrs    = $pathFinder->search();
+
+        $this->assertCount(1, $opAddrs);
+        $this->assertEquals('/products/{product}/images/thumbnails', $opAddrs[0]->path());
+    }
+
+    public function testItPrioritises2EquallyDynamicPaths(): void
+    {
+        $spec = <<<SPEC
+openapi: "3.0.0"
+info:
+  title: Uber API
+  description: Move your app forward with the Uber API
+  version: "1.0.0"
+paths:
+  /products/{product}/images/{image}/{size}:
+    get:
+      summary: A specific image for a specific product
+  /products/{product}/images/thumbnails/{size}:
+    get:
+      summary: All thumbnail images for a specific product
+  /products/{product}/images/{image}/primary:
+    get:
+      summary: All thumbnail images for a specific product
+SPEC;
+
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), '/products/10/images/thumbnails/primary', 'get');
+        $opAddrs    = $pathFinder->search();
+
+        $this->assertCount(2, $opAddrs);
+        $this->assertEquals('/products/{product}/images/thumbnails/{size}', $opAddrs[0]->path());
+        $this->assertEquals('/products/{product}/images/{image}/primary', $opAddrs[1]->path());
+    }
 }

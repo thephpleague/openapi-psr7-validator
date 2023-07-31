@@ -6,9 +6,8 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
-use Respect\Validation\Exceptions\Exception;
-use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function mb_strlen;
 use function sprintf;
@@ -39,7 +38,7 @@ class MinLength extends BaseKeyword
             Validator::stringType()->assert($data);
             Validator::intVal()->assert($minLength);
             Validator::trueVal()->assert($minLength >= 0);
-        } catch (Exception | ExceptionInterface $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 

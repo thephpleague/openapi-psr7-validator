@@ -11,6 +11,7 @@ use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UploadedFileInterface;
 
 use function filesize;
 use function GuzzleHttp\Psr7\parse_request;
@@ -132,6 +133,54 @@ Content-Type: image/whatever
 HTTP
 ,
             ],
+            // specified headers for one part (multiple, with charset)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: APPLICATION/XML; CHARSET=UTF-8; OTHER=value
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
+            // specified headers for one part (multiple, other valid type)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: application/json ; charset="ISO-8859-1"
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
+            // specified headers for one part (multiple, wildcard)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: text/plain; charset=us-ascii
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+            ],
             // deserialized values
             [
                 <<<HTTP
@@ -214,6 +263,57 @@ HTTP
 ,
                 InvalidBody::class,
             ],
+            // missing required part
+            [
+                <<<HTTP
+POST /multipart/encoding HTTP/1.1
+Content-Length: 428
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOmz20xyMCkE27rN7
+
+------WebKitFormBoundaryOmz20xyMCkE27rN7
+Content-Disposition: form-data; name="description"
+Content-Type: text/plain
+
+123
+------WebKitFormBoundaryOmz20xyMCkE27rN7--
+HTTP
+,
+                InvalidBody::class,
+            ],
+            // wrong encoding charset for one of the parts (multiple)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: application/xml; other=utf-8; charset=ISO-8859-1
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+                InvalidBody::class,
+            ],
+            // missing encoding charset for one of the parts (multiple)
+            [
+                <<<HTTP
+POST /multipart/encoding/multiple HTTP/1.1
+Content-Length: 2740
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ
+Content-Disposition: form-data; name="data"; filename="file1.txt"
+Content-Type: application/xml
+
+[file content goes there]
+------WebKitFormBoundaryWfPNVh4wuWBlyEyQ--
+HTTP
+,
+                InvalidBody::class,
+            ],
             // wrong header for one part
             [
                 <<<HTTP
@@ -267,7 +367,7 @@ Content-Type: text/plain
 Content-Disposition: form-data; name="secure"
 Content-Type: text/plain
 
-0
+2
 ------WebKitFormBoundaryOmz20xyMCkE27rN7
 Content-Disposition: form-data; name="code"
 Content-Type: text/plain
@@ -322,25 +422,56 @@ HTTP
         $validator->validate($serverRequest);
     }
 
-    public function testValidateMultipartServerRequestGreen(): void
+    /**
+     * @return mixed[][]
+     */
+    public function dataProviderMultipartServerRequestGreen(): array
     {
-        $specFile = __DIR__ . '/../../../stubs/multipart.yaml';
-
         $imagePath = __DIR__ . '/../../../stubs/image.jpg';
         $imageSize = filesize($imagePath);
 
-        $serverRequest = (new ServerRequest('post', new Uri('/multipart')))
-            ->withHeader('Content-Type', 'multipart/form-data')
-            ->withParsedBody([
-                'id'      => 'bc8e1430-a963-11e9-a2a3-2a2ae2dbcce4',
-                'address' => [
-                    'street' => 'Some street',
-                    'city'   => 'some city',
+        return [
+            // Normal multipart message
+            [
+                'post',
+                '/multipart',
+                [
+                    'id'      => 'bc8e1430-a963-11e9-a2a3-2a2ae2dbcce4',
+                    'address' => [
+                        'street' => 'Some street',
+                        'city'   => 'some city',
+                    ],
                 ],
-            ])
-            ->withUploadedFiles([
-                'profileImage' => new UploadedFile($imagePath, $imageSize, 0),
-            ]);
+                [
+                    'profileImage' => new UploadedFile($imagePath, $imageSize, 0),
+                ],
+            ],
+            // Missing optional field with defined encoding
+            [
+                'post',
+                '/multipart/encoding',
+                [],
+                [
+                    'image' => new UploadedFile($imagePath, $imageSize, 0),
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param string[]                             $body
+     * @param array<string, UploadedFileInterface> $files
+     *
+     * @dataProvider dataProviderMultipartServerRequestGreen
+     */
+    public function testValidateMultipartServerRequestGreen(string $method, string $uri, array $body = [], array $files = []): void
+    {
+        $specFile = __DIR__ . '/../../../stubs/multipart.yaml';
+
+        $serverRequest = (new ServerRequest($method, new Uri($uri)))
+            ->withHeader('Content-Type', 'multipart/form-data')
+            ->withParsedBody($body)
+            ->withUploadedFiles($files);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($specFile)->getServerRequestValidator();
         $validator->validate($serverRequest);

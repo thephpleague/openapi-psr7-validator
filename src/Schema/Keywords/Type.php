@@ -11,6 +11,7 @@ use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\TypeMismatch;
 use League\OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
 use RuntimeException;
+use TypeError;
 
 use function class_exists;
 use function is_array;
@@ -32,51 +33,80 @@ class Type extends BaseKeyword
      * An instance matches successfully if its primitive type is one of the
      * types defined by keyword.  Recall: "number" includes "integer".
      *
-     * @param mixed $data
+     * @param mixed           $data
+     * @param string|string[] $types
      *
      * @throws TypeMismatch
      */
-    public function validate($data, string $type, ?string $format = null): void
+    public function validate($data, $types, ?string $format = null): void
     {
-        switch ($type) {
-            case CebeType::OBJECT:
-                if (! is_object($data) && ! (is_array($data) && ArrayHelper::isAssoc($data)) && $data !== []) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::OBJECT, $data);
-                }
+        if (! is_array($types) && ! is_string($types)) {
+            throw new TypeError('$types only can be array or string');
+        }
 
-                break;
-            case CebeType::ARRAY:
-                if (! is_array($data) || ArrayHelper::isAssoc($data)) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch('array', $data);
-                }
+        if (! is_array($types)) {
+            $types = [$types];
+        }
 
-                break;
-            case CebeType::BOOLEAN:
-                if (! is_bool($data)) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::BOOLEAN, $data);
-                }
+        $matchedType = false;
+        foreach ($types as $type) {
+            switch ($type) {
+                case CebeType::OBJECT:
+                    if (! is_object($data) && ! (is_array($data) && ArrayHelper::isAssoc($data)) && $data !== []) {
+                        break;
+                    }
 
-                break;
-            case CebeType::NUMBER:
-                if (is_string($data) || ! is_numeric($data)) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::NUMBER, $data);
-                }
+                    $matchedType = $type;
+                    break;
+                case CebeType::ARRAY:
+                    if (! is_array($data) || ArrayHelper::isAssoc($data)) {
+                        break;
+                    }
 
-                break;
-            case CebeType::INTEGER:
-                if (! is_int($data)) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::INTEGER, $data);
-                }
+                    $matchedType = $type;
+                    break;
+                case CebeType::BOOLEAN:
+                    if (! is_bool($data)) {
+                        break;
+                    }
 
-                break;
-            case CebeType::STRING:
-                if (! is_string($data)) {
-                    throw TypeMismatch::becauseTypeDoesNotMatch(CebeType::STRING, $data);
-                }
+                    $matchedType = $type;
+                    break;
+                case CebeType::NUMBER:
+                    if (is_string($data) || ! is_numeric($data)) {
+                        break;
+                    }
 
-                break;
-            default:
-                throw InvalidSchema::becauseTypeIsNotKnown($type);
+                    $matchedType = $type;
+                    break;
+                case CebeType::INTEGER:
+                    if (! is_int($data)) {
+                        break;
+                    }
+
+                    $matchedType = $type;
+                    break;
+                case CebeType::STRING:
+                    if (! is_string($data)) {
+                        break;
+                    }
+
+                    $matchedType = $type;
+                    break;
+                case CebeType::NULL:
+                    if ($data !== null) {
+                        break;
+                    }
+
+                    $matchedType = $type;
+                    break;
+                default:
+                    throw InvalidSchema::becauseTypeIsNotKnown($type);
+            }
+        }
+
+        if ($matchedType === false) {
+            throw TypeMismatch::becauseTypeDoesNotMatch($types, $data);
         }
 
         // 2. Validate format now
@@ -85,7 +115,7 @@ class Type extends BaseKeyword
             return;
         }
 
-        $formatValidator = FormatsContainer::getFormat($type, $format); // callable or FQCN
+        $formatValidator = FormatsContainer::getFormat($matchedType, $format); // callable or FQCN
         if ($formatValidator === null) {
             return;
         }
@@ -99,7 +129,7 @@ class Type extends BaseKeyword
         }
 
         if (! $formatValidator($data)) {
-            throw FormatMismatch::fromFormat($format, $data, $type);
+            throw FormatMismatch::fromFormat($format, $data, $matchedType);
         }
     }
 }

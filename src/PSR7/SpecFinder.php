@@ -23,9 +23,9 @@ use League\OpenAPIValidation\PSR7\Exception\NoResponseCode;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Webmozart\Assert\Assert;
 
+use function is_array;
 use function json_decode;
 use function json_encode;
-use function property_exists;
 use function substr;
 
 final class SpecFinder
@@ -152,15 +152,14 @@ final class SpecFinder
         $opSpec = $this->findOperationSpec($addr);
 
         // 1. Collect security params
-        if (property_exists($opSpec->getSerializableData(), 'security')) {
-            // security is set on operation level
-            $securitySpecs = $opSpec->security;
-        } else {
-            // security is set on root level (fallback option)
-            $securitySpecs = $this->openApi->security;
+        $securitySpecs = $opSpec->security;
+
+        // security is set on operation level
+        if (is_array($securitySpecs)) {
+            return $securitySpecs;
         }
 
-        return $securitySpecs;
+        return $this->openApi->security;
     }
 
     /**

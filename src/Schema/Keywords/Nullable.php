@@ -6,6 +6,9 @@ namespace League\OpenAPIValidation\Schema\Keywords;
 
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 
+use function in_array;
+use function is_string;
+
 class Nullable extends BaseKeyword
 {
     /**
@@ -17,8 +20,13 @@ class Nullable extends BaseKeyword
      */
     public function validate($data, bool $nullable): void
     {
-        if (! $nullable && ($data === null)) {
+        if (! $nullable && ($data === null) && ! $this->nullableByType()) {
             throw KeywordMismatch::fromKeyword('nullable', $data, 'Value cannot be null');
         }
+    }
+
+    public function nullableByType(): bool
+    {
+        return ! is_string($this->parentSchema->type) && in_array('null', $this->parentSchema->type);
     }
 }

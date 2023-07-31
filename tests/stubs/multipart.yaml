@@ -66,13 +66,37 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - image
               properties:
                 image:
                   type: string
                   format: binary
+                description:
+                  type: string
             encoding:
               image:
                 contentType: specific/type
+              description:
+                contentType: text/plain
+      responses:
+        204:
+          description: good post
+  /multipart/encoding/multiple:
+    post:
+      summary: ---
+      operationId: post-multipart-encoding-multiple
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+            encoding:
+              data:
+                contentType: application/xml; charset="utf-8", application/json, text/*
       responses:
         204:
           description: good post

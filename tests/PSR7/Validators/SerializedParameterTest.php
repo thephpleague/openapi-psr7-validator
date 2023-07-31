@@ -31,7 +31,7 @@ class SerializedParameterTest extends TestCase
         $subject = new SerializedParameter($this->createMock(Schema::class), 'application/json');
 
         $this->expectException(SchemaMismatch::class);
-        $this->expectExceptionMessage("Value expected to be 'string', 'array' given");
+        $this->expectExceptionMessage("Value expected to be 'string', but 'array' given");
 
         $subject->deserialize(['green', 'red']);
     }

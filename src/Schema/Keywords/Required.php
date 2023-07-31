@@ -9,9 +9,8 @@ use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
-use Respect\Validation\Exceptions\Exception;
-use Respect\Validation\Exceptions\ExceptionInterface;
 use Respect\Validation\Validator;
+use Throwable;
 
 use function array_unique;
 use function count;
@@ -54,7 +53,7 @@ class Required extends BaseKeyword
             Validator::arrayType()->assert($required);
             Validator::each(Validator::stringType())->assert($required);
             Validator::trueVal()->assert(count(array_unique($required)) === count($required));
-        } catch (Exception | ExceptionInterface $e) {
+        } catch (Throwable $e) {
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
