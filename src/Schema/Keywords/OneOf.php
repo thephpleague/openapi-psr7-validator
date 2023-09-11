@@ -61,6 +61,40 @@ class OneOf extends BaseKeyword
         $innerExceptions = [];
         $validSchemas    = [];
 
+        if (isset($this->parentSchema->discriminator->mapping, $data[$this->parentSchema->discriminator->propertyName])) {
+            $schemaIndex = array_search(
+                $data[$this->parentSchema->discriminator->propertyName],
+                array_keys($this->parentSchema->discriminator->mapping)
+            );
+
+            if ($schemaIndex === false) {
+                throw NotEnoughValidSchemas::fromKeywordWithInnerExceptions(
+                    'oneOf',
+                    $data,
+                    $innerExceptions,
+                    'Data must match at least one schema'
+                );
+            }
+
+            if (isset($oneOf[$schemaIndex])) {
+                try {
+                    $schemaItem = $oneOf[$schemaIndex];
+
+                    $schemaValidator = new SchemaValidator($this->validationDataType);
+                    $schemaValidator->validate($data, $schemaItem, $this->dataBreadCrumb);
+
+                    return;
+                } catch (SchemaMismatch $e) {
+                    throw NotEnoughValidSchemas::fromKeywordWithInnerExceptions(
+                        'oneOf',
+                        $data,
+                        [$e],
+                        'Data mapped by Discriminator is not match'
+                    );
+                }
+            }
+        }
+
         foreach ($oneOf as $schema) {
             try {
                 $schemaValidator->validate($data, $schema, $this->dataBreadCrumb);
