@@ -15,10 +15,7 @@ jobs:
           - "lowest"
           - "highest"
         php:
-          - '7.2'
-          - '7.3'
-          - '7.4'
-          - '8.0'
+          - '8.1'
         experimental:
           - false
         include:
@@ -51,14 +48,14 @@ jobs:
         run: ./vendor/bin/phpunit -c phpunit.xml
 
   cs:
-    name: Codestyle check on PHP 7.2
+    name: Codestyle check on PHP 8.1
     runs-on: ubuntu-latest
 
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@2.1.0
         with:
-          php-version: 7.2
+          php-version: 8.1
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -76,7 +73,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - '7.2'
+          - '8.1'
 
     steps:
       - name: Set up PHP
