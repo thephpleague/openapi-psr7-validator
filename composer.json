@@ -21,10 +21,10 @@
         }
     },
     "require": {
-        "php": ">=7.2",
+        "php": "^8.3",
         "ext-json": "*",
         "devizzent/cebe-php-openapi": "^1.0",
-        "league/uri": "^6.3",
+        "league/uri": "^7.4",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "psr/http-message": "^1.0 || ^2.0",
         "psr/http-server-middleware": "^1.0",
@@ -35,7 +35,7 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "^8.0",
-        "guzzlehttp/psr7": "^1.5",
+        "guzzlehttp/psr7": "^2.6",
         "hansott/psr7-cookies": "^3.0.2",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan": "^1",
