@@ -21,7 +21,7 @@
         }
     },
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "ext-json": "*",
         "devizzent/cebe-php-openapi": "^1.0",
         "league/uri": "^7.3",
