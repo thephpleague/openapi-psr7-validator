@@ -15,11 +15,11 @@ jobs:
           - "lowest"
           - "highest"
         php:
-          - '8.3'
+          - '8.1'
         experimental:
           - false
         include:
-          - php: "8.3"
+          - php: "8.1"
             composer-options: "--ignore-platform-reqs"
             experimental: true
 
@@ -46,12 +46,12 @@ jobs:
         run: ./vendor/bin/phpunit -c phpunit.xml
 
   cs:
-    name: Codestyle check on PHP 8.3
+    name: Codestyle check on PHP 8.1
     runs-on: ubuntu-latest
     strategy:
       matrix:
         php:
-          - '8.3'
+          - '8.1'
 
     steps:
       - name: Set up PHP
@@ -76,7 +76,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - '8.3'
+          - '8.1'
 
     steps:
       - name: Set up PHP
