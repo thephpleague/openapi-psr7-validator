@@ -15,17 +15,21 @@ jobs:
           - "lowest"
           - "highest"
         php:
-          - '8.3'
+          - '7.2'
+          - '7.3'
+          - '7.4'
+          - '8.0'
         experimental:
           - false
         include:
-          - php: "8.3"
+          - php: "8.1"
             composer-options: "--ignore-platform-reqs"
             experimental: true
+            dependencies: "highest"
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@2.9.0
         with:
           php-version: ${{ matrix.php }}
           extensions: intl, mbstring
@@ -33,6 +37,7 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+
 
       - name: "Install lowest dependencies"
         if: ${{ matrix.dependencies == 'lowest' }}
@@ -46,19 +51,14 @@ jobs:
         run: ./vendor/bin/phpunit -c phpunit.xml
 
   cs:
-    name: Codestyle check on PHP 8.3
+    name: Codestyle check on PHP 7.2
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php:
-          - '8.3'
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@2.1.0
         with:
-          php-version: ${{ matrix.php }}
-          extensions: intl, mbstring
+          php-version: 7.2
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -76,14 +76,13 @@ jobs:
     strategy:
       matrix:
         php:
-          - '8.3'
+          - '7.2'
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@2.1.0
         with:
           php-version: ${{ matrix.php }}
-          extensions: intl
 
       - name: Checkout code
         uses: actions/checkout@v2
