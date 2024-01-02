@@ -27,14 +27,14 @@ jobs:
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@2.9.0
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: intl, mbstring
           tools: "composer:v2"
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: "Install specific version of phpunit "
         if: ${{ matrix.phpunit  }}
@@ -64,12 +64,12 @@ jobs:
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@2.1.0
+        uses: shivammathur/setup-php@v2
         with:
           php-version: 7.2
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: "Install specific version of phpunit "
         if: ${{ matrix.phpunit  }}
@@ -94,12 +94,12 @@ jobs:
 
     steps:
       - name: Set up PHP
-        uses: shivammathur/setup-php@2.1.0
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: "Install specific version of phpunit "
         if: ${{ matrix.phpunit  }}
