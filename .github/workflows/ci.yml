@@ -7,7 +7,6 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
@@ -19,13 +18,9 @@ jobs:
           - '7.3'
           - '7.4'
           - '8.0'
-        experimental:
-          - false
-        include:
-          - php: "8.1"
-            composer-options: "--ignore-platform-reqs"
-            experimental: true
-            dependencies: "highest"
+          - '8.1'
+          - '8.2'
+          - '8.3'
 
     steps:
       - name: Set up PHP
@@ -41,11 +36,11 @@ jobs:
 
       - name: "Install lowest dependencies"
         if: ${{ matrix.dependencies == 'lowest' }}
-        run: composer update --prefer-lowest --no-interaction --no-progress --no-suggest ${{ matrix.composer-options }}
+        run: composer update --prefer-lowest --no-interaction --no-progress --no-suggest
 
       - name: "Install highest dependencies"
         if: ${{ matrix.dependencies == 'highest' }}
-        run: composer update --no-interaction --no-progress --no-suggest ${{ matrix.composer-options }}
+        run: composer update --no-interaction --no-progress --no-suggest
 
       - name: "Run tests"
         run: ./vendor/bin/phpunit -c phpunit.xml
