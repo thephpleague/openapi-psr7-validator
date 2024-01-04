@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Tests\PSR7;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Utils;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
-use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
 final class ValidateResponseTest extends BaseValidatorTest
@@ -32,7 +32,7 @@ final class ValidateResponseTest extends BaseValidatorTest
         ];
         $response = (new Response())
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(stream_for(json_encode($body)));
+            ->withBody(Utils::streamFor(json_encode($body)));
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
         $validator->validate(new OperationAddress('/ref', 'post'), $response);
@@ -43,7 +43,7 @@ final class ValidateResponseTest extends BaseValidatorTest
     {
         $response = $this->makeGoodResponse('/path1', 'get')
                          ->withHeader('Content-Type', 'image/jpeg')
-                         ->withBody(stream_for(__DIR__ . '/../stubs/image.jpg'));
+                         ->withBody(Utils::streamFor(__DIR__ . '/../stubs/image.jpg'));
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getResponseValidator();
         $validator->validate(new OperationAddress('/path1', 'get'), $response);
@@ -54,7 +54,7 @@ final class ValidateResponseTest extends BaseValidatorTest
     {
         $addr     = new OperationAddress('/path1', 'get');
         $body     = [];
-        $response = $this->makeGoodResponse('/path1', 'get')->withBody(stream_for(json_encode($body)));
+        $response = $this->makeGoodResponse('/path1', 'get')->withBody(Utils::streamFor(json_encode($body)));
 
         $this->expectException(InvalidBody::class);
         $this->expectExceptionMessage(

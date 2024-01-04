@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace League\OpenAPIValidation\Tests\FromCommunity;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Utils;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 
-use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
 final class Issue57Test extends TestCase
@@ -60,7 +60,7 @@ YAML;
 
         $psrRequest = (new ServerRequest('post', 'http://localhost:8000/api/v1/products.create'))
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(stream_for(json_encode(['test' => (object) ['some_property_here' => (object) []]])));
+            ->withBody(Utils::streamFor(json_encode(['test' => (object) ['some_property_here' => (object) []]])));
 
         $validator->validate($psrRequest);
 

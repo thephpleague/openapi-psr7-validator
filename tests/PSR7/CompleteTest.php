@@ -6,13 +6,13 @@ namespace League\OpenAPIValidation\Tests\PSR7;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Utils;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
 use const PHP_INT_MAX;
@@ -56,13 +56,13 @@ final class CompleteTest extends TestCase
             ->withCookieParams(['session_id' => 100])
             ->withHeader('X-RequestId', 'abcd')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(stream_for(json_encode(['propB' => 'good value'])));
+            ->withBody(Utils::streamFor(json_encode(['propB' => 'good value'])));
     }
 
     protected function buildGoodResponse(): ResponseInterface
     {
         return (new Response())
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(stream_for(json_encode(['propA' => PHP_INT_MAX])));
+            ->withBody(Utils::streamFor(json_encode(['propA' => PHP_INT_MAX])));
     }
 }
