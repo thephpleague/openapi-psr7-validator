@@ -12,6 +12,8 @@ class StringURI
     public function __invoke(string $value): bool
     {
         try {
+            // namespace 'League\Uri' is provided by multiple packages, but PHPStan does not support merging them
+            // @phpstan-ignore-next-line
             UriString::parse($value);
 
             return true;
