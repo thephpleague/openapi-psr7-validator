@@ -36,7 +36,7 @@
     "require-dev": {
         "doctrine/coding-standard": "^8.0",
         "guzzlehttp/psr7": "^2.0",
-        "hansott/psr7-cookies": "^3.0.2",
+        "hansott/psr7-cookies": "^3.0.2 || ^4.0",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan": "^1",
         "phpstan/phpstan-phpunit": "^1",
