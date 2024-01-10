@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\PSR7;
 
+use GuzzleHttp\Psr7\Utils;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
-use function GuzzleHttp\Psr7\stream_for;
 use function json_encode;
 
 final class RequestTest extends BaseValidatorTest
@@ -27,7 +27,7 @@ final class RequestTest extends BaseValidatorTest
     {
         $body    = ['name' => 'Alex'];
         $request = $this->makeGoodRequest('/request-body', 'post')
-            ->withBody(stream_for(json_encode($body)));
+            ->withBody(Utils::streamFor(json_encode($body)));
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRequestValidator();
         $validator->validate($request);
@@ -39,7 +39,7 @@ final class RequestTest extends BaseValidatorTest
         $addr    = new OperationAddress('/request-body', 'post');
         $body    = ['name' => 1000];
         $request = $this->makeGoodRequest($addr->path(), $addr->method())
-            ->withBody(stream_for(json_encode($body)));
+            ->withBody(Utils::streamFor(json_encode($body)));
 
         $this->expectException(InvalidBody::class);
         $this->expectExceptionMessage(

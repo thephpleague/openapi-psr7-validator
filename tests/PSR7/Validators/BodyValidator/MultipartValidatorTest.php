@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\PSR7\Validators\BodyValidator;
 
+use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\UploadedFile;
 use GuzzleHttp\Psr7\Uri;
@@ -14,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UploadedFileInterface;
 
 use function filesize;
-use function GuzzleHttp\Psr7\parse_request;
 
 class MultipartValidatorTest extends TestCase
 {
@@ -388,7 +388,7 @@ HTTP
     {
         $specFile = __DIR__ . '/../../../stubs/multipart.yaml';
 
-        $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
+        $request       = Message::parseRequest($message); // convert a text HTTP message to a PSR7 message
         $serverRequest = new ServerRequest(
             $request->getMethod(),
             $request->getUri(),
@@ -410,7 +410,7 @@ HTTP
 
         $specFile = __DIR__ . '/../../../stubs/multipart.yaml';
 
-        $request       = parse_request($message); // convert a text HTTP message to a PSR7 message
+        $request       = Message::parseRequest($message); // convert a text HTTP message to a PSR7 message
         $serverRequest = new ServerRequest(
             $request->getMethod(),
             $request->getUri(),
