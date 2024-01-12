@@ -80,4 +80,52 @@ SPEC;
 
         (new SchemaValidator())->validate($data, $schema);
     }
+
+    public function testItValidatesItemsGreenWithDiscriminator(): void
+    {
+        $spec = <<<SPEC
+schema:
+  type: array
+  items:
+    discriminator: 
+      propertyName: type
+      mapping:
+        NAME: 0
+        TIME: 1
+    anyOf:
+      - type: object
+        properties:
+          type: 
+            type: string
+          name:
+            type: string
+        required:
+        - type
+        - name
+      - type: object
+        properties:
+          type: 
+            type: string
+          age:
+            type: integer
+        required:
+        - type
+        - age  
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = [
+            [
+                'type' => 'NAME',
+                'name' => 'John',
+            ],
+            [
+                'type' => 'TIME',
+                'age' => 22,
+            ],
+        ];
+
+        (new SchemaValidator())->validate($data, $schema);
+        $this->addToAssertionCount(2);
+    }
 }
