@@ -16,7 +16,13 @@ final class RoutedServerRequestTest extends BaseValidatorTest
 {
     public function testItValidatesMessageGreen(): void
     {
-        $request = $this->makeGoodServerRequest('/path1', 'get');
+        $request = $this->makeGoodServerRequest('/path1', 'get')
+            ->withQueryParams([
+                'queryArgB[]' => [
+                    'value1',
+                    'value2',
+                ],
+            ]);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getRoutedRequestValidator();
         $validator->validate(new OperationAddress('/path1', 'get'), $request);

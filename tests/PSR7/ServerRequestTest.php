@@ -16,7 +16,8 @@ final class ServerRequestTest extends BaseValidatorTest
 {
     public function testItValidatesMessageGreen(): void
     {
-        $request = $this->makeGoodServerRequest('/path1', 'get');
+        $request = $this->makeGoodServerRequest('/path1', 'get')
+            ->withQueryParams(['queryArgB[]' => ['value1']]);
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);

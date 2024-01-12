@@ -101,6 +101,7 @@ paths:
       parameters:
         - $ref: 'schemas.yaml#/components/parameters/HeaderA'
         - $ref: 'schemas.yaml#/components/parameters/QueryArgumentA'
+        - $ref: 'schemas.yaml#/components/parameters/QueryArgumentB'
       description: Get Path1
       responses:
         200:

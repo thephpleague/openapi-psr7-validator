@@ -49,3 +49,13 @@ components:
       schema:
         type: number
         format: float
+    QueryArgumentB:
+      in: query
+      name: queryArgB[]
+      description: query argument B which is array
+      required: true
+      schema:
+        type: array
+        items:
+          - type: string
+            example: value1
