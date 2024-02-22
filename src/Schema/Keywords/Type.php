@@ -128,7 +128,7 @@ class Type extends BaseKeyword
             $formatValidator = new $formatValidator();
         }
 
-        if (! $formatValidator($data)) {
+        if (! $formatValidator($data, $this->parentSchema)) {
             throw FormatMismatch::fromFormat($format, $data, $matchedType);
         }
     }
