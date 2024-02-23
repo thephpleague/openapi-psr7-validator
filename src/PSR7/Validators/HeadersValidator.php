@@ -41,7 +41,7 @@ final class HeadersValidator implements MessageValidator
 
             foreach ($message->getHeader($header) as $headerValue) {
                 try {
-                    $validator->validate($parameter->deserialize($headerValue), $spec->schema);
+                    $validator->validate($parameter->deserialize($headerValue), $parameter->getSchema());
                 } catch (SchemaMismatch $exception) {
                     throw InvalidHeaders::becauseValueDoesNotMatchSchema($header, $headerValue, $addr, $exception);
                 }
