@@ -4,7 +4,7 @@
 ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)
 
 # OpenAPI PSR-7 Message (HTTP Request/Response) Validator
-This package can validate PSR-7 messages against OpenAPI (3.0.x) specifications 
+This package can validate PSR-7 messages against OpenAPI 3.0.x and 3.1.0 specifications 
 expressed in YAML or JSON. 
 
 ![](image.jpg)
