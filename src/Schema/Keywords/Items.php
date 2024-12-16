@@ -12,6 +12,9 @@ use League\OpenAPIValidation\Schema\SchemaValidator;
 use Respect\Validation\Validator;
 use Throwable;
 
+use function in_array;
+use function is_array;
+use function is_string;
 use function sprintf;
 
 class Items extends BaseKeyword
@@ -46,7 +49,19 @@ class Items extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array')) {
+        if (
+            ! isset($this->parentSchema->type)
+            || (
+                (
+                    is_string($this->parentSchema->type)
+                    && $this->parentSchema->type !== 'array'
+                )
+                || (
+                    is_array($this->parentSchema->type)
+                    && in_array('array', $this->parentSchema->type) === false
+                )
+            )
+        ) {
             throw new InvalidSchema(sprintf('items MUST be present if the type is array'));
         }
 
