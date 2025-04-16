@@ -28,6 +28,8 @@ class OperationAddress
     protected $method;
     /** @var string */
     protected $path;
+    /** @var string */
+    protected $fullPath;
 
     public function __construct(string $path, string $method)
     {
@@ -63,6 +65,18 @@ class OperationAddress
         return $this->path;
     }
 
+    public function fullPath(): string
+    {
+        return $this->fullPath;
+    }
+
+    public function setFullPath(string $fullPath): self
+    {
+        $this->fullPath = $fullPath;
+
+        return $this;
+    }
+
     public function hasPlaceholders(): bool
     {
         return (bool) $this->countPlaceholders();
@@ -76,7 +90,7 @@ class OperationAddress
     public function countExactMatchParts(string $comparisonPath): int
     {
         $comparisonPathParts = explode('/', trim($comparisonPath, '/'));
-        $pathParts           = explode('/', trim($this->path(), '/'));
+        $pathParts           = explode('/', trim($this->fullPath(), '/'));
         $exactMatchCount     = 0;
         foreach ($comparisonPathParts as $key => $comparisonPathPart) {
             if ($comparisonPathPart !== $pathParts[$key]) {

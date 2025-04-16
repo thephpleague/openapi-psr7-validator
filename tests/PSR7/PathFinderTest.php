@@ -125,6 +125,8 @@ info:
   title: Uber API
   description: Move your app forward with the Uber API
   version: "1.0.0"
+servers:
+  - url: https://localhost/v1
 paths:
   /products/{product}/images/{image}:
     get:
@@ -134,7 +136,7 @@ paths:
       summary: All thumbnail images for a specific product
 SPEC;
 
-        $pathFinder = new PathFinder(Reader::readFromYaml($spec), '/products/10/images/thumbnails', 'get');
+        $pathFinder = new PathFinder(Reader::readFromYaml($spec), '/v1/products/10/images/thumbnails', 'get');
         $opAddrs    = $pathFinder->search();
 
         $this->assertCount(1, $opAddrs);
