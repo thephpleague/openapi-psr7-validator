@@ -1,0 +1,23 @@
+name: On Tag Creation
+
+on:
+    push:
+        tags:
+            - 'v**'
+    workflow_dispatch:
+
+
+jobs:
+    package_and_publish:
+        runs-on: gha-runner
+        env:
+            UBI_ROBOT_GITHUB_TOKEN: ${{ secrets.UBI_ROBOT_GITHUB_TOKEN }}
+
+        steps:
+            -
+                name: Build and publish package
+                uses: ubitransports/build-publish-composer-package-action@master
+                with:
+                    ubi_robot_github_token: ${{ secrets.UBI_ROBOT_GITHUB_TOKEN }}
+                    gcp_github_actions_sa_key: ${{ secrets.GCP_GITHUB_ACTIONS_SA_KEY }}
+                    package: ubitransport/openapi-psr7-validator
