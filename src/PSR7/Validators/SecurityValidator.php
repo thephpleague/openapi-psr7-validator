@@ -26,8 +26,8 @@ use function sprintf;
 final class SecurityValidator implements MessageValidator
 {
     private const HEADER_AUTHORIZATION = 'Authorization';
-    private const AUTH_PATTERN_BASIC   = '#^Basic #';
-    private const AUTH_PATTERN_BEARER  = '#^Bearer #';
+    private const AUTH_PATTERN_BASIC   = '#^Basic #i';
+    private const AUTH_PATTERN_BEARER  = '#^Bearer #i';
 
     /** @var SpecFinder */
     private $finder;
