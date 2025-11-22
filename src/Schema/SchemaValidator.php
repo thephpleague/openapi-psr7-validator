@@ -10,6 +10,7 @@ use League\OpenAPIValidation\Foundation\ArrayHelper;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Keywords\AllOf;
 use League\OpenAPIValidation\Schema\Keywords\AnyOf;
+use League\OpenAPIValidation\Schema\Keywords\ConstValue;
 use League\OpenAPIValidation\Schema\Keywords\Enum;
 use League\OpenAPIValidation\Schema\Keywords\Items;
 use League\OpenAPIValidation\Schema\Keywords\Maximum;
@@ -59,8 +60,17 @@ final class SchemaValidator implements Validator
             // These keywords are not part of the JSON Schema at all (new to OAS)
             (new Nullable($schema))->validate($data, $schema->nullable ?? true);
 
+            // Validate const keyword (JSON Schema draft 6+) before early return for null
+            // This is necessary because const might be null, and we need to validate it
+            $schemaData = $schema->getSerializableData();
+            $hasConst   = isset($schemaData->const);
+            if ($hasConst) {
+                (new ConstValue($schema))->validate($data, $schemaData->const);
+            }
+
             // We don't want to validate any more if the value is a valid Null
-            if ($data === null) {
+            // But only if const was not specified, as const validation already happened above
+            if ($data === null && ! $hasConst) {
                 return;
             }
 
@@ -120,6 +130,8 @@ final class SchemaValidator implements Validator
             if (isset($schema->required)) {
                 (new Required($schema, $this->validationStrategy, $breadCrumb))->validate($data, $schema->required);
             }
+
+            // Note: const validation is done earlier (before early return for null)
 
             if (isset($schema->enum)) {
                 (new Enum($schema))->validate($data, $schema->enum);
