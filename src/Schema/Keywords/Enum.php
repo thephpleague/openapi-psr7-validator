@@ -9,8 +9,12 @@ use OpenClassrooms\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use Respect\Validation\Validator;
 use Throwable;
 
+use function array_map;
 use function count;
+use function implode;
 use function in_array;
+use function is_string;
+use function sprintf;
 
 class Enum extends BaseKeyword
 {
@@ -38,7 +42,18 @@ class Enum extends BaseKeyword
         }
 
         if (! in_array($data, $enum, true)) {
-            throw KeywordMismatch::fromKeyword('enum', $data, 'Value must be present in the enum');
+            $allowedValues = implode(', ', array_map(
+                static function ($value) {
+                    return is_string($value) ? "'" . $value . "'" : (string) $value;
+                },
+                $enum
+            ));
+
+            throw KeywordMismatch::fromKeyword(
+                'enum',
+                $data,
+                sprintf('Value must be present in the enum. Allowed values: %s', $allowedValues)
+            );
         }
     }
 }

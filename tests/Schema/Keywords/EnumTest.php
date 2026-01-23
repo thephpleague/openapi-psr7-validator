@@ -47,4 +47,50 @@ SPEC;
             $this->assertEquals('enum', $e->keyword());
         }
     }
+
+    public function testItDisplaysAllowedValuesInErrorMessage(): void
+    {
+        $spec = <<<SPEC
+schema:
+  type: string
+  enum:
+  - apple
+  - banana
+  - cherry
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = 'orange';
+
+        try {
+            (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
+        } catch (KeywordMismatch $e) {
+            $this->assertEquals('enum', $e->keyword());
+            $this->assertEquals('Keyword validation failed: Value must be present in the enum. Allowed values: \'apple\', \'banana\', \'cherry\'', $e->getMessage());
+        }
+    }
+
+    public function testItDisplaysNumericEnumValuesWithoutQuotes(): void
+    {
+        $spec = <<<SPEC
+schema:
+  type: integer
+  enum:
+  - 1
+  - 2
+  - 3
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = 5;
+
+        try {
+            (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
+        } catch (KeywordMismatch $e) {
+            $this->assertEquals('enum', $e->keyword());
+            $this->assertEquals('Keyword validation failed: Value must be present in the enum. Allowed values: 1, 2, 3', $e->getMessage());
+        }
+    }
 }
