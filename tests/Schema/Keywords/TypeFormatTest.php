@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Tests\Schema\Keywords;
 
+use cebe\openapi\spec\Schema;
 use League\OpenAPIValidation\Schema\Exception\FormatMismatch;
 use League\OpenAPIValidation\Schema\SchemaValidator;
 use League\OpenAPIValidation\Schema\TypeFormats\FormatsContainer;
@@ -77,6 +78,36 @@ SPEC;
 
         $schema = $this->loadRawSchema($spec);
         (new SchemaValidator())->validate('good value', $schema);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItAllowsCustomFormatWithParentSchema(): void
+    {
+        $spec = <<<SPEC
+schema:
+  type: string
+  format: country
+  x-continent: europe
+SPEC;
+
+        $countryFormat = new class ()
+        {
+            /**
+             * @param mixed $value
+             */
+            public function __invoke($value, Schema $parentSchema): bool
+            {
+                if ($parentSchema->{'x-continent'} === 'europe') {
+                    return $value === 'england';
+                }
+
+                return false;
+            }
+        };
+        FormatsContainer::registerFormat('string', 'country', $countryFormat);
+
+        $schema = $this->loadRawSchema($spec);
+        (new SchemaValidator())->validate('england', $schema);
         $this->addToAssertionCount(1);
     }
 
