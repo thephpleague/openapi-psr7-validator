@@ -20,6 +20,11 @@
             "League\\OpenAPIValidation\\Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "test": "phpunit",
+        "analyze": "phpstan",
+        "cs": "phpcs"
+    },
     "require": {
         "php": ">=7.2",
         "ext-json": "*",
