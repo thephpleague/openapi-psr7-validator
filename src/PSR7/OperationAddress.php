@@ -70,7 +70,7 @@ class OperationAddress
 
     public function countPlaceholders(): int
     {
-        return preg_match_all(self::PATH_PLACEHOLDER, $this->path()) ?? 0;
+        return (int) preg_match_all(self::PATH_PLACEHOLDER, $this->path());
     }
 
     public function countExactMatchParts(string $comparisonPath): int
