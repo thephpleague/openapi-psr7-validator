@@ -18,10 +18,10 @@ final class ValidationMiddleware implements MiddlewareInterface
 {
     /** @var ServerRequestValidator */
     private $requestValidator;
-    /** @var ResponseValidator */
+    /** @var ResponseValidator|null */
     private $responseValidator;
 
-    public function __construct(ServerRequestValidator $requestValidator, ResponseValidator $responseValidator)
+    public function __construct(ServerRequestValidator $requestValidator, ?ResponseValidator $responseValidator = null)
     {
         $this->requestValidator  = $requestValidator;
         $this->responseValidator = $responseValidator;
@@ -46,11 +46,13 @@ final class ValidationMiddleware implements MiddlewareInterface
         // 2. Process request
         $response = $handler->handle($request);
 
-        // 3. Validate response
-        try {
-            $this->responseValidator->validate($matchedOASOperation, $response);
-        } catch (ValidationFailed $e) {
-            throw InvalidResponseMessage::because($e);
+        if ($this->responseValidator !== null) {
+            // 3. Validate response
+            try {
+                $this->responseValidator->validate($matchedOASOperation, $response);
+            } catch (ValidationFailed $e) {
+                throw InvalidResponseMessage::because($e);
+            }
         }
 
         return $response;

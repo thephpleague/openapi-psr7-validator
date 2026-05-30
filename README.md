@@ -89,6 +89,8 @@ Validation of `\Psr\Http\Message\ResponseInterface` is a bit more complicated
 . Because you need not only YAML file and Response itself, but also you need 
 to know which operation this response belongs to (in terms of OpenAPI).
 
+Reponse validation is optional and is enabled by default. See [Skipping response validation](#skipping-response-validation)
+
 Example:
 
 ```php
@@ -192,6 +194,15 @@ You can use `->setCache($pool, $ttl)` call for both PSR-7 and PSR-15 builder in 
 
 If you want take control over the cache key for schema item, or your cache does not support cache key generation by itself
 you can `->overrideCacheKey('my_custom_key')` to ensure cache uses key you want.
+
+### Skipping response validation
+If you want to skip response validation and only validate requests, you can call `->shouldValidateResponse(false)` method on the builder like this:
+```php
+$psr15Middleware = (new \OpenAPIValidation\PSR15\ValidationMiddlewareBuilder)
+    ->fromYamlFile($yamlFile)
+    ->shouldValidateResponse(false)
+    ->getValidationMiddleware();
+```
 
 ### Standalone OpenAPI Validator
 The package contains a standalone validator which can validate any data 

@@ -59,4 +59,24 @@ class ValidationMiddlewareTest extends BaseValidatorTest
         $this->expectException($expectedExceptionType);
         $middleware->process($serverRequest, $handler);
     }
+
+    public function testItDoesNotValidateResponseIfNoValidatorConfigured(): void
+    {
+        $this->expectNotToPerformAssertions();
+
+        $builder = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile);
+
+        $middleware = new ValidationMiddleware(
+            $builder->getServerRequestValidator(),
+            null
+        );
+
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->willReturn(new Response());
+
+        // no exception thrown
+        $middleware->process($this->makeGoodServerRequest('/read', 'get'), $handler);
+    }
 }
