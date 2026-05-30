@@ -113,7 +113,7 @@ class OperationAddress
         $url = strtok($url, '?');
 
         // 1. Find param names and build pattern
-        $pattern = $this->buildPattern($this->path(), $parameterNames);
+        $pattern = $this->buildPattern($this->path(), $parameterNames, $parameterNamesMatch);
 
         // 2. Parse param values
         if (! preg_match($pattern, $url, $matches)) {
@@ -123,7 +123,7 @@ class OperationAddress
         // 3. Combine keys and values
         $parsedParams = [];
         foreach ($parameterNames as $name) {
-            $parsedParams[$name] = $matches[$name];
+            $parsedParams[$name] = $matches[$parameterNamesMatch[$name]];
         }
 
         return $parsedParams;
@@ -134,9 +134,10 @@ class OperationAddress
      *
      * @param array<string>|null $parameterNames
      */
-    protected function buildPattern(string $url, ?array &$parameterNames): string
+    protected function buildPattern(string $url, ?array &$parameterNames, ?array &$parameterNamesMatch): string
     {
         $parameterNames = [];
+        $parameterNamesMatch = [];
         $pregParts      = [];
         $inParameter    = false;
 
@@ -160,8 +161,10 @@ class OperationAddress
             }
 
             if ($inParameter) {
-                $pregParts[]      = '(?<' . $part . '>[^/]+)';
+                $partGroup = str_replace("-", "_", $part);
+                $pregParts[]      = '(?<' . $partGroup . '>[^/]+)';
                 $parameterNames[] = $part;
+                $parameterNamesMatch[$part] = $partGroup;
             } else {
                 $pregParts[] = preg_quote($part, '#');
             }
