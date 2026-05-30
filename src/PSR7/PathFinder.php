@@ -114,7 +114,7 @@ class PathFinder
                 }
 
                 // path matched!
-                $paths[] = $opCandidate['addr'];
+                $paths[] = $opCandidate['addr']->setFullPath($candidatePath);
                 break;
             }
         }
@@ -230,7 +230,7 @@ class PathFinder
         $partCounts        = [];
         $placeholderCounts = [];
         foreach ($paths as $path) {
-            $partCounts[]        = $this->countParts($path->path());
+            $partCounts[]        = $this->countParts($path->fullPath());
             $placeholderCounts[] = $path->countPlaceholders();
         }
 
