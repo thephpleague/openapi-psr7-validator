@@ -27,6 +27,10 @@ class Nullable extends BaseKeyword
 
     public function nullableByType(): bool
     {
-        return ! is_string($this->parentSchema->type) && in_array('null', $this->parentSchema->type);
+        if (is_string($this->parentSchema->type)) {
+            return $this->parentSchema->type === 'null';
+        }
+
+        return in_array('null', $this->parentSchema->type);
     }
 }

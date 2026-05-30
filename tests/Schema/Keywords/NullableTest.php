@@ -25,6 +25,20 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
+    public function testItValidatesNullableStandaloneGreen(): void
+    {
+        $spec = <<<SPEC
+schema:
+    type: 'null'
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = null;
+
+        (new SchemaValidator())->validate($data, $schema);
+        $this->addToAssertionCount(1);
+    }
+
     public function testItValidatesNullableRed(): void
     {
         $spec = <<<SPEC
