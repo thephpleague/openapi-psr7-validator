@@ -267,6 +267,10 @@ final class SerializedParameter
     {
         if (in_array($this->style, [self::STYLE_FORM, self::STYLE_SPACE_DELIMITED, self::STYLE_PIPE_DELIMITED], true)) {
             if ($this->explode === false) {
+                if (! is_string($value)) {
+                    throw TypeMismatch::becauseTypeDoesNotMatch(['string'], $value);
+                }
+
                 $value = explode(self::STYLE_DELIMITER_MAP[$this->style], $value);
             }
 
