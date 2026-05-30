@@ -29,7 +29,7 @@ use Riverline\MultiPartParser\StreamedPart;
 
 use function array_diff_assoc;
 use function array_map;
-use function array_replace;
+use function array_merge_recursive;
 use function array_shift;
 use function explode;
 use function in_array;
@@ -291,7 +291,7 @@ class MultipartValidator implements MessageValidator
 
         $files = $this->normalizeFiles($message->getUploadedFiles());
 
-        $body = array_replace($body, $files);
+        $body = array_merge_recursive($body, $files);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {
