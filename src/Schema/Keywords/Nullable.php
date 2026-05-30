@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace League\OpenAPIValidation\Schema\Keywords;
 
+use cebe\openapi\spec\Type as CebeType;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 
 use function in_array;
+use function is_array;
 use function is_string;
 
 class Nullable extends BaseKeyword
@@ -27,6 +29,16 @@ class Nullable extends BaseKeyword
 
     public function nullableByType(): bool
     {
-        return ! is_string($this->parentSchema->type) && in_array('null', $this->parentSchema->type);
+        if (is_string($this->parentSchema->type)) {
+            // If type is the string "null", then null values are allowed
+            return $this->parentSchema->type === CebeType::NULL;
+        }
+
+        if (is_array($this->parentSchema->type)) {
+            // If type is an array containing 'null', then null values are allowed
+            return in_array(CebeType::NULL, $this->parentSchema->type);
+        }
+
+        return false;
     }
 }
