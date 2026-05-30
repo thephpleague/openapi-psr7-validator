@@ -83,6 +83,27 @@ Content-Type: image/jpeg
 HTTP
 ,
             ],
+            // multipart mixed message with nested file objects (collections)
+            [
+                <<<HTTP
+POST /multipart/files/collections HTTP/1.1
+Content-Length: 311
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWRBHApnEKYVLfiJ1
+
+------WebKitFormBoundaryWRBHApnEKYVLfiJ1
+Content-Disposition: form-data; name="files[0][caption]"
+Content-Type: text/plain
+
+some-type
+------WebKitFormBoundaryWRBHApnEKYVLfiJ1
+Content-Disposition: form-data; name="files[0][file]"; filename="image1.png"
+Content-Type: application/octet-stream
+
+{...file content...}
+------WebKitFormBoundaryWRBHApnEKYVLfiJ1--
+HTTP
+,
+            ],
             // specified encoding for one part
             [
                 <<<HTTP
@@ -444,6 +465,26 @@ HTTP
                 ],
                 [
                     'profileImage' => new UploadedFile($imagePath, $imageSize, 0),
+                ],
+            ],
+            // multipart mixed message with nested file objects (collections)
+            // The PHP kernel separates binary data (files) from body data so it's
+            // important to test that this is correctly handled by the validator
+            // when dealing with nested objects
+            [
+                'post',
+                '/multipart/files/collections',
+                [
+                    'files' => [
+                        ['caption' => 'Some caption'],
+                        ['caption' => 'Some caption'],
+                    ],
+                ],
+                [
+                    'files' => [
+                        ['file' => new UploadedFile($imagePath, $imageSize, 0)],
+                        ['file' => new UploadedFile($imagePath, $imageSize, 0)],
+                    ],
                 ],
             ],
             // Missing optional field with defined encoding

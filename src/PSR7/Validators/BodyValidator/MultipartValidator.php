@@ -29,7 +29,7 @@ use Riverline\MultiPartParser\StreamedPart;
 
 use function array_diff_assoc;
 use function array_map;
-use function array_replace;
+use function array_replace_recursive;
 use function array_shift;
 use function explode;
 use function in_array;
@@ -291,7 +291,24 @@ class MultipartValidator implements MessageValidator
 
         $files = $this->normalizeFiles($message->getUploadedFiles());
 
-        $body = array_replace($body, $files);
+        // The PHP kernel separates file data (binary) from body data so it's
+        // imperative to combine the two arrays __recursively__ to have properly
+        // constructed arrays of objects (collections) prior to validating
+        // them against the schema
+        //
+        // Otherwise, the file array will overwrite the body array at the common
+        // __root__ element, which may result in an object validation error if
+        // the object also contains other properties (stored in the body array)
+        //
+        // Eg: Array of file objects with a text descriptor
+        // [
+        //   ['description' => <string>, 'file' => <binary>]
+        //   ['description' => <string>, 'file' => <binary>]
+        //   ['description' => <string>, 'file' => <binary>]
+        // ]
+        //
+        // The 'description' would be in $body and 'file' would be in $files
+        $body = array_replace_recursive($body, $files);
 
         $validator = new SchemaValidator($this->detectValidationStrategy($message));
         try {

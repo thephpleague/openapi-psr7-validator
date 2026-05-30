@@ -57,6 +57,33 @@ paths:
       responses:
         204:
           description: good post
+  /multipart/files/collections:
+    post:
+      summary: ---
+      operationId: post-multipart-file-collections
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array 
+                  items:
+                    type: object
+                    required:
+                      - caption
+                      - file
+                    properties:
+                      caption:
+                        type: string
+                      file:
+                        type: string
+                        format: binary
+
+      responses:
+        204:
+          description: good post
   /multipart/encoding:
     post:
       summary: ---
