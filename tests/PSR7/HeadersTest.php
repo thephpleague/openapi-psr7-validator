@@ -15,7 +15,15 @@ final class HeadersTest extends BaseValidatorTest
 {
     public function testItValidatesRequestQueryArgumentsGreen(): void
     {
-        $request = (new ServerRequest('get', new Uri('/path1?queryArgA=20')))->withHeader('header-a', 'value A');
+        $request = (new ServerRequest('get', new Uri('/path1')))
+            ->withQueryParams([
+                'queryArgA' => 20,
+                'queryArgB[]' => [
+                    'value1',
+                    'value2',
+                ],
+            ])
+            ->withHeader('header-a', 'value A');
 
         $validator = (new ValidatorBuilder())->fromYamlFile($this->apiSpecFile)->getServerRequestValidator();
         $validator->validate($request);

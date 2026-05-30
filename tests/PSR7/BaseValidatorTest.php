@@ -54,12 +54,27 @@ abstract class BaseValidatorTest extends TestCase
         switch ($method . ' ' . $path) {
             case 'get /read':
                 return $request
-                    ->withUri(new Uri($path . '?filter=age&limit=10'))
-                    ->withQueryParams(['filter' => 'age', 'limit' => 10, 'offset' => 0]);
+                    ->withUri(new Uri($path))
+                    ->withQueryParams([
+                        'filter' => 'age',
+                        'limit' => 10,
+                        'offset' => 0,
+                        'queryArgB[]' => [
+                            'value1',
+                            '20',
+                        ],
+                    ]);
 
             case 'get /path1':
                 return $request
-                    ->withUri(new Uri($path . '?queryArgA=20'))
+                    ->withUri(new Uri($path))
+                    ->withQueryParams([
+                        'queryArgA' => '20',
+                        'queryArgB[]' => [
+                            'value1',
+                            '20',
+                        ],
+                    ])
                     ->withHeader('Header-A', 'value A');
 
             case 'post /cookies':
@@ -86,11 +101,11 @@ abstract class BaseValidatorTest extends TestCase
         switch ($method . ' ' . $path) {
             case 'get /read':
                 return $request
-                    ->withUri(new Uri($path . '?filter=age&limit=10&offset=0'));
+                    ->withUri(new Uri($path . '?filter=age&limit=10&offset=0&queryArgB[]=value1&queryArgB[]=value2'));
 
             case 'get /path1':
                 return $request
-                    ->withUri(new Uri($path . '?queryArgA=20'))
+                    ->withUri(new Uri($path . '?queryArgA=20&queryArgB[]=value1&queryArgB[]=value2'))
                     ->withHeader('Header-A', 'value A');
 
             case 'post /cookies':
