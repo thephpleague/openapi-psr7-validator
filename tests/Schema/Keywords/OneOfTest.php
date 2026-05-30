@@ -85,4 +85,88 @@ SPEC;
             $this->assertEquals('oneOf', $e->keyword());
         }
     }
+
+    public function testItValidatesOneOfGreenWithDiscriminator(): void
+    {
+        $spec = <<<SPEC
+schema:
+  discriminator: 
+    propertyName: type
+    mapping:
+      NAME: 0
+      TIME: 1
+  oneOf:
+    - type: object
+      properties:
+        type: 
+          type: string
+        name:
+          type: string
+      required:
+      - type
+      - name
+    - type: object
+      properties:
+        type: 
+          type: string
+        age:
+          type: integer
+      required:
+      - type
+      - age
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = [
+            'type' => 'NAME',
+            'name' => 'John',
+        ];
+
+        (new SchemaValidator())->validate($data, $schema);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testItValidatesOneOfRedWithDiscriminator(): void
+    {
+        $spec = <<<SPEC
+schema:
+  discriminator: 
+    propertyName: type
+    mapping:
+      NAME: 0
+      TIME: 1
+  oneOf:
+    - type: object
+      properties:
+        type: 
+          type: string
+        name:
+          type: string
+      required:
+      - type
+      - name
+    - type: object
+      properties:
+        type: 
+          type: string
+        age:
+          type: integer
+      required:
+      - type
+      - age
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = [
+            'type' => 'TIME',
+            'age' => 'today',
+        ];
+
+        try {
+            (new SchemaValidator())->validate($data, $schema);
+            $this->fail('Validation did not expected to pass');
+        } catch (KeywordMismatch $e) {
+            $this->assertEquals('oneOf', $e->keyword());
+        }
+    }
 }

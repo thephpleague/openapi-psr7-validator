@@ -54,6 +54,40 @@ class AnyOf extends BaseKeyword
 
         $innerExceptions = [];
 
+        if (isset($this->parentSchema->discriminator->mapping, $data[$this->parentSchema->discriminator->propertyName])) {
+            $schemaIndex = array_search(
+                $data[$this->parentSchema->discriminator->propertyName],
+                array_keys($this->parentSchema->discriminator->mapping)
+            );
+
+            if ($schemaIndex === false) {
+                throw NotEnoughValidSchemas::fromKeywordWithInnerExceptions(
+                    'anyOf',
+                    $data,
+                    $innerExceptions,
+                    'Data must match at least one schema'
+                );
+            }
+
+            if (isset($anyOf[$schemaIndex])) {
+                try {
+                    $schemaItem = $anyOf[$schemaIndex];
+
+                    $schemaValidator = new SchemaValidator($this->validationDataType);
+                    $schemaValidator->validate($data, $schemaItem, $this->dataBreadCrumb);
+
+                    return;
+                } catch (SchemaMismatch $e) {
+                    throw NotEnoughValidSchemas::fromKeywordWithInnerExceptions(
+                        'anyOf',
+                        $data,
+                        [$e],
+                        'Data mapped by Discriminator is not match'
+                    );
+                }
+            }
+        }
+
         foreach ($anyOf as $schema) {
             $schemaValidator = new SchemaValidator($this->validationDataType);
             try {
