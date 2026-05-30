@@ -46,4 +46,12 @@ class InvalidBody extends AddressValidationFailed
 
         return $exception;
     }
+
+    public static function becauseOfMissingRequiredBody(OperationAddress $addr): self
+    {
+        $exception          = static::fromAddr($addr);
+        $exception->message = sprintf('Required body is missing for %s', $addr);
+
+        return $exception;
+    }
 }

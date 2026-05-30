@@ -6,6 +6,8 @@ namespace League\OpenAPIValidation\PSR7\Validators\BodyValidator;
 
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\Reference;
+use cebe\openapi\spec\RequestBody;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidHeaders;
 use League\OpenAPIValidation\PSR7\MessageValidator;
 use League\OpenAPIValidation\PSR7\OperationAddress;
@@ -38,6 +40,20 @@ final class BodyValidator implements MessageValidator
     public function validate(OperationAddress $addr, MessageInterface $message): void
     {
         $mediaTypeSpecs = $this->finder->findBodySpec($addr);
+
+        if ($mediaTypeSpecs === null) {
+            return;
+        }
+
+        if ($mediaTypeSpecs instanceof RequestBody && $message->getBody()->getSize() === 0) {
+            if ($mediaTypeSpecs->required) {
+                throw InvalidBody::becauseOfMissingRequiredBody($addr);
+            }
+
+            return;
+        }
+
+        $mediaTypeSpecs = $mediaTypeSpecs->content;
 
         if (empty($mediaTypeSpecs)) {
             // edge case: if "content" keyword is not set (body can be anything as no expectations set)
