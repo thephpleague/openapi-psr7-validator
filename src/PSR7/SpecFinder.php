@@ -155,11 +155,11 @@ final class SpecFinder
         $securitySpecs = $opSpec->security;
 
         // security is set on operation level
-        if (is_array($securitySpecs)) {
-            return $securitySpecs;
+        if (!empty($securitySpecs)) {
+            return (array) $securitySpecs;
         }
 
-        return $this->openApi->security;
+        return (array) $this->openApi->security;
     }
 
     /**
