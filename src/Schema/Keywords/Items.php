@@ -46,7 +46,7 @@ class Items extends BaseKeyword
             throw InvalidSchema::becauseDefensiveSchemaValidationFailed($e);
         }
 
-        if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array')) {
+        if (! isset($this->parentSchema->type) || ($this->parentSchema->type !== 'array' && (!is_array($this->parentSchema->type) || !in_array('array', $this->parentSchema->type, true)))) {
             throw new InvalidSchema(sprintf('items MUST be present if the type is array'));
         }
 
