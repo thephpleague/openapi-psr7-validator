@@ -16,6 +16,11 @@ class StringByte
     {
         //base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw==
 
-        return base64_encode(base64_decode($value, true)) === $value;
+        $decoded = base64_decode($value, true);
+        if ($decoded === false) {
+            return false;
+        }
+
+        return base64_encode($decoded) === $value;
     }
 }
