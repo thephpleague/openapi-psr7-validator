@@ -45,6 +45,22 @@ SPEC;
         $this->addToAssertionCount(1);
     }
 
+    public function testItValidatesItemsWithUnionTypeGreen(): void
+    {
+        $spec = <<<SPEC
+schema:
+  type: [array, "null"]
+  items:
+    type: string
+SPEC;
+
+        $schema = $this->loadRawSchema($spec);
+        $data   = ['stringA', 'stringB'];
+
+        (new SchemaValidator())->validate($data, $schema);
+        $this->addToAssertionCount(1);
+    }
+
     public function testItValidatesItemsRed(): void
     {
         $spec = <<<SPEC
